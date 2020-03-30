@@ -445,51 +445,40 @@ DT::datatable(d_ent, class= "cell-border stripe", rownames = F, filter = "top",
 ```{r fig.width=8, fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Mapa de Casos Confirmados de Coronavirus en México"}
 caption <- "Elaboración propia con datos de la Secretaría de Salud | <a href='https://twitter.com/lolo7no'>@lolo7no</a> <a href='https://twitter.com/guzmart_'>@guzmart_</a>"
 
-tocamel <- function (x, delim = "[^[:alnum:]]", upper = FALSE, sep = "", ...) 
-{
-  stopifnot(is.character(x))
-  stopifnot(is.character(delim))
-  s <- strsplit(x, delim, ...)
-  sapply(s, function(y) {
-    if (any(is.na(y))) {
-      y
-    }
-    else {
-      first <- substring(y, 1, 1)
-      if (isTRUE(upper)) 
-        first <- toupper(first)
-      else first[-1] <- toupper(first[-1])
-      paste(first, substring(y, 2), sep = "", collapse = sep)
-    }
-  })
-}
-
+## Leemos la base SHP de polígonos de México
 estados_mexico <- readOGR(dsn = "México_Estados/",verbose = F)
+## Todavía estaba guardada como DF la CDMX
 levels(estados_mexico$ESTADO)[9] <- "Ciudad De México"
 levels(estados_mexico@data$ESTADO)[9] <- "Ciudad De México"
 
+## Hacemos 10 bins de las fechas hasta ahora.
 seq_dates <- seq.Date(from = min(as.Date(d$fecha_corte)), to = max(as.Date(d$fecha_corte)), by = "day")
 seq_dates <- enframe(seq_dates, value = "fecha_corte")
 seq_dates$bin <- ntile(seq_dates$fecha_corte, 10)
 seq_dates <- seq_dates%>%select(-name)
 
+## Tomamos la base de datos, Estructuramos los datos de estado y fecha,
 data_fecha <- d %>% 
   mutate(
     ent = tolower(ent),
-    ESTADO = tocamel(ent, upper = T, sep = " "),
+    ESTADO = stringi::stri_trans_totitle(ent),
     ESTADO = ifelse(ESTADO == "Queretaro", "Querétaro", ESTADO),
     ESTADO = as.factor(ESTADO),
     fecha_corte= as.Date(fecha_corte)
   )%>%
   count(
     fecha_corte, ESTADO
-  )%>% 
+  )%>% ## agregamos estados faltantes (si es el caso)
   right_join(estados_mexico@data)%>%
+  ## Completamos fechas faltantes de estados que tuvieron casos después
   complete(fecha_corte, ESTADO)%>%
   ungroup()%>%
+  ## Cambiamos los valores faltantes por 0
   mutate(n = ifelse(is.na(n), 0, n))%>%
+  ## agregamos los bins de fechas
   left_join(seq_dates) %>%
   drop_na(bin)%>%
+  ## Agrupando por bin y por entidad encontramos los casos nuevos y el periodo de fechas de ese bin
   group_by(ESTADO, bin, .drop = F)%>%
   summarise(n = sum(n),
             fechas = paste0 (min(fecha_corte)," a ",max(fecha_corte)),
@@ -497,38 +486,48 @@ data_fecha <- d %>%
   group_by(
     ESTADO
   )%>%
+  ## Agrupando por estado encontramos los casos acumulados
   mutate(
     n_acumulada = cumsum(n),
     fecha_corte = as.Date(fecha_corte)
   )
 
-
-
-mybins <- c(0,seq(1,max(data_fecha$n_acumulada, data_fecha$n)+5,5))
+## Creamos bins de casos acumulados para asignar valores de color
+mybins <- c(0,seq(1,max(data_fecha$n_acumulada, data_fecha$n)+5,10))
 my_colors <- brewer.pal(9, "Reds") 
 my_colors <- colorRampPalette(my_colors)(length(mybins))
+## Creamos una función que transforme número de casos a color
 mypalette <- colorBin(palette=my_colors, domain=data_fecha$n_acumulada, na.color="transparent", bins=mybins)
 
+## Transformamos los datos para unir con datos geográficos
 data_mapa <- data_fecha %>%
   mutate(n = ifelse(is.na(n), 0, n),
          n_acumulada = ifelse(is.na(n_acumulada), 0, n_acumulada),
          color = mypalette(n_acumulada))%>%
+  ## Cambiamos el nombre de cada variable a "Variable"_"Fecha"
   pivot_wider(ESTADO, names_from = fecha_corte, values_from = c("fechas","n","n_acumulada" ,"color"))%>%
   mutate_at(vars(starts_with("n")), ~ifelse(is.na(.), 0, .))%>%
   mutate_at(vars(starts_with("color")), ~ifelse(is.na(.), "#FFF5F0", .))%>%
   select(-ends_with("NA"))%>%
+  ## Ordenamos según datos geográficos IMPORTANTE!!
   right_join(estados_mexico@data)
+# transformamos la base de datos a matriz para fácil indexación
+data_mapa1 <- as.matrix.data.frame(data_mapa)
+
+## Creamos mapa
 mymap <- leaflet(options = leafletOptions(zoomControl = FALSE,
                                           minZoom = 3, 
                                           maxZoom = 7,
                                           dragging = FALSE)) %>% 
   addProviderTiles("Esri.WorldGrayCanvas")  %>%
   setView( lat=21, lng=-103 , zoom=5)%>%addControl(caption, position = "bottomleft")
-date <- unique(data_fecha$fecha_corte)[2]
-data_mapa1 <- as.matrix.data.frame(data_mapa)
+
+## Hacemos un loop sobre cada uno de los bins creados 
 for (date in (unique(data_fecha$fecha_corte))) {
+  ## el nombre del layer por agregar es la fecha de corte
   dateStr <- as.Date(date, origin = "1970-01-01")
-  popup1 <- paste0("<span style='color: #7f0000'><strong>",data_mapa1[,paste0("fechas_",dateStr)],"</strong></span>",
+  ## Info que sale al pasar el mouse, 
+  popup1 <- paste0("<span style='color:#7f0000'><strong>",data_mapa1[,paste0("fechas_",dateStr)],"</strong<></span>",
                    "<br><span style='color: salmon;'><strong>Estado: </strong></span>", 
                    data_mapa$ESTADO, 
                    "<br><span style='color: salmon;'><strong>Casos Totales: </strong></span>", 
@@ -536,27 +535,30 @@ for (date in (unique(data_fecha$fecha_corte))) {
                    "<br><span style='color: salmon;'><strong>Casos Nuevos: </strong></span>", 
                    data_mapa1[,paste0("n_",dateStr)]
   )
+  ## Agregamos layer de polígonos usando el shpfile
   mymap <- mymap %>% addPolygons(data = estados_mexico, 
-                                  fillColor = ~data_mapa1[,paste0("color_",dateStr)],  ## we want the polygon filled with 
-                                  ## one of the palette-colors
-                                  ## according to the value in student1$Anteil
-                                  fillOpacity = 0.8,         ## how transparent do you want the polygon to be?
-                                  color = "red",       ## color of borders between districts
-                                  weight = 1.5,            ## width of borders
-                                  popup = popup1,         ## which popup?
+                                  fillColor = ~data_mapa1[,paste0("color_",dateStr)],
+                                  fillOpacity = 0.8,
+                                  color = "red",       
+                                  weight = 1.5,    
+                                  popup = popup1,
+                                 ## Nombre del layer
                                   group=dateStr)
 }
+## Todos los grupos creados
 baseDates <- as.Date(unique(data_fecha$fecha_corte))
-mymap <- mymap %>% addLayersControl(
-  baseGroups = baseDates,
-  options = layersControlOptions(collapsed = FALSE))
- mymap <- mymap%>% addLegend(position = 'topleft', ## choose bottomleft, bottomright, topleft or topright
-          colors = mypalette(seq(1, max(data_fecha$n_acumulada, data_fecha$n), max(data_fecha$n_acumulada, data_fecha$n)/10)), 
-          labels = c("1 Caso",rep("", 8),paste0(max(data_fecha$n_acumulada), " Casos")),  ## legend labels (only min and max)
-          opacity = 0.7,      ##transparency again
-          title = "Casos Totales")   ## title of the legend
 
- mymap%>%
+## Creamos un controlador de los layers
+mymap %>% addLayersControl(
+  baseGroups = baseDates,
+  options = layersControlOptions(collapsed = FALSE)) %>% 
+  addLegend(position = 'topleft', # agregamos una seleccion de colores de los valores de Casos (10 valores) pero podemos escoger más
+            colors = mypalette(seq(1, max(data_fecha$n_acumulada, data_fecha$n),
+                                   max(data_fecha$n_acumulada, data_fecha$n)/10)), 
+            labels = c("1 Caso",rep("", 8),paste0(max(data_fecha$n_acumulada), " Casos")),
+            opacity = 0.7,    
+            title = "Casos Totales") %>%
+  ## Botón de Estrella para centrar mapa
   addEasyButton(easyButton(position = "bottomright",
     icon = htmltools::span(class = "star", htmltools::HTML("&starf;")),
     onClick = htmlwidgets::JS("function(btn, map){
