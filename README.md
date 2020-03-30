@@ -99,4 +99,4 @@ plotly::layout(tickvalues ="",
                                                font = list(color="red")))
 ```
 
-![linea de tiempo](https://github.com/LorenzoLeon/covid19_mex_Reportes/blob/master/linea_del_tiempo.png)
+![linea de tiempo](https://github.com/LorenzoLeon/covid19_mex_Reportes/blob/master/linea_tiempo.png)
