@@ -98,8 +98,8 @@ plotly::layout(tickvalues ="",
                                                font = list(color="red")))
 ```
 Esta es una versión estática similar
-![linea de tiempo](https://github.com/LorenzoLeon/covid19_mex_Reportes/blob/master/linea_tiempo.png)
+![linea de tiempo](https://github.com/LorenzoLeon/covid19_mex_Reportes/blob/master/03_graficas/linea_tiempo.png)
 
 Esta es una versión estática de casos por grupos de edad
-![Proporciones por sexo y edad](https://github.com/LorenzoLeon/covid19_mex_Reportes/blob/master/Prop_sexo_edad.png)
+![Proporciones por sexo y edad](https://github.com/LorenzoLeon/covid19_mex_Reportes/blob/master/03_graficas/Prop_sexo_edad.png)
 
