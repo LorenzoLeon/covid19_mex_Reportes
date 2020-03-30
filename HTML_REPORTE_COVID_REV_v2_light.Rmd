@@ -150,6 +150,7 @@ Descargue el archivo RMarkdown para crear este reporte aquí
 La siguiente gráfica presenta la evolución del brote del virus COVID-19 en México. Al igual que otros países en América Latina, y acorde con estudios sobre la velocidad de crecimiento del brote del virus en la región, las curvas de crecimiento del brote en México son una línea recta en escala logarítmica. La gráfica permite seleccionar la temporalidad que el usuario requiera para su visualización.
 <p>
 Otra forma de observar la tendencia de crecimiento es por medio de la contabilización de los nuevos casos confirmados por día: es decir, cuántas confirmaciones se capturaron en la fecha de publicación. La siguiente gráfica, además, muestra que no existe un crecimiento constante sino que tiende a haber variaciones a lo largo del tiempo.
+[Link a esta gráfica](https://lorenzoleon.github.io/covid19_mex_Reportes/Linea_tiempo.html)
 
 ```{r fig.width=8, fig.height=8, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Casos Confirmados Acumulados por día"}
 caption <- "Elaboración propia con datos de la Secretaría de Salud | <a href='https://twitter.com/lolo7no'>@lolo7no</a> <a href='https://twitter.com/guzmart_'>@guzmart_</a>"
@@ -219,7 +220,7 @@ plotly <- plotly::ggplotly(ur, tooltip = c("x", "y", "color"))%>%plotly::layout(
                             currentvalue = list(prefix = "YEAR ", font = list(color="red"))
   )
 ggsave("linea_tiempo.png", plot = ur + geom_label(aes(label = Casos)), width = 15, height = 10, dpi = 100)
-saveWidget(plotly, file="linea_tiempo.html")
+htmlwidgets::saveWidget(plotly, file="linea_tiempo.html")
 plotly
 
 ```
@@ -228,6 +229,7 @@ plotly
 <p>
 La siguiente gráfica permite seguir la evolución temporal de la pirámide población de los contagios por COVID-19 en México. Esta información revela información interesante y útil para el lector. Hoy, los datos señalan no sólo que es mayor el contagio de la enfermedad entre los hombres mexicanos, sino que además existen diferencias significativas respecto a las mujeres en ciertos grupos etarios. Asimismo, cabe señalar que las poblaciones etarias más vulnerables parecen mostrar un menor número de casos positivos de COVID-19, manteniéndose así un 64% de los contagios en la población entre los 21 a 50 años. **PENDIENTE REVISAR DATO
 <p>
+[Link a esta gráfica](https://lorenzoleon.github.io/covid19_mex_Reportes/Prop_sexo_edad.html)
 ```{r fig.width=8, fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Distribución de casos por sexo y grupos de edad"}
 caption <- "Elaboración propia con datos de la Secretaría de Salud | <a href='https://twitter.com/lolo7no'>@lolo7no</a> <a href='https://twitter.com/guzmart_'>@guzmart_</a>"
 
@@ -333,7 +335,7 @@ plotly <-  plotly::ggplotly(ur, tooltip = c("text"))%>%
                                     yshift=0,font=list(size=15, color="red")))
  
  ggsave("Prop_sexo_edad.png", plot = ur + geom_label(na.rm = T, size = 5, aes(label = ifelse(abs(prop)<1,NA_character_,paste0(abs(round(prop,1)), "%")))), width = 15, height = 10, dpi = 100)
-htmlwidgets::saveWidget(plotly, file="linea_tiempo.html")
+htmlwidgets::saveWidget(plotly, file="Prop_sexo_edad.html")
 plotly
 ```
 <p>
@@ -430,7 +432,7 @@ DT::datatable(d_ent, class= "cell-border stripe", rownames = F, filter = "top",
               extensions = "Buttons", options = list(dom="Bfrtip",
                                                      buttons = c("copy", "excel")))
 ```
-
+[Link a este Mapa](https://lorenzoleon.github.io/covid19_mex_Reportes/Mapa_Casos.html)
 ## <b>Mapa de Casos agregados por entidad en el tiempo</b>
 ```{r fig.width=8, fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Mapa de Casos Confirmados de Coronavirus en México"}
 caption <- "Elaboración propia con datos de la Secretaría de Salud | <a href='https://twitter.com/lolo7no'>@lolo7no</a> <a href='https://twitter.com/guzmart_'>@guzmart_</a>"
