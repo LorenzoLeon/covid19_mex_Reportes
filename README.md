@@ -75,7 +75,7 @@ unt <- enframe(unique(fig$Fecha), name = "id", value = "label")
 unt$visible <-  ifelse(unt$id%%3 == 1,T,F)
 unt$value <-  as.numeric(as.Date(unt$label))
 
-plotly::ggplotly(grafica, tooltip = c("x", "y", "color"))%>%
+plot <- plotly::ggplotly(grafica, tooltip = c("x", "y", "color"))%>%
 plotly::layout(tickvalues ="",
                annotations = list(x = 1, 
                                   y = 0, 
