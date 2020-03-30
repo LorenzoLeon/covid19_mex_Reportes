@@ -20,7 +20,7 @@ require(lubridate, quietly = T)
 require(RColorBrewer, quietly = T)
 
 
-datos_ultimos <- "Guzmart_datos_covid.xlsx"
+datos_ultimos <- "01_datos/Guzmart_datos_covid.xlsx"
 download.file(paste0("https://github.com/guzmart/covid19_mex/blob/master/01_datos/", filetoread,"?raw=true"), destfile = datos_ultimos)
 
 d <- read_excel(datos_ultimos,
@@ -212,14 +212,14 @@ ur2 <- ggplot(fig,
         axis.text.x = element_text(size = 12, angle = 90, vjust = 0.5),
         axis.title.y = element_text(size = 15),
         axis.text.y = element_text(size = 15))
-ggsave("linea_tiempo.png", plot = ur2 + geom_label(aes(label = Casos))+ guides(label = FALSE), width = 15, height = 10, dpi = 100)
+ggsave("03_graficas/linea_tiempo.png", plot = ur2 + geom_label(aes(label = Casos))+ guides(label = FALSE), width = 15, height = 10, dpi = 100)
 
 xfun::pkg_load2(c("base64enc", "htmltools", "mime"))
-write_excel_csv(fig, "~/SynologyDrive/Drive/Code/Parametría/COVID_SEGUIMIENTO_MX/01_datos/Temps/Data_fecha_acumulada.csv")
+write_excel_csv(fig, "01_datos/Data_fecha_acumulada.csv")
 ```
 <p>
 ```{r results='asis',echo=FALSE,message=FALSE}
-xfun::embed_file('~/SynologyDrive/Drive/Code/Parametría/COVID_SEGUIMIENTO_MX/01_datos/Temps/Data_fecha_acumulada.csv', text = "Descargue los datos para la siguiente gráfica. AQUÍ")
+xfun::embed_file('01_datos/Data_fecha_acumulada.csv', text = "Descargue los datos para la siguiente gráfica. AQUÍ")
 ```
 <p>
 ```{r fig.width=8, fig.height=8, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Casos Confirmados Acumulados por día"}
@@ -263,7 +263,7 @@ plotly <- plotly::ggplotly(ur, tooltip = c("x", "y", "color"))%>%plotly::layout(
   plotly::animation_slider( visible=F, 
                             currentvalue = list(prefix = "YEAR ", font = list(color="red"))
   )
-htmlwidgets::saveWidget(plotly, file="linea_tiempo.html")
+htmlwidgets::saveWidget(plotly,libdir = "03_graficas/",selfcontained = F, file="linea_tiempo.html")
 plotly
 
 ```
@@ -336,11 +336,11 @@ test <- data_sexo_edad %>%
 
 b <- test %>% 
   filter(fecha_corte == max(as.Date(unique(d$fecha_corte))))
-write_excel_csv(b,'~/SynologyDrive/Drive/Code/Parametría/COVID_SEGUIMIENTO_MX/01_datos/Temps/Data_sexo_edad.csv')
+write_excel_csv(b,'01_datos/Data_sexo_edad.csv')
 ```
 <p>
 ```{r results='asis',echo=FALSE,message=FALSE}
-xfun::embed_file('~/SynologyDrive/Drive/Code/Parametría/COVID_SEGUIMIENTO_MX/01_datos/Temps/Data_sexo_edad.csv', text = "Descargue los datos para la siguiente gráfica. AQUÍ")
+xfun::embed_file('01_datos/Data_sexo_edad.csv', text = "Descargue los datos para la siguiente gráfica. AQUÍ")
 ```
 <p>
 ```{r fig.width=8, fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Distribución de casos por sexo y grupos de edad"}
@@ -382,8 +382,8 @@ plotly <-  plotly::ggplotly(ur, tooltip = c("text"))%>%
                                     xanchor='right', yanchor='auto', xshift=0,
                                     yshift=0,font=list(size=15, color="red")))
  
- ggsave("Prop_sexo_edad.png", plot = ur + geom_label(na.rm = T, size = 5, aes(label = ifelse(abs(prop)<1,NA_character_,paste0(abs(round(prop,1)), "%")))), width = 15, height = 10, dpi = 100)
-htmlwidgets::saveWidget(plotly, file="Prop_sexo_edad.html")
+ ggsave("03_graficas/Prop_sexo_edad.png", plot = ur + geom_label(na.rm = T, size = 5, aes(label = ifelse(abs(prop)<1,NA_character_,paste0(abs(round(prop,1)), "%")))), width = 15, height = 10, dpi = 100)
+htmlwidgets::saveWidget(plotly, libdir = "03_graficas/",selfcontained = F, file="Prop_sexo_edad.html")
 plotly
 ```
 <p>
@@ -554,13 +554,18 @@ data_mapa <- data_fecha %>%
 # transformamos la base de datos a matriz para fácil indexación
 data_mapa1 <- as.matrix.data.frame(data_mapa)
 
-write_excel_csv(data_mapa,'~/SynologyDrive/Drive/Code/Parametría/COVID_SEGUIMIENTO_MX/01_datos/Temps/Datos_entidad_Acumulados_para_Mapa.csv')
+write_excel_csv(data_mapa,'01_datos/Datos_entidad_Acumulados_para_Mapa.csv')
 ```
 <p>
 ```{r results='asis',echo=FALSE,message=FALSE}
-xfun::embed_file('~/SynologyDrive/Drive/Code/Parametría/COVID_SEGUIMIENTO_MX/01_datos/Temps/Datos_entidad_Acumulados_para_Mapa.csv', text = "Descargue los datos para la siguiente gráfica. AQUÍ")
+xfun::embed_file('01_datos/Datos_entidad_Acumulados_para_Mapa.csv', text = "Descargue los datos para la siguiente gráfica. AQUÍ")
 ```
 <p>
+```{css, echo = FALSE}
+.leaflet-container {
+  cursor: pointer !important;
+}
+```
 ```{r fig.width=8, fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Mapa de Casos Confirmados de Coronavirus en México"}
 
 ## Creamos mapa
@@ -614,7 +619,7 @@ mymap <- mymap %>% addLayersControl(
                     map.setView(new L.latLng(21, -103), 5);
                     }")))
 
-htmlwidgets::saveWidget(mymap, file="Mapa_Casos.html")
+htmlwidgets::saveWidget(mymap,libdir = "03_graficas/",selfcontained = F, file="03_graficas/Mapa_Casos.html")
 mymap
 
 ```
