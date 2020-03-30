@@ -2,20 +2,22 @@
 ## Reporte COVID-19
 [Revise el Reporte Interactivo aquí](https://lorenzoleon.github.io/covid19_mex_Reportes/REPORTE_COVID.html)
 
-Autor: [@lolo7no](https://twitter.com/lolo7no)
-<p>
-  Este es un esfuerzo de [Guzmart_](https://twitter.com/guzmart_) y mío dentro de Parametría, para crear un reporte sistemático de los datos publicados por la Sec de Salud en México. Es un esfuerzo de accesibilidad a datos y de transparencia sobre el proceso para crear estos datos. Creemos en los datos abiertos y que mientras más personas sepan cómo tratarlos mejor informados estaremos como ciudadanía.
+Autores : [@lolo7no](https://twitter.com/lolo7no) y [Guzmart_](https://twitter.com/guzmart_)
+ 
+Este es un esfuerzo de Guzmart_ y mío dentro de Parametría, para crear un reporte sistemático de los datos publicados por la Sec de Salud en México. Es un esfuerzo de accesibilidad a datos y de transparencia sobre el proceso para crear estos datos. Creemos en los datos abiertos y que mientras más personas sepan cómo tratarlos mejor informados estaremos como ciudadanía.
   
-  Recuerda, si puedes #QuedateEnCasa, manten #SusanaDistancia si no y #lavateLasManos siempre
-<p>
-  Descargue los datos de este reporte desde en el repositorio de [GITHUB](https://github.com/guzmart/covid19_mex)
+Recuerda, si puedes #QuedateEnCasa, manten #SusanaDistancia si no y #lavateLasManos siempre
+  
+Descargue los datos de este reporte desde en el repositorio de:
+[GITHUB](https://github.com/guzmart/covid19_mex)
 
 ### Este es un ejemplo de una gráfica simple de Casos Acumulados
-<p>
-La siguiente gráfica presenta la evolución del brote del virus COVID-19 en México. Al igual que otros países en América Latina, y acorde con estudios sobre la velocidad de crecimiento del brote del virus en la región, las curvas de crecimiento del brote en México son una línea recta en escala logarítmica. La gráfica permite seleccionar la temporalidad que el usuario requiera para su visualización.
-<p>
-Otra forma de observar la tendencia de crecimiento es por medio de la contabilización de los nuevos casos confirmados por día: es decir, cuántas confirmaciones se capturaron en la fecha de publicación. La siguiente gráfica, además, muestra que no existe un crecimiento constante sino que tiende a haber variaciones a lo largo del tiempo.
-<p>
+
+  La siguiente gráfica presenta la evolución del brote del virus COVID-19 en México. Al igual que otros países en América Latina, y acorde con estudios sobre la velocidad de crecimiento del brote del virus en la región, las curvas de crecimiento del brote en México son una línea recta en escala logarítmica. La gráfica permite seleccionar la temporalidad que el usuario requiera para su visualización.
+
+  Otra forma de observar la tendencia de crecimiento es por medio de la contabilización de los nuevos casos confirmados por día: es decir, cuántas confirmaciones se capturaron en la fecha de publicación. La siguiente gráfica, además, muestra que no existe un crecimiento constante sino que tiende a haber variaciones a lo largo del tiempo.
+  
+
 ```r
 caption <- "Elaboración propia con datos de la Secretaría de Salud | <a href='https://twitter.com/lolo7no'>@lolo7no</a> <a href='https://twitter.com/guzmart_'>@guzmart_</a>"
 titulo <- "Número de casos confirmados de COVID-19 en México"
@@ -95,7 +97,6 @@ plotly::layout(tickvalues ="",
                            currentvalue = list(prefix = "YEAR ", 
                                                font = list(color="red")))
 ```
-<p>
 Esta es una versión estática similar
 ![linea de tiempo](https://github.com/LorenzoLeon/covid19_mex_Reportes/blob/master/linea_tiempo.png)
 
