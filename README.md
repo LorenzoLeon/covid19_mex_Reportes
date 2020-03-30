@@ -98,5 +98,5 @@ plotly::layout(tickvalues ="",
                            currentvalue = list(prefix = "YEAR ", 
                                                font = list(color="red")))
 ```
-
+Esta es una versión estática similar
 ![linea de tiempo](https://github.com/LorenzoLeon/covid19_mex_Reportes/blob/master/linea_tiempo.png)
