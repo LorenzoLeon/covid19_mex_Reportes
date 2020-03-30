@@ -1,3 +1,4 @@
+
 ## Reporte COVID-19
 
 Autor: [@lolo7no](https://twitter.com/lolo7no)
@@ -18,7 +19,7 @@ La siguiente gráfica presenta la evolución del brote del virus COVID-19 en Mé
 <p>
 Otra forma de observar la tendencia de crecimiento es por medio de la contabilización de los nuevos casos confirmados por día: es decir, cuántas confirmaciones se capturaron en la fecha de publicación. La siguiente gráfica, además, muestra que no existe un crecimiento constante sino que tiende a haber variaciones a lo largo del tiempo.
 
-``` {r}
+```r
 caption <- "Elaboración propia con datos de la Secretaría de Salud | <a href='https://twitter.com/lolo7no'>@lolo7no</a> <a href='https://twitter.com/guzmart_'>@guzmart_</a>"
 titulo <- "Número de casos confirmados de COVID-19 en México"
 subtitulo <- paste0("Fecha de corte: ",str_sub(max(data_fecha_acumulado$fecha_corte), end = -1))
@@ -78,15 +79,24 @@ unt <- enframe(unique(fig$Fecha), name = "id", value = "label")
 unt$visible <-  ifelse(unt$id%%3 == 1,T,F)
 unt$value <-  as.numeric(as.Date(unt$label))
 
-plotly::ggplotly(grafica, tooltip = c("x", "y", "color"))%>%plotly::layout(tickvalues ="",annotations = 
-                                               list(x = 1, y = 0, text = caption, 
-                                                    showarrow = F, xref='paper', yref='paper', 
-                                                    xanchor='right', yanchor='auto', xshift=0, yshift=0,
-                                                    font=list(size=15, color="red")))%>%plotly::animation_button( label = "Empezar")%>%
-  plotly::animation_slider( visible=F, 
-                            currentvalue = list(prefix = "YEAR ", font = list(color="red"))
-  )
-
+plotly::ggplotly(grafica, tooltip = c("x", "y", "color"))%>%
+plotly::layout(tickvalues ="",
+               annotations = list(x = 1, 
+                                  y = 0, 
+                                  text = caption, 
+                                  showarrow = F, 
+                                  xref='paper', 
+                                  yref='paper', 
+                                  xanchor='right', 
+                                  yanchor='auto', 
+                                  xshift=0, 
+                                  yshift=0,
+                                  font=list(size=15, color="red"))
+               )%>%
+  plotly::animation_button(label = "Empezar")%>%
+  plotly::animation_slider(visible=F, 
+                           currentvalue = list(prefix = "YEAR ", 
+                                               font = list(color="red")))
 ```
 
-![linea de tiempo](https://github.com/LorenzoLeon/covid19_mex_Reportes/blob/master/linea_del_tiempo.html)
+![linea de tiempo](https://github.com/LorenzoLeon/covid19_mex_Reportes/blob/master/linea_del_tiempo.png)
