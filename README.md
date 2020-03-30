@@ -78,7 +78,7 @@ unt <- enframe(unique(fig$Fecha), name = "id", value = "label")
 unt$visible <-  ifelse(unt$id%%3 == 1,T,F)
 unt$value <-  as.numeric(as.Date(unt$label))
 
-grafica_plot <- plotly::ggplotly(grafica, tooltip = c("x", "y", "color"))%>%plotly::layout(tickvalues ="",annotations = 
+plotly::ggplotly(grafica, tooltip = c("x", "y", "color"))%>%plotly::layout(tickvalues ="",annotations = 
                                                list(x = 1, y = 0, text = caption, 
                                                     showarrow = F, xref='paper', yref='paper', 
                                                     xanchor='right', yanchor='auto', xshift=0, yshift=0,
@@ -86,8 +86,6 @@ grafica_plot <- plotly::ggplotly(grafica, tooltip = c("x", "y", "color"))%>%plot
   plotly::animation_slider( visible=F, 
                             currentvalue = list(prefix = "YEAR ", font = list(color="red"))
   )
-
-htmlwidgets::saveWidget(grafica_plot, "linea_del_tiempo.html")
 
 ```
 
