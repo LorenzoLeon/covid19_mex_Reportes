@@ -1,12 +1,12 @@
 
 ## Reporte COVID-19
-[Revise el Reporte Interactivo aquí](https://lorenzoleon.github.io/covid19_mex_Reportes/HTML_REPORTE_COVID_REV_v2_light.html)
+[Revise el Reporte Interactivo aquí](https://lorenzoleon.github.io/covid19_mex_Reportes/REPORTE_COVID.html)
 
 Autor: [@lolo7no](https://twitter.com/lolo7no)
 <p>
-  Este es un esfuerzo de [Guzmart_](https://twitter.com/guzmart_) y mío para crear un reporte sistemático de los datos publicados por la Sec de Salud en México. Es un esfuerzo de accesibilidad a datos y de transparencia sobre el proceso para crear estos datos. Creemos en los datos abiertos y que mientras más personas sepan cómo tratarlos mejor informados estaremos como ciudadanía.
+  Este es un esfuerzo de [Guzmart_](https://twitter.com/guzmart_) y mío dentro de Parametría, para crear un reporte sistemático de los datos publicados por la Sec de Salud en México. Es un esfuerzo de accesibilidad a datos y de transparencia sobre el proceso para crear estos datos. Creemos en los datos abiertos y que mientras más personas sepan cómo tratarlos mejor informados estaremos como ciudadanía.
   
-  Recuerda, si puedes #QuedateEnCasa, manten #SusanaDistancia si no y #lavateLasManos
+  Recuerda, si puedes #QuedateEnCasa, manten #SusanaDistancia si no y #lavateLasManos siempre
 <p>
   Descargue los datos de este reporte desde en el repositorio de [GITHUB](https://github.com/guzmart/covid19_mex)
 
@@ -96,3 +96,7 @@ plotly::layout(tickvalues ="",
 ```
 Esta es una versión estática similar
 ![linea de tiempo](https://github.com/LorenzoLeon/covid19_mex_Reportes/blob/master/linea_tiempo.png)
+
+Esta es una versión estática de casos por grupos de edad
+![Proporciones por sexo y edad](https://github.com/LorenzoLeon/covid19_mex_Reportes/blob/master/Prop_sexo_edad.png)
+
