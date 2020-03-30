@@ -156,7 +156,7 @@ La siguiente gráfica presenta la evolución del brote del virus COVID-19 en Mé
 <p>
 Otra forma de observar la tendencia de crecimiento es por medio de la contabilización de los nuevos casos confirmados por día: es decir, cuántas confirmaciones se capturaron en la fecha de publicación. La siguiente gráfica, además, muestra que no existe un crecimiento constante sino que tiende a haber variaciones a lo largo del tiempo.
 ```{r echo=F, message = FALSE, warning = FALSE}
-caption <- "Elaboración propia con datos de la Secretaría de Salud | <a href='https://twitter.com/Parametria'>@parametria</a> | <a href='https://twitter.com/lolo7no'>@lolo7no</a> <a href='https://twitter.com/guzmart_'>@guzmart_</a>"
+caption <- "Elaboración propia con datos de la Secretaría de Salud | <a href='https://twitter.com/Parametria'>@parametria</a> | <a href='https://twitter.com/lolo7no'>@lolo7no</a> | <a href='https://twitter.com/guzmart_'>@guzmart_</a>"
 caption1 <- "Elaboración propia con datos de la Secretaría de Salud | @parametria| @lolo7no | @guzmart_"
 titulo <- "Número de casos confirmados de COVID-19 en México"
 subtitulo <- paste0("Fecha de corte: ",str_sub(max(data_fecha_acumulado$fecha_corte), end = -1))
@@ -274,8 +274,6 @@ plotly
 La siguiente gráfica permite seguir la evolución temporal de la pirámide población de los contagios por COVID-19 en México. Esta información revela información interesante y útil para el lector. Hoy, los datos señalan no sólo que es mayor el contagio de la enfermedad entre los hombres mexicanos, sino que además existen diferencias significativas respecto a las mujeres en ciertos grupos etarios. Asimismo, cabe señalar que las poblaciones etarias más vulnerables parecen mostrar un menor número de casos positivos de COVID-19, manteniéndose así un 64% de los contagios en la población entre los 21 a 50 años. **PENDIENTE REVISAR DATO
 <p>
 ```{r echo=F, message = FALSE, warning = FALSE}
-caption <- "Elaboración propia con datos de la Secretaría de Salud | <a href='https://twitter.com/lolo7no'>@lolo7no</a> <a href='https://twitter.com/guzmart_'>@guzmart_</a>"
-
 ## Agrupamos por edades, sexo y fechas, completamos grupos vacíos y contamos casos. 
 data_sexo_edad <- d %>% 
   mutate(
@@ -487,9 +485,6 @@ DT::datatable(d_ent, class= "cell-border stripe", rownames = F, filter = "top",
 <p>
 ## <b>Mapa de Casos agregados por entidad en el tiempo</b>
 ```{r echo=F, background="white", message = FALSE, warning = FALSE}
-
-caption <- "Elaboración propia con datos de la Secretaría de Salud | <a href='https://twitter.com/lolo7no'>@lolo7no</a> <a href='https://twitter.com/guzmart_'>@guzmart_</a>"
-
 ## Leemos la base SHP de polígonos de México
 estados_mexico <- readOGR(dsn = "México_Estados/",verbose = F)
 ## Todavía estaba guardada como DF la CDMX
