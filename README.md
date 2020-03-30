@@ -1,20 +1,16 @@
 
 ## Reporte COVID-19
+[Revise el Reporte Interactivo aquí](https://lorenzoleon.github.io/covid19_mex_Reportes/HTML_REPORTE_COVID_REV_v2_light.html)
 
 Autor: [@lolo7no](https://twitter.com/lolo7no)
-
-<b>Información Pública - Secretaría de Salud</b>
 <p>
-Desde el inicio de la crisis mundial de salud debida al brote del virus COVID-19, el rápido crecimiento del contagio y la desinformación sobre la enfermedad han sido dos de los principales retos a combatir para los gobiernos de los países afectados. En México, la Secretaría de Salud Federal combate en dos frentes. Por un lado, garantizar la suficiencia de recursos e infraestructura médica necesaria para atender al público cuando se alcancen los puntos más críticos de contagio en el país. Y, por otro lado, a través de la Dirección General de Epidemiología, la Secretaría publica diariamente un informe técnico con los casos sospechosos y positivos al COVID-19 en todo el país. 
-
-Si bien este esfuerzo gubernamental busca combatir la desinformación en el tema, los formatos de presentación de los datos no permiten un análisis sintético del fenómeno. En este marco nace la siguiente propuesta. Con el fin de dar garantía al derecho humano de acceso a la información oportuna y completa, que resulta además en este caso de interés público, ponemos a disposición del público el siguiente reporte interactivo sobre la evolución del COVID-19 en México.
-
+  Este es un esfuerzo de [Guzmart_](https://twitter.com/guzmart_) y mío para crear un reporte sistemático de los datos publicados por la Sec de Salud en México. Es un esfuerzo de accesibilidad a datos y de transparencia sobre el proceso para crear estos datos. Creemos en los datos abiertos y que mientras más personas sepan cómo tratarlos mejor informados estaremos como ciudadanía.
+  
+  Recuerda, si puedes #QuedateEnCasa, manten #SusanaDistancia si no y #lavateLasManos
 <p>
-Descargue los datos de este reporte desde en el repositorio de [GITHUB](https://github.com/guzmart/covid19_mex)
-<p>
+  Descargue los datos de este reporte desde en el repositorio de [GITHUB](https://github.com/guzmart/covid19_mex)
 
-### Número de casos positivos a COVID-19 en México según fecha de reporte oficial
-
+### Este es un ejemplo de una gráfica simple de Casos Acumulados
 La siguiente gráfica presenta la evolución del brote del virus COVID-19 en México. Al igual que otros países en América Latina, y acorde con estudios sobre la velocidad de crecimiento del brote del virus en la región, las curvas de crecimiento del brote en México son una línea recta en escala logarítmica. La gráfica permite seleccionar la temporalidad que el usuario requiera para su visualización.
 <p>
 Otra forma de observar la tendencia de crecimiento es por medio de la contabilización de los nuevos casos confirmados por día: es decir, cuántas confirmaciones se capturaron en la fecha de publicación. La siguiente gráfica, además, muestra que no existe un crecimiento constante sino que tiende a haber variaciones a lo largo del tiempo.
