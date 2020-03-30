@@ -11,10 +11,11 @@ Autor: [@lolo7no](https://twitter.com/lolo7no)
   Descargue los datos de este reporte desde en el repositorio de [GITHUB](https://github.com/guzmart/covid19_mex)
 
 ### Este es un ejemplo de una gráfica simple de Casos Acumulados
+<p>
 La siguiente gráfica presenta la evolución del brote del virus COVID-19 en México. Al igual que otros países en América Latina, y acorde con estudios sobre la velocidad de crecimiento del brote del virus en la región, las curvas de crecimiento del brote en México son una línea recta en escala logarítmica. La gráfica permite seleccionar la temporalidad que el usuario requiera para su visualización.
 <p>
 Otra forma de observar la tendencia de crecimiento es por medio de la contabilización de los nuevos casos confirmados por día: es decir, cuántas confirmaciones se capturaron en la fecha de publicación. La siguiente gráfica, además, muestra que no existe un crecimiento constante sino que tiende a haber variaciones a lo largo del tiempo.
-
+<p>
 ```r
 caption <- "Elaboración propia con datos de la Secretaría de Salud | <a href='https://twitter.com/lolo7no'>@lolo7no</a> <a href='https://twitter.com/guzmart_'>@guzmart_</a>"
 titulo <- "Número de casos confirmados de COVID-19 en México"
@@ -94,6 +95,7 @@ plotly::layout(tickvalues ="",
                            currentvalue = list(prefix = "YEAR ", 
                                                font = list(color="red")))
 ```
+<p>
 Esta es una versión estática similar
 ![linea de tiempo](https://github.com/LorenzoLeon/covid19_mex_Reportes/blob/master/linea_tiempo.png)
 
