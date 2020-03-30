@@ -1,44 +1,11 @@
 ---
 title: "Reporte COVID-19"
-author: "<a href='https://twitter.com/lolo7no'>@lolo7no</a>"
-date: "`r Sys.Date()`"
-output: rmdformats::readthedown
+date: "2020-03-29"
+output:
+  prettydoc::html_pretty:
+    theme: leonids
+    highlight: github
 ---
-````{r echo=F, background="white", message = FALSE, warning = FALSE}
-#theme: cayman
-library(leaflet, quietly = T)
-library(geojsonio, quietly = T)
-library(tidyverse, quietly = T)
-library(rgdal, quietly = T)
-library(leaftime, quietly = T, )
-require(readxl, quietly = T)
-require(ggthemes, quietly = T)
-require(lubridate, quietly = T)
-require(RColorBrewer, quietly = T)
-
-datos_ultimos <- "Guzmart_datos_covid.xlsx"
-download.file("https://github.com/guzmart/covid19_mex/blob/master/01_datos/covid_mex_20200329.xlsx?raw=true", destfile = datos_ultimos)
-
-d <- read_excel(datos_ultimos, 
-                          col_types = c("numeric", "text", "text", 
-                                        "numeric", "date", "text", "text", 
-                                        "date", "date", "text", "text", "text", "text" ))
-
-data_fecha <- d %>% 
-  group_by(
-    fecha_corte
-  ) %>% 
-  summarise(
-    n = n()
-  ) 
-
-
-data_fecha_acumulado <- data_fecha %>% 
-  mutate(
-    n_acumulada = cumsum(n)
-  ) 
-
-````
 # COVID-19 en México
 <b>Información Pública - Secretaría de Salud</b>
 <p>
@@ -57,6 +24,36 @@ La siguiente gráfica presenta la evolución del brote del virus COVID-19 en Mé
 Otra forma de observar la tendencia de crecimiento es por medio de la contabilización de los nuevos casos confirmados por día: es decir, cuántas confirmaciones se capturaron en la fecha de publicación. La siguiente gráfica, además, muestra que no existe un crecimiento constante sino que tiende a haber variaciones a lo largo del tiempo.
 
 ```{r fig.width=8, fig.height=8, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Casos Confirmados Acumulados por día"}
+library(leaflet, quietly = T)
+library(tidyverse, quietly = T)
+library(rgdal, quietly = T)
+library(leaftime, quietly = T, )
+require(readxl, quietly = T)
+require(ggthemes, quietly = T)
+require(lubridate, quietly = T)
+require(RColorBrewer, quietly = T)
+
+
+datos_ultimos <- "Guzmart_datos_covid.xlsx"
+download.file("https://github.com/guzmart/covid19_mex/blob/master/01_datos/covid_mex_20200329.xlsx?raw=true", destfile = datos_ultimos)
+
+d <- read_excel(datos_ultimos, 
+                          col_types = c("numeric", "text", "text", 
+                                        "numeric", "date", "text", "text", 
+                                        "date", "date", "text", "text", "text", "text" ))
+data_fecha <- d %>% 
+  group_by(
+    fecha_corte
+  ) %>% 
+  summarise(
+    n = n()
+  ) 
+
+
+data_fecha_acumulado <- data_fecha %>% 
+  mutate(
+    n_acumulada = cumsum(n)
+  ) 
 caption <- "Elaboración propia con datos de la Secretaría de Salud | <a href='https://twitter.com/lolo7no'>@lolo7no</a> <a href='https://twitter.com/guzmart_'>@guzmart_</a>"
 titulo <- "Número de casos confirmados de COVID-19 en México"
 subtitulo <- paste0("Fecha de corte: ",str_sub(max(data_fecha_acumulado$fecha_corte), end = -1))
@@ -89,7 +86,7 @@ ur <- ggplot(fig,
              opacity = 1,
              y = Casos,
              color = `Tipo de Casos`)) +
-  geom_line() +
+  geom_line() + geom_label(aes(label = Casos))+
   scale_x_date(date_breaks = "3 day",
                limits = c(
                  min(as.Date(data_fecha$fecha_corte)-0.7),
@@ -101,7 +98,7 @@ ur <- ggplot(fig,
        subtitle=subtitulo,
        x="",
        y="Número de casos") +
-  theme(plot.title = element_text(size = 20, face = "bold", hjust = -.5),
+  theme(plot.title = element_text(size = 20, face = "bold"),
         #plot.subtitle = element_text(size = 25),
         #plot.caption = element_text(size = 20),
         strip.text = element_text(size = 15),
