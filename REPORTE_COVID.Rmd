@@ -1,7 +1,7 @@
 ---
 title: "Reporte COVID-19"
 author: "<a href='https://www.parametria.com.mx'>PARAMETRÍA</a> Benjamín Hill #185, Hipódromo Condesa <p> <a href='https://twitter.com/lolo7no'>@lolo7no</a> <p> <a href='https://twitter.com/guzmart_'>@guzmart</a>"
-date: !r Sys.Date()
+date: "`r Sys.Date()`"
 output: rmdformats::readthedown
 params: 
   Fecha de corte: !r Sys.Date()-lubridate::days(1)
@@ -124,7 +124,7 @@ write_excel_csv(fig, "01_datos/Data_fecha_acumulada.csv")
 xfun::embed_file('01_datos/Data_fecha_acumulada.csv', text = "Descargue los datos para la siguiente gráfica. AQUÍ")
 ```
 <p>
-```{r fig.width=8, fig.height=8, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Casos Confirmados Acumulados por día"}
+```{r fig.width=10, fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Casos Confirmados Acumulados por día"}
 ur <- ggplot(fig, 
          aes(x = Fecha,
              frame = frame, 
@@ -298,6 +298,7 @@ plotly <-  plotly::ggplotly(ur, tooltip = c("text"))%>%
                                     '<sup>',
                                     subtitulo,
                                     '</sup>')),
+                 hovermode = "y", 
                  bargap = 0.1, 
                  barmode = 'overlay', 
                  legend = list(orientation = 'v', x = 0, y = 0.9),
@@ -410,7 +411,7 @@ DT::datatable(d_ent, class= "cell-border stripe", rownames = F, filter = "top",
 ## <b>Mapa de Casos agregados por entidad en el tiempo</b>
 ```{r echo=F, background="white", message = FALSE, warning = FALSE}
 ## Leemos la base SHP de polígonos de México
-estados_mexico <- readOGR(dsn = "México_Estados/",verbose = F)
+estados_mexico <- readOGR(dsn = "01_datos/México_Estados/",verbose = F)
 ## Todavía estaba guardada como DF la CDMX
 levels(estados_mexico$ESTADO)[9] <- "Ciudad De México"
 levels(estados_mexico@data$ESTADO)[9] <- "Ciudad De México"
