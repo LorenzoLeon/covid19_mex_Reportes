@@ -1,6 +1,6 @@
 
 ## Reporte COVID-19
-[Revise el Reporte Interactivo aquí](https://lorenzoleon.github.io/covid19_mex_Reportes/REPORTE_COVID.html)
+[Revise el Reporte Interactivo aquí](https://lorenzoleon.github.io/covid19_mex_Reportes/)
 
 Autores : [@lolo7no](https://twitter.com/lolo7no) y [Guzmart_](https://twitter.com/guzmart_)
  
