@@ -8,10 +8,10 @@ Este es un esfuerzo de Guzmart_ y mío dentro de Parametría, para crear un repo
   
 Recuerda, si puedes #QuedateEnCasa, manten #SusanaDistancia si no y #lavateLasManos siempre
   
-Descargue los datos de este reporte desde en el repositorio de:
+Descargue los datos de este reporte desde el repositorio de Guzmart_ aquí:
 [GITHUB](https://github.com/guzmart/covid19_mex)
 
-### Este es un ejemplo de una gráfica simple de Casos Acumulados
+### Este es un ejemplo de una gráfica animada de Casos Acumulados
 
   La siguiente gráfica presenta la evolución del brote del virus COVID-19 en México. Al igual que otros países en América Latina, y acorde con estudios sobre la velocidad de crecimiento del brote del virus en la región, las curvas de crecimiento del brote en México son una línea recta en escala logarítmica. La gráfica permite seleccionar la temporalidad que el usuario requiera para su visualización.
 
