@@ -158,10 +158,14 @@ unt$visible <-  ifelse(unt$id%%3 == 1,T,F)
 unt$value <-  as.numeric(as.Date(unt$label))
 
 plotly <- plotly::ggplotly(ur, 
-                           tooltip = c("x", "y", "color"), 
-                           dynamicTicks = TRUE)%>%
-  #plotly::rangeslider(type = "date") %>% 
-  plotly::layout(hovermode = "x", 
+                           tooltip = c("x", "y", "color")
+                           )%>%
+  plotly::layout(title = list(text = paste0(titulo,
+                                    '<br>',
+                                    '<sup>',
+                                    subtitulo,
+                                    '</sup>')),
+                 hovermode = "x", 
                  tickvalues ="", 
                  annotations = list(x = 1, y = 0, 
                                     text = caption, 
@@ -174,15 +178,15 @@ plotly <- plotly::ggplotly(ur,
                                     yshift=0,
                                     font=list(size=15, color="red")))%>%
   plotly::animation_button(label = "Empezar")%>%
-  plotly::animation_slider(visible=F, active = length(unique(fig$Fecha)),
+  plotly::animation_slider(visible=F,
                            currentvalue = list(prefix = "YEAR ", 
                                                font = list(color="red")))
 
-htmlwidgets::saveWidget(plotly, file="03_graficas/linea_tiempo.html")
+htmlwidgets::saveWidget(plotly,selfcontained = T, file="linea_tiempo.html")
 plotly
 
 ```
-[Link a esta gráfica](https://lorenzoleon.github.io/covid19_mex_Reportes/03_graficas/Linea_tiempo.html)
+[Link a esta gráfica](https://lorenzoleon.github.io/covid19_mex_Reportes/linea_tiempo.html)
 <p>
 ## <b>3 Pirámide poblacional de casos positivos a COVID-19 según fecha de reporte oficial</b>
 <p>
@@ -289,7 +293,12 @@ ur <- ggplot(b,
         legend.position = "bottom") +
   coord_flip() 
 plotly <-  plotly::ggplotly(ur, tooltip = c("text"))%>%
-  plotly::layout(bargap = 0.1, 
+  plotly::layout(title = list(text = paste0(titulo,
+                                    '<br>',
+                                    '<sup>',
+                                    subtitulo,
+                                    '</sup>')),
+                 bargap = 0.1, 
                  barmode = 'overlay', 
                  legend = list(orientation = 'v', x = 0, y = 0.9),
                  annotations = list(x = 1, y = 0, text = caption, 
@@ -298,11 +307,11 @@ plotly <-  plotly::ggplotly(ur, tooltip = c("text"))%>%
                                     yshift=0,font=list(size=15, color="red")))
  
  ggsave("03_graficas/Prop_sexo_edad.png", plot = ur + geom_label(na.rm = T, size = 5, aes(label = ifelse(abs(prop)<1,NA_character_,paste0(abs(round(prop,1)), "%")))), width = 15, height = 10, dpi = 100)
-htmlwidgets::saveWidget(plotly, file="03_graficas/Prop_sexo_edad.html")
+htmlwidgets::saveWidget(plotly, selfcontained = T,file="Prop_sexo_edad.html")
 plotly
 ```
 <p>
-[Link a esta gráfica](https://lorenzoleon.github.io/covid19_mex_Reportes/03_graficas/Prop_sexo_edad.html)
+[Link a esta gráfica](https://lorenzoleon.github.io/covid19_mex_Reportes/Prop_sexo_edad.html)
 <p>
 ## Casos de COVID-19 en México por entidad federativa, a la fecha de corte.
 <p>
@@ -534,12 +543,12 @@ mymap <- mymap %>% addLayersControl(
                     map.setView(new L.latLng(21, -103), 5);
                     }")))
 
-htmlwidgets::saveWidget(mymap, file="03_graficas/Mapa_Casos.html")
+htmlwidgets::saveWidget(mymap, selfcontained = T,file="Mapa_Casos.html")
 mymap
 
 ```
 <p>
-[Link a este Mapa](https://lorenzoleon.github.io/covid19_mex_Reportes/03_graficas/Mapa_Casos.html)
+[Link a este Mapa](https://lorenzoleon.github.io/covid19_mex_Reportes/Mapa_Casos.html)
 <p>
 La intensidad del color indica la magnitud de los casos totales georreferenciados por entidad.
 <p>
