@@ -124,7 +124,7 @@ write_excel_csv(fig, "01_datos/Data_fecha_acumulada.csv")
 xfun::embed_file('01_datos/Data_fecha_acumulada.csv', text = "Descargue los datos para la siguiente gráfica. AQUÍ")
 ```
 <p>
-```{r fig.width=10, fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Casos Confirmados Acumulados por día"}
+```{r fig.width=9, fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Casos Confirmados Acumulados por día"}
 ur <- ggplot(fig, 
          aes(x = Fecha,
              frame = frame, 
@@ -186,9 +186,10 @@ htmlwidgets::saveWidget(plotly,selfcontained = T, file="linea_tiempo.html")
 plotly
 
 ```
+<p>
 [Link a esta gráfica](https://lorenzoleon.github.io/covid19_mex_Reportes/linea_tiempo.html)
 <p>
-## <b>3 Pirámide poblacional de casos positivos a COVID-19 según fecha de reporte oficial</b>
+## <b>Pirámide poblacional de casos positivos a COVID-19 según fecha de reporte oficial</b>
 <p>
 La siguiente gráfica permite seguir la evolución temporal de la pirámide población de los contagios por COVID-19 en México. Esta información revela información interesante y útil para el lector. Hoy, los datos señalan no sólo que es mayor el contagio de la enfermedad entre los hombres mexicanos, sino que además existen diferencias significativas respecto a las mujeres en ciertos grupos etarios. Asimismo, cabe señalar que las poblaciones etarias más vulnerables parecen mostrar un menor número de casos positivos de COVID-19, manteniéndose así un 64% de los contagios en la población entre los 21 a 50 años. **PENDIENTE REVISAR DATO
 <p>
@@ -262,7 +263,7 @@ write_excel_csv(b,'01_datos/Data_sexo_edad.csv')
 xfun::embed_file('01_datos/Data_sexo_edad.csv', text = "Descargue los datos para la siguiente gráfica. AQUÍ")
 ```
 <p>
-```{r fig.width=8, fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Distribución de casos por sexo y grupos de edad"}
+```{r fig.width=9, fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Distribución de casos por sexo y grupos de edad"}
 titulo <- "Piramide poblacional de casos de COVID-19 en México"
 ur <- ggplot(b, 
        aes(x = str_wrap(g_edad,15), 
