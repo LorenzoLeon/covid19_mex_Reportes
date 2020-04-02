@@ -1139,13 +1139,14 @@ categorias <- unique(cuadros_OP$Categoría)
 ```
 <br>
 
+### <b>Nivel de información respecto al COVID-19</b>
 ***
-
+<br>
+Resultados de distintas encuestadoras a nivel mundial
 <br>
 ```{r fig.width=9, fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Información sobre COVID-19"}
 caption <- "Elaboración propia con datos de <a href='https://wapor.org/'>WAPOR</a> | <a href='https://twitter.com/Parametria'>@parametria</a> | <a href='https://twitter.com/lolo7no'>@lolo7no</a> | <a href='https://twitter.com/guzmart_'>@guzmart_</a>"
-titulo <- "Nivel de información respecto al COVID-19"
-subtitulo <-"Resultados de distintas encuestadoras a nivel mundial" 
+
 niv_con <- cuadros_OP %>% 
   filter(Categoría=="Noticias") %>% 
   filter(str_detect(id,"1")) %>% 
@@ -1192,13 +1193,7 @@ p <-
         legend.position = "none")
   
 plotly <- ggplotly(p, dynamicTicks = TRUE, tooltip = c("label","fill"))%>%
-  plotly::layout(title = list(text = paste0(titulo,
-                                    '<br>',
-                                    '<sup>',
-                                    subtitulo,
-                                    '</sup>'),
-                              y = 1.1),
-                 hovermode = "x", 
+  plotly::layout(hovermode = "x", 
                  tickvalues ="", 
                  annotations = list(x = 1, y = 0, 
                                     text = caption, 
@@ -1215,11 +1210,12 @@ plotly
 ```
 <br>
 
+### <b>Evaluación del tratamiento mediático de la información sobre el COVID-19</b>
 ***
-
+<br>
+Resultados de distintas encuestadoras a nivel mundial
 <br>
 ```{r fig.width=9, fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Tratamiento mediático sobre COVID-19"}
-titulo <- "Evaluación del tratamiento mediático de la información sobre el COVID-19"
 
 manejo_media <- cuadros_OP %>% 
   filter(Categoría=="Manejo Medios") %>% 
@@ -1255,12 +1251,7 @@ p <-
 
   
 plotly <- ggplotly(p, tooltip = "label") %>%
-  plotly::layout(title = list(text = paste0(titulo,
-                                    '<br>',
-                                    '<sup>',
-                                    subtitulo,
-                                    '</sup>'),
-                              y = 1.1),
+  plotly::layout(
                  hovermode = "x", 
                  tickvalues ="", 
                  annotations = list(x = 1, y = 0, 
@@ -1278,12 +1269,14 @@ plotly
 ```
 <br>
 
+### <b>Aprobación del trabajo del Presidente en el manejo de la crisis derivada de la pandemia del COVID-19 (México)</b>
 ***
+<br>
+Resultados de distintas encuestadoras en México
 <br>
 
 ```{r fig.width=9, fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Aprobación Presidente durante crisis de COVID-19"}
 titulo <- "Aprobación del trabajo del Presidente en el manejo de la crisis derivada de la pandemia del COVID-19 (México)"
-subtitulo <- "Resultados de distintas encuestadoras en México"
 
 apr_pres <- cuadros_OP %>% 
   filter(Categoría=="Aprobar") %>% 
@@ -1317,13 +1310,7 @@ p <-
         legend.position = "none")
   
 plotly <- ggplotly(p, tooltip = "label") %>%
-  plotly::layout(title = list(text = paste0(titulo,
-                                    '<br>',
-                                    '<sup>',
-                                    subtitulo,
-                                    '</sup>'),
-                              y = 1.1),
-                 hovermode = "x", 
+  plotly::layout(hovermode = "x", 
                  tickvalues ="", 
                  annotations = list(x = 1, y = 0, 
                                     text = caption, 
@@ -1341,13 +1328,13 @@ plotly
 ```
 <br>
 
+### <b>Aprobación del trabajo del Presidente en el manejo de la crisis derivada de la pandemia del COVID-19 (Internacional)</b>
 ***
-
+<br>
+Resultados de distintas encuestadoras a nivel mundial.
+Sólo se muestran las proporciones de evaluaciones positivas.
 <br>
 ```{r fig.width=9, fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Aprobación Presidentes Internacional durante crisis de COVID-19"}
-titulo <- "Aprobación del trabajo del Presidente en el manejo de la crisis derivada de la pandemia del COVID-19 (Internacional)"
-subtitulo <- "Resultados de distintas encuestadoras a nivel mundial.
-Sólo se muestran las proporciones de evaluaciones positivas."
 
 apr_pres_int <- cuadros_OP %>% 
   filter(Categoría=="Aprobar") %>% 
@@ -1392,12 +1379,7 @@ p <-
         legend.position = "none")
   
 plotly <- ggplotly(p, tooltip = c("fill", "label")) %>%
-  plotly::layout(title = list(text = paste0(titulo,
-                                    '<br>',
-                                    '<sup>',
-                                    subtitulo,
-                                    '</sup>'),
-                              y = 1.1),
+  plotly::layout(
                  hovermode = "x", 
                  tickvalues ="", 
                  annotations = list(x = 1, y = 0, 
@@ -1415,13 +1397,13 @@ plotly
 ```
 <br>
 
+### <b>Aprobación del trabajo gubernamental local en el manejo de la crisis derivada de la pandemia del COVID-19</b>
 ***
-
+<br>
+Resultados de distintas encuestadoras a nivel mundial.
+Sólo se muestran las proporciones de evaluaciones positivas.
 <br>
 ```{r fig.width=9, fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Aprobación Gobierno durante crisis de COVID-19"}
-titulo <- "Aprobación del trabajo gubernamental local en el manejo de la crisis derivada de la pandemia del COVID-19"
-subtitulo <- "Resultados de distintas encuestadoras a nivel mundial.
-Sólo se muestran las proporciones de evaluaciones positivas."
 
 apr_gob_loc <- cuadros_OP %>% 
   filter(Categoría=="Aprobar") %>% 
@@ -1460,12 +1442,7 @@ p <-
         legend.position = "none")
   
 plotly <- ggplotly(p, tooltip = c("fill", "label")) %>%
-  plotly::layout(title = list(text = paste0(titulo,
-                                    '<br>',
-                                    '<sup>',
-                                    subtitulo,
-                                    '</sup>'),
-                              y = 1.1),
+  plotly::layout(
                  hovermode = "x", 
                  tickvalues ="", 
                  annotations = list(x = 1, y = 0, 
@@ -1483,13 +1460,13 @@ plotly
 ```
 <br>
 
+### <b>Percepción de suficiencia en el manejo de la crisis derivada de la pandemia del COVID-19\n Gobiernos nacionales o federales</b>
 ***
-
+<br>
+Resultados de distintas encuestadoras a nivel mundial.
+Sólo se muestran las proporciones de evaluaciones positivas.
 <br>
 ```{r fig.width=9, fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Percepción de suficiencia durante crisis de COVID-19"}
-titulo <- "Percepción de suficiencia en el manejo de la crisis derivada de la pandemia del COVID-19\n Gobiernos nacionales o federales"
-subtitulo <- "Resultados de distintas encuestadoras a nivel mundial.
-Sólo se muestran las proporciones de evaluaciones positivas."
 
 suficiente_fed <- cuadros_OP %>% 
   filter(Categoría=="Suficiente") %>% 
@@ -1530,13 +1507,7 @@ p <-
         legend.position = "none")
   
 plotly <- ggplotly(p, tooltip = c("fill", "label")) %>%
-  plotly::layout(title = list(text = paste0(titulo,
-                                    '<br>',
-                                    '<sup>',
-                                    subtitulo,
-                                    '</sup>'),
-                              y = 1.1),
-                 hovermode = "x", 
+  plotly::layout(hovermode = "x", 
                  tickvalues ="", 
                  annotations = list(x = 1, y = 0, 
                                     text = caption, 
@@ -1553,13 +1524,13 @@ plotly
 ```
 <br>
 
+### <b>Percepción de suficiencia en el manejo de la crisis derivada de la pandemia del COVID-19\n Gobiernos locales</b>
 ***
-
+<br>
+Resultados de distintas encuestadoras a nivel mundial.
+Sólo se muestran las proporciones de evaluaciones positivas.
 <br>
 ```{r fig.width=9, fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Percepción suficiencia (Local) durante crisis de  COVID-19"}
-titulo <- "Percepción de suficiencia en el manejo de la crisis derivada de la pandemia del COVID-19\n Gobiernos locales"
-subtitulo <- "Resultados de distintas encuestadoras a nivel mundial.
-Sólo se muestran las proporciones de evaluaciones positivas."
 
 suficiente_loc <- cuadros_OP %>% 
   filter(Categoría=="Suficiente") %>% 
@@ -1598,12 +1569,7 @@ p <-
         legend.position = "none")
   
 plotly <- ggplotly(p, tooltip = c("fill", "label")) %>%
-  plotly::layout(title = list(text = paste0(titulo,
-                                    '<br>',
-                                    '<sup>',
-                                    subtitulo,
-                                    '</sup>'),
-                              y = 1.1),
+  plotly::layout(
                  hovermode = "x", 
                  tickvalues ="", 
                  annotations = list(x = 1, y = 0, 
@@ -1621,12 +1587,12 @@ plotly
 ```
 <br>
 
+### <b>Percepción respecto al impacto del COVID-19 en la vida personal y familiar</b>
 ***
-
+<br>
+Resultados de distintas encuestadoras a nivel mundial
 <br>
 ```{r fig.width=9, fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Percepción de impacto en vida personal y familiar durante crisis de COVID-19"}
-titulo <- "Percepción respecto al impacto del COVID-19 en la vida personal y familiar"
-subtitulo <- "Resultados de distintas encuestadoras a nivel mundial"
 
 impacto <- cuadros_OP %>% 
   filter(Categoría=="Cambios" | Categoría == "Impacto") %>% 
@@ -1660,13 +1626,7 @@ p <-
         legend.position='none')
   
 plotly <- ggplotly(p, tooltip = c("fill", "label")) %>%
-  plotly::layout(title = list(text = paste0(titulo,
-                                    '<br>',
-                                    '<sup>',
-                                    subtitulo,
-                                    '</sup>'),
-                              y = 1.1),
-                 hovermode = "x", 
+  plotly::layout(hovermode = "x", 
                  tickvalues ="", 
                  annotations = list(x = 1, y = 0, 
                                     text = caption, 
@@ -1683,12 +1643,12 @@ plotly
 ```
 <br>
 
+### <b>Percepción respecto al desarrollo de la pandemia del COVID-19</b>
 ***
-
+<br>
+Resultados de distintas encuestadoras a nivel mundial
 <br>
 ```{r fig.width=9, fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Percepción respecto al desarrollo de la pandemia de COVID-19"}
-titulo <- "Percepción respecto al desarrollo de la pandemia del COVID-19"
-subtitulo <- "Resultados de distintas encuestadoras a nivel mundial"
 
 empeorar <- cuadros_OP %>% 
   filter(Categoría=="Empeorar") %>% 
@@ -1721,13 +1681,7 @@ p <-
         legend.position='none')
   
 plotly <- ggplotly(p, tooltip = c("label")) %>%
-  plotly::layout(title = list(text = paste0(titulo,
-                                    '<br>',
-                                    '<sup>',
-                                    subtitulo,
-                                    '</sup>'),
-                              y = 1.1),
-                 hovermode = "x", 
+  plotly::layout(hovermode = "x", 
                  tickvalues ="", 
                  annotations = list(x = 1, y = 0, 
                                     text = caption, 
