@@ -498,7 +498,7 @@ xfun::embed_file('01_datos/Datos_entidad_Acumulados_para_Mapa.csv', text = "Desc
 mymap <- leaflet(options = leafletOptions(zoomControl = FALSE,
                                           minZoom = 3, 
                                           maxZoom = 7,
-                                          dragging = FALSE)) %>% 
+                                          dragging = T)) %>% 
   addProviderTiles("Esri.WorldGrayCanvas")  %>%
   setView( lat=21, lng=-103 , zoom=5)%>%addControl(caption, position = "bottomleft")
 
