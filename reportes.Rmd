@@ -1,7 +1,7 @@
 ---
-title: "Reporte COVID-19 Redes Sociales"
+title: "Reporte COVID-19"
 author: "[Parametría](http://parametria.com.mx/)"
-date: "`r format(Sys.time(), '%d %B %Y')`"
+date: "`r format(Sys.time(), '%d/%m/%Y')`"
 mail: "lorenzoln@parametria.com.mx"
 twitter: "lolo7no"
 github: "LorenzoLeon/covid19_mex_Reportes"
@@ -20,19 +20,17 @@ knit: (function(inputFile, encoding) { rmarkdown::render(inputFile, encoding = e
 
 LOREMIPSUM
 
-
+<center>
 <br>
 Descargue este reporte en formato estáfico PDF. [AQUÍ](https://github.com/LorenzoLeon/covid19_mex_Reportes/REPORTE_COVID.pdf)
 <br>
 Descargue el archivo RMarkdown para crear este reporte aquí
 [Rmarkdown](https://github.com/LorenzoLeon/covid19_mex_Reportes/REPORTE_COVID.Rmd)
-<br><br>
-
-***
-
+</center>
+<br>
 ```{r echo=F, background="white", message = FALSE, warning = FALSE}
 #theme: cayman
-Sys.setlocale("LC_TIME", "es_ES.UTF-8")
+#suppressMessages(Sys.setlocale("LC_TIME", "es_ES.UTF-8"))
 library(knitr, quietly = T)
 opts_chunk$set(widgetframe_widgetsdir = 'widgets')
 library(leaftime, quietly = T, )
@@ -69,13 +67,11 @@ require(tidyverse, quietly = T)
 load.emojifont("OpenSansEmoji.ttf")
 load.emojifont("EmojiOne.ttf")
 import_roboto_condensed()
-#{.tabset .tabset-fade .tabset-pills}
 ```
+
 # <b>COVID-19 en México</b> {.tabset }
 ***
-Tres partes...
-
-muy divertidas... wuu
+Desde hace un par de semanas, la propagación del virus COVID-19 ha impactado al mundo: desde la forma en la que nos relacionamos cotidianamente, hasta la economía mundial. Ante esta coyuntura, Parametría propone realizar un seguimiento puntual del fenómeno en México en tres frentes: primero, los datos duros respecto al número de casos confirmados; segundo, la opinión pública sobre el fenómeno en sí mismo, así como las medidas en política pública que se han implementado; tercero, un seguimiento en redes sociales acerca de esta discusión pública.
 
 ## <b>Análisis de datos de la Secretaría de Salud</b>
 ***
@@ -102,7 +98,7 @@ d <- read_excel(paste0("01_datos/",filetoread),
                                         "date", "date", "text", "text", "text", "text" ))%>%
   filter(fecha_corte > params$`Fecha Mínima`)
 ```
-Los datos de `r format(as.Date(max(d$fecha_corte)),"%d-%B" )` tienen `r nrow(d)` entradas y `r ncol(d)` columnas.
+Los datos de `r format(as.Date(max(d$fecha_corte)),"%d-%B" )` tienen `r nrow(d%>%filter(!(inconsistencia_omision == 1)))` casos registrados con y `r ncol(d)` variables.
 
 ### <b>Número de casos positivos</b>
 ***
@@ -494,12 +490,9 @@ DT::datatable(d_ent%>%select(Fecha, Entidad, `Casos nuevos`, Total, ends_with("a
 ```
 
 
-### <b>Mapa de Casos</b>
+### <b>Mapa de Casos agregados por entidad en el tiempo</b>
 ***
 
-<b> Mapa de Casos agregados por entidad en el tiempo</b>
-<br>
-Blah Blah
 <br>
 ```{r echo=F, background="white", message = FALSE, warning = FALSE}
 ## Leemos la base SHP de polígonos de México
@@ -647,10 +640,18 @@ La intensidad del color indica la magnitud de los casos totales georreferenciado
 <br>
 
 ## <b>Análisis de Redes Sociales</b>
-
 ***
+<b>Análisis de Sentimiento y Temas</b>
+<br>
+Con base en una extracción completa de tweets donde se menciona a la figura o tema de importancia analizamos y creamos un diagnóstico de la opinión pública. Basado en un análisis ad hoc de disciplinas mixtas creamos un diccionario especializado para la figura o tema de interés. Este diccionario nos permite crear indicadores de sentimiento o relevancia, capaces de crear sistemas de redes 
+<br>
+<b>Etapas de Análisis</b>
+<br>
+Iniciando con una extracción directa de todos los tweets donde hay menciones o utilizan las palabras clave predeterminadas creamos un diagnóstico preliminar. Esta descarga se realiza con interfaces basadas en la API de Twitter, donde filtramos en tiempo real los tweets de interés para crear una base de datos propia analizable.
+A partir de este análisis identificamos los topics, hashtags y utilizadores más importantes para el seguimiento. Consideramos poco relevante los seguimientos a tiempo real, dado que es imposible ex ante conocer los futuros temas o tendencias coyunturales. 
+<br>
 Es importante hacer un seguimiento de redes Sociales para la comprensión del debate público, principalmente porque, al ser de acceso público, el debate es más cercano a la opinión pública del momento. Este análisis se basa en un scrapping personal de tweets en México que hacen mención de COVID-19. Si bien el sistema no es perfecto (con errores, omisiones e imperfecciones), sirve para tener una buena imagen del debate durante el tiempo.
-
+<br>
 
 ```{r echo=F, background="white", message = FALSE, warning = FALSE}
 caption <- "Elaboración propia con datos de Twitter | <a href='https://twitter.com/Parametria'>@parametria</a> | <a href='https://twitter.com/lolo7no'>@lolo7no</a> | <a href='https://twitter.com/guzmart_'>@guzmart_</a>"
@@ -695,18 +696,17 @@ tweets <- tweets %>%
                        format = "%Y-%m-%d %T") - hours(7),
    RT = stri_detect(text, fixed = "RT"),
    replied_TO = ifelse(RT, stri_extract_first(text, regex = "@[[:alnum:]_]+"), "")
-  ) %>% filter(fecha>as.POSIXct("2020-03-15", format = "%Y-%m-%d"))
+  ) %>% filter(fecha>as.POSIXct("2020-03-15", format = "%Y-%m-%d"),fecha<as.POSIXct("2020-03-20", format = "%Y-%m-%d") )
 
 saveRDS(tweets, "01_datos/tweets.rds")
 ```
-Los datos sobre tweets hasta `r max(tweets$fecha)` tienen `r nrow(tweets)` entradas y `r ncol(tweets)` columnas.
+Los datos sobre tweets hasta `r max(tweets$fecha)` tienen `r nrow(tweets)` tweets y `r ncol(tweets)` variables.
 
 ### <b>Tiempo</b>
 ***
-
-Lorem Ipsum
+Es importante remarcar los ciclos normales de creación de tweets. Estos son normales por las horas de descanso y la escalada esperada del fin de semana. En promedio cada día tuvo alrededor de mil tweets. Vale la pena destacar que entre las 18:00 hrs y las 19:00 hrs existen incrementos en la actividad del tema; esto coincide con la conferencia diaria que la Secretaría de Salud transmite en relación con la epidemia. 
 <br>
-```{r fig.width=9, fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Línea de Tiempo de Tweets sobre COVID-19 en México - Twitter"}
+```{r fig.width=9, fig.height=7, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Línea de Tiempo de Tweets sobre COVID-19 en México - Twitter"}
 
 titulo <- "Frecuencia de tuits que mencionan al "
 subtitulo <- paste0("#COVID19mx Tuits agrupados por hora del 15 de marzo al ", as.Date(max(tweets$fecha)))
@@ -733,12 +733,12 @@ ur <- ggplot(data = tweets %>%
        y="Número de tweets",
        x="",
        caption=caption1) +
-  theme(plot.title = element_text(size = 35),
-        plot.subtitle = element_text(size = 30),
-        plot.caption = element_text(size = 20),
-        axis.title.x = element_text(size = 20),
-        axis.text.y = element_text(size = 20),
-        axis.text.x = element_text(angle = 90))
+  theme(plot.title = element_text(size = 20),
+        plot.subtitle = element_text(size = 15),
+        plot.caption = element_text(size = 10),
+        axis.title.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10),
+        axis.text.x = element_text(angle = 45))
 
 ggsave("03_graficas/linea_tiempo_tweets.png", plot = ur, width = 15, height = 10, dpi = 100)
 
@@ -761,12 +761,12 @@ ur <- ggplot(data = tweets %>%
        y="Número de tweets",
        x="",
        caption=caption1) +
-  theme(plot.title = element_text(size = 35),
-        plot.subtitle = element_text(size = 30),
-        plot.caption = element_text(size = 20),
-        axis.title.x = element_text(size = 20),
-        axis.text.y = element_text(size = 20),
-        axis.text.x = element_text(angle = 90))
+   theme(plot.title = element_text(size = 20),
+        plot.subtitle = element_text(size = 15),
+        plot.caption = element_text(size = 10),
+        axis.title.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10),
+        axis.text.x = element_text(angle = 45))
 
 plotly <- plotly::ggplotly(ur, 
                            tooltip = c("x", "y"),
@@ -799,14 +799,14 @@ plotly
 <br>
 
 
-### <b>Hashtags, Menciones, Temas</b> {.tabset .tabset-fade}
+### <b>Hashtags, Menciones, Temas</b> {.tabset .tabset-fade .tabset-pills}
 ***
 Lorem Ipsum
 <br>
 
 #### <b>Temas</b>
 ***
-Lorem Ipsum
+Esta gráfica indica que la palabras relacionadas con las consecuencias del virus —tales como cuarentena, efecto y casos— son recurrentes en la discusión pública. También cabe destacar que “hoy” fue la palabra más mencionada —con un conteo total de 8,695—, lo anterior sugiere que las y los usuarios de Twitter están preocupados por el seguimiento diario de la evolución del tema.
 
 <br>
 <center>
@@ -817,7 +817,7 @@ Lorem Ipsum
 
 #### <b>Hashtags</b>
 ***
-Blah Blah
+Los hashtags que se relacionaron con mayor frecuencia a los tweets hacen referencia al #COVID19mx pueden dividirse en tres grandes conglomerados. Primero, aquellos relacionados con algunas entidades federativas que ya han implementado estrategias específicas. Segundo, los hashtags relacionados con las recomendaciones para contener el contagio del virus (CuarentenaNacional, QuedateEnCasa). Finalmente, términos comúnmente usados por agencias de noticias para promover su contenido.
 <br>
 <center>
 ![Hashtags más comunes en Tweets sobre COVID-19 en México - Twitter](03_graficas/WC_hashtags_twitter.png)
@@ -827,7 +827,7 @@ Blah Blah
 
 #### <b>Menciones</b>
 ***
-BLahBLAH
+Resulta interesante observar que la discusión pública en redes se relaciona fuertemente con las autoridades correspondientes. En particular, llama la atención que la jefa de gobierno Claudia Sheinbaum (4,342) y el subsecretario Hugo López-Gatell (4,292) superen la frecuencia de menciones del presidente Lopez Obrador(3923). Lo anterior pudiera ser indicativo de una atribución de responsabilidad sofisticada por parte de las y los usuarios de Twitter: no se responsabiliza o asocia en su totalidad el manejo de la crisis al jefe del ejecutivo, sino que se relaciona el manejo de la crisis con autoridades locales y/o especializadas en salud. Adicionalmente, este comportamiento es congruente con la misma estrategia de comunicación que el gobierno ha implementado en este tema. Por otro lado, el comunicador Ciro Gómez-Leyva fue puntero en la frecuencia de menciones con un total de 5,631.
 <br>
 <center>
 ![Menciones más comunes en Tweets sobre COVID-19 en México - Twitter](03_graficas/WC_ats_twitter.png)
@@ -937,7 +937,8 @@ ur <- ggplot(data_emojis,
   #scale_x_discrete(labels = emojis) +
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
-        axis.ticks.x=element_blank())
+        axis.ticks.x=element_blank(),
+        legend.position = "none")
 
 plotly <- plotly::ggplotly(ur, 
                            tooltip = c("label", "y")
@@ -969,7 +970,7 @@ plotly
 ### <b>Análisis de Sentimiento</b>
 ***
 
-LOREM IPSUM
+El sentimiento general relacionado con el virus COVID19 en México es negativo. Sin embargo, vale la pena destacar que —sobre todo el día 17 de marzo— durante las conferencias de prensa transmitidas por la Secretaría de Salud el sentimiento mejora ligeramente. Esto podría ser indicativo que el socializar información puntual relacionada con la evolución de la epidemia calma las preocupaciones de las personas.
 <br>
 ```{r fig.width=9, fig.height=8, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Análisis de Sentimiento en Tweets sobre COVID-19 en México - Twitter"}
 
@@ -1061,10 +1062,8 @@ htmlwidgets::saveWidget(plotly,selfcontained = F, file="linea_tiempo_sentimiento
 plotly
 
 ```
-
 [Link a esta gráfica](https://lorenzoleon.github.io/covid19_mex_Reportes/linea_tiempo_sentimiento_tweets.html)
 <br>
-
 
 
 ## <b>Análisis de Opinión Pública</b>
@@ -1701,7 +1700,6 @@ plotly <- ggplotly(p, tooltip = c("label")) %>%
 htmlwidgets::saveWidget(plotly,selfcontained = F, file="percepcion_epi_op.html")
 plotly
 ```
-Elaboración de Parametría con información publicada en WAPOR.
 <br>
 
 ***
