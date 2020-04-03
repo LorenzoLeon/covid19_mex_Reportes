@@ -32,7 +32,7 @@ Descargue el archivo RMarkdown para crear este reporte aquí
 
 ```{r echo=F, background="white", message = FALSE, warning = FALSE}
 #theme: cayman
-#Sys.setlocale("LC_TIME", "es_ES.UTF-8")
+Sys.setlocale("LC_TIME", "es_ES.UTF-8")
 library(knitr, quietly = T)
 opts_chunk$set(widgetframe_widgetsdir = 'widgets')
 library(leaftime, quietly = T, )
@@ -102,7 +102,7 @@ d <- read_excel(paste0("01_datos/",filetoread),
                                         "date", "date", "text", "text", "text", "text" ))%>%
   filter(fecha_corte > params$`Fecha Mínima`)
 ```
-Los datos de `r max(d$fecha_corte)` tienen `r nrow(d)` entradas y `r ncol(d)` columnas.
+Los datos de `r format(as.Date(max(d$fecha_corte)),"%d-%B" )` tienen `r nrow(d)` entradas y `r ncol(d)` columnas.
 
 ### <b>Número de casos positivos</b>
 ***
@@ -1195,7 +1195,7 @@ p <-
 plotly <- ggplotly(p, dynamicTicks = TRUE, tooltip = c("label","fill"))%>%
   plotly::layout(hovermode = "x", 
                  tickvalues ="", 
-                 annotations = list(x = 1, y = 0, 
+                 annotations = list(x = 1, y = 1, 
                                     text = caption, 
                                     showarrow = F, 
                                     xref='paper', 
@@ -1245,7 +1245,7 @@ p <-
        y="%") +
   theme(strip.text = element_text(size = 20),
         text = element_text(family = "Arial Narrow"),
-        axis.text.x = element_text(size = 12),
+        axis.text.x = element_text(size = 8),
         axis.text.y = element_text(size = 12),
         legend.position = "none")
 
@@ -1254,7 +1254,7 @@ plotly <- ggplotly(p, tooltip = "label") %>%
   plotly::layout(
                  hovermode = "x", 
                  tickvalues ="", 
-                 annotations = list(x = 1, y = 0, 
+                 annotations = list(x = 1, y = 1, 
                                     text = caption, 
                                     showarrow = F, 
                                     xref='paper', 
@@ -1312,7 +1312,7 @@ p <-
 plotly <- ggplotly(p, tooltip = "label") %>%
   plotly::layout(hovermode = "x", 
                  tickvalues ="", 
-                 annotations = list(x = 1, y = 0, 
+                 annotations = list(x = 1, y = -0.2, 
                                     text = caption, 
                                     showarrow = F, 
                                     xref='paper', 
@@ -1374,7 +1374,7 @@ p <-
   theme(strip.text = element_text(size = 20),
         panel.spacing.x = unit(3, "lines"),
         text = element_text(family = "Arial Narrow"),
-        axis.text.x = element_text(size = 15),
+        axis.text.x = element_text(size = 10, angle = 45),
         axis.text.y = element_text(size = 15),
         legend.position = "none")
   
@@ -1621,14 +1621,14 @@ p <-
        y="%") +
   theme(strip.text = element_text(size = 20),
         text = element_text(family = "Arial Narrow"),
-        axis.text.x = element_text(size = 15),
+        axis.text.x = element_text(size = 10),
         axis.text.y = element_text(size = 15),
         legend.position='none')
   
 plotly <- ggplotly(p, tooltip = c("fill", "label")) %>%
   plotly::layout(hovermode = "x", 
                  tickvalues ="", 
-                 annotations = list(x = 1, y = 0, 
+                 annotations = list(x = 1, y = -0.12, 
                                     text = caption, 
                                     showarrow = F, 
                                     xref='paper', 
@@ -1674,10 +1674,10 @@ p <-
                     )) +
   labs(x="",
        y="%") +
-  theme(strip.text = element_text(size = 20),
+  theme(strip.text = element_text(size = 150),
         text = element_text(family = "Arial Narrow"),
-        axis.text.x = element_text(size = 15),
-        axis.text.y = element_text(size = 15), 
+        axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10), 
         legend.position='none')
   
 plotly <- ggplotly(p, tooltip = c("label")) %>%
