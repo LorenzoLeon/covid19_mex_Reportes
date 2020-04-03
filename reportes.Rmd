@@ -1167,7 +1167,7 @@ niv_con <- cuadros_OP %>%
 
 p <- 
   ggplot(niv_con,
-       aes(x = reorder(paste0(str_wrap(Encuesta, 20), "\n",País), order), y = prop,
+       aes(x = reorder(paste0(str_wrap(Encuesta, 20), "\n",País), order), y = value,
            fill = País, label = Porcentaje)) +
   geom_col(width = 0.5) + 
   theme_minimal() + 
@@ -1180,9 +1180,9 @@ p <-
                       brewer.pal(n=9, "Blues")[8],
                       brewer.pal(n=9, "Blues")[9]
                     )) +
-  ylim(0, 105) +
+  ylim(0, 1.05) +
   labs(x="",
-       y="%") +
+       y="") +
   theme(plot.title = element_text(size = 20, face = "bold"),
         plot.subtitle = element_text(size = 15),
         plot.caption = element_text(size = 10),
@@ -1193,7 +1193,8 @@ p <-
         legend.position = "none")
   
 plotly <- ggplotly(p, dynamicTicks = TRUE, tooltip = c("label","fill"))%>%
-  plotly::layout(hovermode = "x", 
+  plotly::layout(yaxis = list(tickformat = "%"),
+                 hovermode = "x", 
                  tickvalues ="", 
                  annotations = list(x = 1, y = 1, 
                                     text = caption, 
@@ -1251,7 +1252,7 @@ p <-
 
   
 plotly <- ggplotly(p, tooltip = "label") %>%
-  plotly::layout(
+  plotly::layout(yaxis = list(ticksuffix = "%"),
                  hovermode = "x", 
                  tickvalues ="", 
                  annotations = list(x = 1, y = 1, 
@@ -1310,7 +1311,8 @@ p <-
         legend.position = "none")
   
 plotly <- ggplotly(p, tooltip = "label") %>%
-  plotly::layout(hovermode = "x", 
+  plotly::layout(yaxis = list(ticksuffix = "%"),
+                 hovermode = "x", 
                  tickvalues ="", 
                  annotations = list(x = 1, y = -0.2, 
                                     text = caption, 
@@ -1379,7 +1381,7 @@ p <-
         legend.position = "none")
   
 plotly <- ggplotly(p, tooltip = c("fill", "label")) %>%
-  plotly::layout(
+  plotly::layout(yaxis = list(ticksuffix = "%"),
                  hovermode = "x", 
                  tickvalues ="", 
                  annotations = list(x = 1, y = 0, 
@@ -1442,7 +1444,7 @@ p <-
         legend.position = "none")
   
 plotly <- ggplotly(p, tooltip = c("fill", "label")) %>%
-  plotly::layout(
+  plotly::layout(yaxis = list(ticksuffix= "%"),
                  hovermode = "x", 
                  tickvalues ="", 
                  annotations = list(x = 1, y = 0, 
@@ -1507,7 +1509,8 @@ p <-
         legend.position = "none")
   
 plotly <- ggplotly(p, tooltip = c("fill", "label")) %>%
-  plotly::layout(hovermode = "x", 
+  plotly::layout(yaxis = list(ticksuffix = "%"),
+                 hovermode = "x", 
                  tickvalues ="", 
                  annotations = list(x = 1, y = 0, 
                                     text = caption, 
@@ -1569,7 +1572,7 @@ p <-
         legend.position = "none")
   
 plotly <- ggplotly(p, tooltip = c("fill", "label")) %>%
-  plotly::layout(
+  plotly::layout(yaxis = list(ticksuffix = "%"),
                  hovermode = "x", 
                  tickvalues ="", 
                  annotations = list(x = 1, y = 0, 
@@ -1626,7 +1629,8 @@ p <-
         legend.position='none')
   
 plotly <- ggplotly(p, tooltip = c("fill", "label")) %>%
-  plotly::layout(hovermode = "x", 
+  plotly::layout(yaxis = list(ticksuffix = "%"),
+                 hovermode = "x", 
                  tickvalues ="", 
                  annotations = list(x = 1, y = -0.12, 
                                     text = caption, 
@@ -1674,14 +1678,15 @@ p <-
                     )) +
   labs(x="",
        y="%") +
-  theme(strip.text = element_text(size = 150),
+  theme(strip.text = element_text(size = 15),
         text = element_text(family = "Arial Narrow"),
         axis.text.x = element_text(size = 10),
         axis.text.y = element_text(size = 10), 
         legend.position='none')
   
 plotly <- ggplotly(p, tooltip = c("label")) %>%
-  plotly::layout(hovermode = "x", 
+  plotly::layout(yaxis = list(ticksuffix = "%"),
+                 hovermode = "x", 
                  tickvalues ="", 
                  annotations = list(x = 1, y = 0, 
                                     text = caption, 
