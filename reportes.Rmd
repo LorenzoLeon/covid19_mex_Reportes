@@ -5,7 +5,7 @@ date: "`r format(Sys.time(), '%d/%m/%Y')`"
 mail: "lorenzoln@parametria.com.mx"
 twitter: "lolo7no"
 github: "LorenzoLeon/covid19_mex_Reportes"
-logo: "logo_gallery.png"
+logo: "04_resources/logo.png"
 output:
   epuRate::epurate:
     toc: TRUE
@@ -799,7 +799,7 @@ plotly
 <br>
 
 
-### <b>Hashtags, Menciones, Temas</b> {.tabset .tabset-fade .tabset-pills}
+### <b>Hashtags, Menciones y Temas</b> {.tabset .tabset-fade .tabset-pills}
 ***
 Lorem Ipsum
 <br>
@@ -974,7 +974,7 @@ El sentimiento general relacionado con el virus COVID19 en México es negativo. 
 <br>
 ```{r fig.width=9, fig.height=8, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Análisis de Sentimiento en Tweets sobre COVID-19 en México - Twitter"}
 
-afinn <- readRDS("DiccionarioUNAfin.rds")%>%
+afinn <- readRDS("01_datos/DiccionarioUNAfin.rds")%>%
   filter(!is.na(mean)) %>% rename(Puntuacion = mean)
 desc <- afinn %>% distinct(root, .keep_all = T) %>% 
   select(-Palabra)%>%arrange(desc(Puntuacion)) 

@@ -1,3 +1,6 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Offside&display=swap');
+
 body {
     font-family: "Source Sans Pro","Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 14px;
@@ -26,12 +29,13 @@ body {
 }
 
 h1, .h1, h2, .h2, h3, .h3 {
-    color: #69b3a2;
+    color: #4F89C8;
     margin-top: 84px;
 }
 
 h1 {
   padding-top: 100px;
+  font-family: Offside;
 }
 
 h1.title {
@@ -51,16 +55,21 @@ blue {
 
 /* ---------- Links ----------------- */
 a {
-  color: #69b3a2;
+  color: #4F89C8;
 }
 a:hover {
-  color: #69b3a2;
+  color: #4F89C8;
 }
 
 
 
 
 /* ---------- TOC ----------------- */
+#nav_logo {
+  width: 100%;
+  margin-top: 20px;
+}
+
 #TOC {
   top: 30%;
   position: fixed;
@@ -72,16 +81,16 @@ a:hover {
   border-radius: 0px;
 }
 .list-group-item.active {
-    color: #69b3a2;
-    background-color: white;
+    color: #4F89C8;
+    background-color: transparent;
     border-left: solid;
-    border-color: #69b3a2;
+    border-color: #4F89C8;
 }
 .list-group-item:hover {
-    color: #69b3a2;
-    background-color: white;
+    color: #4F89C8;
+    background-color: transparent;
     border-left: solid;
-    border-color: #69b3a2;
+    border-color: #4F89C8;
 }
 .tocify-extend-page {
   display: none;
@@ -93,7 +102,7 @@ a:hover {
 }
 
 /* ------ Don't display on small media */
-@media (max-width: 1400px) {
+@media (max-width: 1300px) {
   #TOC {
     width: auto;
     display: none;
@@ -109,18 +118,18 @@ a:hover {
     border-width: 0 0px 0px 0px;
     font-weight: normal;
     text-transform: ;
-    color: #69b3a2;
+    color: #4F89C8;
 }
 
 .btn-default {
-    color: #69b3a2;
+    color: #4F89C8;
     background-color: #ffffff;
     border-color: #ffffff;
 }
 
 .pill-nav a {
   display: inline-block;
-  color: #69b3a2;
+  color: #4F89C8;
   text-align: center;
   padding: 14px;
   text-decoration: none;
@@ -129,20 +138,20 @@ a:hover {
 
 /* Change the color of links on mouse-over */
 .pill-nav a:hover {
-  background-color:  #69b3a2;
+  background-color:  #4F89C8;
   border-color: #ffffff;
   color: #ffffff;
 }
 
 /* Add a color to the active/current link */
 .pill-nav a.active {
-  background-color:  #69b3a2;
+  background-color:  #4F89C8;
   border-color: #ffffff;
   color: #ffffff;
 }
 
 .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
-    background-color: #69b3a2;
+    background-color: #4F89C8;
 }
 
 /*-------CAPTION_---------*/

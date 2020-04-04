@@ -1,0 +1,43 @@
+---
+title: "Análisis de Redes Sociales Twitter"
+author: "<center>[Parametría](http://parametria.com.mx/)</center>"
+date: "<center>`r format(Sys.time(), '%d/%m/%Y')`</center>"
+twitter: "lolo7no"
+github: "LorenzoLeon/covid19_mex_Reportes"
+logo: "logo_gallery.png"
+mail: lorenzoln@parametria.com.mx
+output:
+  html_document:
+    collapsed: no
+    css: '04_resources/style.css'
+    df_print: paged
+    include:
+      after_body: '04_resources/footer.html'
+      in_header: '04_resources/header.html'
+    number_sections: no
+    theme: lumen
+    toc: no
+    toc_depth: 1
+    toc_float: yes
+  pdf_document:
+    toc: no
+    toc_depth: '1'
+    keep_tex: false
+---
+<center>
+<div class="pill-nav">
+  <a href='https://lorenzoleon.github.io/covid19_mex_Reportes/'><b>Análisis Parametría<b></a>
+  <a class="active" href='https://lorenzoleon.github.io/covid19_mex_Reportes/RedesSociales.html'><b>Análisis Redes Sociales</b></a>
+  <a href='https://lorenzoleon.github.io/covid19_mex_Reportes/OpinionPublica.html'>Análisis Opinión Pública</a>
+  <a href='https://lorenzoleon.github.io/covid19_mex_Reportes/DatosSalud.html'>Reporte Secretaría de Salud</a>
+</div>
+</center>
+
+<center>
+<br>
+Descargue este reporte en formato estáfico PDF. [AQUÍ](https://github.com/LorenzoLeon/covid19_mex_Reportes/REPORTE_COVID.pdf)
+<br>
+Descargue el archivo RMarkdown para crear este reporte aquí
+[Rmarkdown](https://github.com/LorenzoLeon/covid19_mex_Reportes/REPORTE_COVID.Rmd)
+</center>
+<br>
