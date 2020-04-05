@@ -1,0 +1,650 @@
+---
+title: "Reporte de datos sobre COVID-19 de la Secretaría de Salud "
+author: "<center>[Parametría](http://parametria.com.mx/)</center>"
+date: "<center>`r format(Sys.time(), '%d/%m/%Y')`</center>"
+twitter: "lolo7no"
+github: "LorenzoLeon/covid19_mex_Reportes"
+logo: "logo_gallery.png"
+mail: lorenzoln@parametria.com.mx
+lang: es
+output:
+  html_document:
+    collapsed: no
+    css: '04_resources/style.css'
+    df_print: paged
+    include:
+      after_body: '04_resources/footer.html'
+      in_header: '04_resources/header.html'
+    number_sections: no
+    theme: lumen
+    toc: yes
+    toc_depth: 1
+    toc_float: yes
+params: 
+  Fecha de corte: !r lubridate::mdy("04-01-2020")
+  Fecha Mínima: !r as.Date("2020-02-01", format = "%Y-%m-%d")
+  view_pdf: !r knitr::is_latex_output()
+  view_html: !r knitr::is_html_output()
+---
+<center>
+<div class="pill-nav">
+<a class="active" href='https://lorenzoleon.github.io/covid19_mex_Reportes/'><b>Análisis Parametría</b></a>
+<a href='https://lorenzoleon.github.io/covid19_mex_Reportes/RedesSociales.html'><b>Análisis Redes Sociales</b></a>
+<a href='https://lorenzoleon.github.io/covid19_mex_Reportes/OpinionPublica.html'><b>Análisis Opinión Pública</b></a>
+<a href='https://lorenzoleon.github.io/covid19_mex_Reportes/DatosSalud.html'><b>Reporte Secretaría de Salud</b></a>
+</div>
+</center>
+```{block eval=FALSE, include=params$view_html}
+<center>
+<br>
+Descargue el archivo RMarkdown para crear este reporte aquí
+[Rmarkdown](https://github.com/LorenzoLeon/covid19_mex_Reportes/AnalisisParametria.Rmd)
+</center>
+<br>
+***
+```
+***
+
+# <b>Información Pública - Secretaría de Salud, Redes Sociales y Encuestas de Opinión</b>
+<br>
+Desde el inicio de la crisis mundial de salud debida al brote del virus COVID-19, el rápido crecimiento del contagio y la desinformación sobre la enfermedad han sido dos de los principales retos a combatir para los gobiernos de los países afectados. En México, la Secretaría de Salud Federal combate en dos frentes. Por un lado, garantizar la suficiencia de recursos e infraestructura médica necesaria para atender al público cuando se alcancen los puntos más críticos de contagio en el país. Y, por otro lado, a través de la Dirección General de Epidemiología, la Secretaría publica diariamente un informe técnico con los casos sospechosos y positivos al COVID-19 en todo el país. 
+<p>
+Si bien este esfuerzo gubernamental busca combatir la desinformación en el tema, los formatos de presentación de los datos no permiten un análisis sintético del fenómeno. En este marco nace la siguiente propuesta de Parametría. Con el fin de dar garantía al derecho humano de acceso a la información oportuna y completa, que resulta además en este caso de interés público, Parametría pone a disposición del público el siguiente reporte interactivo sobre la evolución del COVID-19 en México.
+
+***
+<br><br>
+Descargue los datos de este reporte desde en el repositorio de [GITHUB](https://github.com/guzmart/covid19_mex)
+<br>
+```{r echo=F, background="white", message = FALSE, warning = FALSE}
+#theme: cayman
+#suppressMessages(Sys.setlocale("LC_TIME", "es_ES.UTF-8"))
+library(knitr, quietly = T)
+opts_chunk$set(widgetframe_widgetsdir = 'widgets')
+library(leaftime, quietly = T, )
+library(hrbrthemes, quietly = T)
+library(widgetframe)
+require(foreign, quietly = T)
+require(DT, quietly = T)
+library(kableExtra, quietly = T)
+require(xfun, quietly = T)
+require(haven, quietly = T)
+library(geojsonio, quietly = T)
+require(rgdal, quietly = T)
+require(readxl, quietly = T)
+require(ggrepel, quietly = T)
+require(stringi, quietly = T)
+require(xlsx, quietly = T)
+require(ggthemes, quietly = T)
+require(lubridate, quietly = T)
+require(leaflet, quietly = T)
+require(plotly, quietly = T)
+require(RColorBrewer, quietly = T)
+require(tidyverse, quietly = T)
+
+date <- paste0(unlist(strsplit(as.character(params$`Fecha de corte`), "-")), collapse = "")
+filetoread <- paste0("covid_mex_",date,".xlsx")
+if(!file.exists(paste0("01_datos/",filetoread))){
+download.file(paste0("https://github.com/guzmart/covid19_mex/blob/master/01_datos/", filetoread ,"?raw=true"), destfile = paste0("01_datos/",filetoread))
+}
+d <- read_excel(paste0("01_datos/",filetoread),
+                          col_types = c("numeric", "text", "text", 
+                                        "numeric", "date", "text", "text", 
+                                        "date", "date", "text", "text", "text", "text" ))%>%
+  filter(fecha_corte > params$`Fecha Mínima`)
+```
+Los datos de `r format(as.Date(max(d$fecha_corte)),"%d-%B" )` tienen `r nrow(d%>%filter(!(inconsistencia_omision == 1)))` casos registrados con y `r ncol(d)` variables.
+
+# <b>Número de casos positivos</b>
+***
+<br>
+La siguiente gráfica presenta la evolución del brote del virus COVID-19 en México. Al igual que otros países en América Latina, y acorde con estudios sobre la velocidad de crecimiento del brote del virus en la región, las curvas de crecimiento del brote en México son una línea recta en escala logarítmica. La gráfica permite seleccionar la temporalidad que el usuario requiera para su visualización.
+<br>
+Otra forma de observar la tendencia de crecimiento es por medio de la contabilización de los nuevos casos confirmados por día: es decir, cuántas confirmaciones se capturaron en la fecha de publicación. La siguiente gráfica, además, muestra que no existe un crecimiento constante sino que tiende a haber variaciones a lo largo del tiempo.
+```{r echo=F, message = FALSE, warning = FALSE}
+
+data_fecha <- d %>% count(fecha_corte) %>% mutate(n_acumulada = cumsum(n)) 
+caption <- "Elaboración propia con datos de la Secretaría de Salud | <a href='https://twitter.com/Parametria'>@parametria</a> | <a href='https://twitter.com/lolo7no'>@lolo7no</a> | <a href='https://twitter.com/guzmart_'>@guzmart_</a>"
+caption1 <- "Elaboración propia con datos de la Secretaría de Salud | @parametria| @lolo7no | @guzmart_"
+titulo <- "Número de casos confirmados de COVID-19 en México"
+subtitulo <- paste0("Fecha de corte: ",str_sub(max(data_fecha$fecha_corte), end = -1))
+accumulate_by <- function(dat, var) {
+  var <- lazyeval::f_eval(var, dat)
+  lvls <- plotly:::getLevels(var)
+  dats <- lapply(seq_along(lvls), function(x) {
+    cbind(dat[var %in% lvls[seq(1, x)], ], frame = lvls[[x]])
+  })
+  dplyr::bind_rows(dats)
+}
+
+fig <- data_fecha%>%
+  mutate(Fecha = as.Date(fecha_corte),
+         #fff = format(Fecha, format = "%d-%B"),
+         `Casos Acumulados` = n_acumulada,
+         `Casos Nuevos` = n) %>%
+  mutate(
+    fff = as.numeric(Fecha)
+  )%>%
+  select(Fecha, `Casos Acumulados`,`Casos Nuevos`, fff) %>%
+  pivot_longer(cols = starts_with("Casos") , values_to= "Casos")%>%
+  accumulate_by(~fff)%>%
+  mutate(
+    `Tipo de Casos` = name
+  )
+
+ur2 <- ggplot(fig, 
+         aes(x = Fecha,
+             frame = frame, 
+             opacity = 1,
+             y = Casos,
+             color = `Tipo de Casos`)) +
+  geom_line() +
+  scale_x_date(date_breaks = "3 day",
+               limits = c(
+                 min(as.Date(data_fecha$fecha_corte)-0.7),
+                 max(as.Date(data_fecha$fecha_corte)+0.7)
+               ),
+               expand = c(0,0)) +
+  theme_minimal() + 
+  labs(title=str_wrap(titulo, width = 50),
+       subtitle=subtitulo,
+       caption = caption1,
+       x="",
+       y="Número de casos") +
+  theme(plot.title = element_text(size = 20, face = "bold"),
+        plot.subtitle = element_text(size = 15),
+        plot.caption = element_text(size = 10),
+        strip.text = element_text(size = 15),
+        legend.text =  element_blank(),
+        panel.spacing.x = unit(3, "lines"),
+        text = element_text(family = "Arial Narrow"),
+        axis.text.x = element_text(size = 12, angle = 90, vjust = 0.5),
+        axis.title.y = element_text(size = 15),
+        axis.text.y = element_text(size = 15))
+
+ggsave("03_graficas/linea_tiempo.png", plot = ur2 + geom_label(aes(label = Casos))+ guides(label = FALSE), width = 15, height = 10, dpi = 100)
+
+xfun::pkg_load2(c("base64enc", "htmltools", "mime"))
+write_excel_csv(fig, "01_datos/Data_fecha_acumulada.csv")
+```
+<br>
+```{r results='asis',echo=FALSE,message=FALSE}
+xfun::embed_file('01_datos/Data_fecha_acumulada.csv', text = "Descargue los datos para la siguiente gráfica. AQUÍ")
+```
+
+***
+<br><br>
+```{r fig.width=9, fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Casos Confirmados Acumulados por día"}
+ur <- ggplot(fig, 
+         aes(x = Fecha,
+             frame = frame, 
+             opacity = 1,
+             y = Casos,
+             color = `Tipo de Casos`)) +
+  geom_line() +
+  scale_x_date(date_breaks = "3 day",
+               limits = c(
+                 min(as.Date(data_fecha$fecha_corte)-0.7),
+                 max(as.Date(data_fecha$fecha_corte)+0.7)
+               ),
+               expand = c(0,0)) +
+  theme_minimal() + 
+  labs(title=str_wrap(paste0(titulo,": ", subtitulo), width = 50),
+       subtitle=subtitulo,
+       x="",
+       y="Número de casos") +
+  theme(plot.title = element_text(size = 20, face = "bold", hjust = -.5),
+        #plot.subtitle = element_text(size = 25),
+        #plot.caption = element_text(size = 20),
+        strip.text = element_text(size = 15),
+        panel.spacing.x = unit(3, "lines"),
+        text = element_text(family = "Arial Narrow"),
+        axis.text.x = element_text(size = 12, angle = 90, vjust = 0.5),
+        axis.title.y = element_text(size = 15),
+        axis.text.y = element_text(size = 15))
+
+unt <- enframe(unique(fig$Fecha), name = "id", value = "label")
+unt$visible <-  ifelse(unt$id%%3 == 1,T,F)
+unt$value <-  as.numeric(as.Date(unt$label))
+
+plotly <- plotly::ggplotly(ur, 
+                           tooltip = c("x", "y", "color")
+                           )%>%
+  plotly::layout(title = list(text = paste0(titulo,
+                                    '<br>',
+                                    '<sup>',
+                                    subtitulo,
+                                    '</sup>')),
+                 hovermode = "x", 
+                 tickvalues ="", 
+                 annotations = list(x = 1, y = 0, 
+                                    text = caption, 
+                                    showarrow = F, 
+                                    xref='paper', 
+                                    yref='paper', 
+                                    xanchor='right', 
+                                    yanchor='auto', 
+                                    xshift=0, 
+                                    yshift=0,
+                                    font=list(size=15, color="red")))%>%
+  plotly::animation_button(label = "Empezar")%>%
+  plotly::animation_slider(visible=F,
+                           currentvalue = list(prefix = "YEAR ", 
+                                               font = list(color="red")))
+
+htmlwidgets::saveWidget(plotly,selfcontained = F, file="linea_tiempo.html")
+plotly
+
+```
+<br>
+[Link a esta gráfica](https://lorenzoleon.github.io/covid19_mex_Reportes/linea_tiempo.html)
+<br>
+
+# <b>Pirámide poblacional</b>
+***
+
+<b>Pirámide poblacional de casos positivos a COVID-19 según fecha de reporte oficial</b>
+<br>
+La siguiente gráfica permite seguir la evolución temporal de la pirámide población de los contagios por COVID-19 en México. Esta información revela información interesante y útil para el lector. Hoy, los datos señalan no sólo que es mayor el contagio de la enfermedad entre los hombres mexicanos, sino que además existen diferencias significativas respecto a las mujeres en ciertos grupos etarios. Asimismo, cabe señalar que las poblaciones etarias más vulnerables parecen mostrar un menor número de casos positivos de COVID-19, manteniéndose así un 64% de los contagios en la población entre los 21 a 50 años. 
+<br>
+```{r echo=F, message = FALSE, warning = FALSE}
+# Agrupamos por edades, sexo y fechas, completamos grupos vacíos y contamos casos. 
+data_sexo_edad <- d %>% 
+  mutate(
+    g_edad = case_when(
+      edad<11 ~ "0 a 10 años",
+      edad>10&edad<21 ~ "11 a 20 años",
+      edad>20&edad<31 ~ "21 a 30 años",
+      edad>30&edad<41 ~ "31 a 40 años",
+      edad>40&edad<51 ~ "41 a 50 años",
+      edad>50&edad<61 ~ "51 a 60 años",
+      edad>60&edad<71 ~ "61 a 70 años",
+      edad>70&edad<81 ~ "71 a 80 años",
+      edad>80~ "80 años o más"
+    )
+  )%>%
+  count(
+    fecha_corte, sexo, g_edad
+  ) %>% 
+  complete(fecha_corte, sexo, g_edad) %>% 
+  replace(., is.na(.), 0) %>% 
+  group_by(
+    sexo, g_edad
+  ) %>% 
+  mutate(
+    n_acumulada = cumsum(n)
+  ) %>% 
+  complete(fecha_corte, sexo, g_edad) %>% 
+  replace(., is.na(.), 0) %>% 
+  ungroup()%>% 
+  mutate(
+    sexo=ifelse(
+      str_detect(sexo,"F"), "Mujeres", "Hombres"
+    ),
+     n_acumulada = ifelse(
+       str_detect(sexo, "ombr"), n_acumulada*(-1), n_acumulada
+     )
+  ) %>% 
+  group_by(
+    fecha_corte, sexo
+  ) %>% 
+  mutate(
+    prop = round(n_acumulada/sum(abs(n_acumulada))*100)
+  ) %>% 
+  ungroup() 
+
+# Extraemos promedios de sexo
+test <- data_sexo_edad %>% 
+  group_by(
+    fecha_corte, sexo
+  )  %>% 
+  summarise(
+    n_acumulada = sum(n_acumulada)
+  ) %>% 
+  mutate(
+    prop = round(n_acumulada/sum(abs(n_acumulada))*100),
+    g_edad = "Promedio",
+  ) %>% 
+  ungroup() %>% 
+  bind_rows(data_sexo_edad) 
+
+b <- test %>% 
+  filter(fecha_corte == max(as.Date(unique(d$fecha_corte))))
+write_excel_csv(b,'01_datos/Data_sexo_edad.csv')
+```
+<br>
+```{r results='asis',echo=FALSE,message=FALSE}
+xfun::embed_file('01_datos/Data_sexo_edad.csv', text = "Descargue los datos para la siguiente gráfica. AQUÍ")
+```
+<br>
+```{r fig.width=9, fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Distribución de casos por sexo y grupos de edad"}
+titulo <- "Piramide poblacional de casos de COVID-19 en México"
+ur <- ggplot(b, 
+       aes(x = str_wrap(g_edad,15), 
+           y = prop, 
+           text = paste0(abs(round(prop,1)), "%"),
+           fill = sexo)) + 
+  geom_bar(stat = "identity", width = .6) +
+  scale_y_continuous(
+    limits = c(-100,100),
+    breaks = seq(-100,100,25),
+    labels = paste0(
+      c(as.character(seq(100,0,-25)),
+        as.character(seq(25,100,25))), "%"
+    )
+  ) + 
+  scale_fill_manual("", values = c("#800026","#FEB24C")) +
+  guides(fill = guide_legend(reverse=F)) +
+  labs(title=str_wrap(paste0(titulo,": ", subtitulo), width = 55)) +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 20, face = "bold"),
+        text = element_text(family = "Arial Narrow"),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(size = 15, angle = 90),
+        axis.text.y = element_text(size = 20),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 20),
+        legend.position = "bottom") +
+  coord_flip() 
+plotly <-  plotly::ggplotly(ur, tooltip = c("text"))%>%
+  plotly::layout(title = list(text = paste0(titulo,
+                                    '<br>',
+                                    '<sup>',
+                                    subtitulo,
+                                    '</sup>')),
+                 hovermode = "y", 
+                 bargap = 0.1, 
+                 barmode = 'overlay', 
+                 legend = list(orientation = 'v', x = 0, y = 0.9),
+                 annotations = list(x = 1, y = 0, text = caption, 
+                                    showarrow = F, xref='paper', yref='paper', 
+                                    xanchor='right', yanchor='auto', xshift=0,
+                                    yshift=0,font=list(size=15, color="red")))
+ 
+ ggsave("03_graficas/Prop_sexo_edad.png", plot = ur + geom_label(na.rm = T, size = 5, aes(label = ifelse(abs(prop)<1,NA_character_,paste0(abs(round(prop,1)), "%")))), width = 15, height = 10, dpi = 100)
+htmlwidgets::saveWidget(plotly, selfcontained = F,file="Prop_sexo_edad.html")
+plotly
+```
+<br>
+[Link a esta gráfica](https://lorenzoleon.github.io/covid19_mex_Reportes/Prop_sexo_edad.html)
+<br>
+
+# <b>Tabla completa</b> {.tabset .tabset-fade .tabset-pills}
+***
+
+<b>Casos de COVID-19 en México por entidad federativa, a la fecha de corte</b>
+
+<br>
+
+# Tabla por sexo
+***
+
+<br>
+```{r fig.width=6, fig.height=6, fig.align='center',results='asis',echo=FALSE,message=FALSE}
+d_ent <- d %>% 
+  count(
+    fecha_corte, ent
+  ) %>% 
+  complete(fecha_corte, ent) %>% 
+  replace(., is.na(.), 0) %>% 
+  group_by(
+    ent
+  ) %>% 
+  mutate(
+    n_acumulada = cumsum(n)
+  ) %>% 
+  complete(fecha_corte, ent) %>% 
+  replace(., is.na(.), 0) %>% 
+  ungroup() %>% 
+  left_join(
+    d %>% 
+  mutate(
+    g_edad = case_when(
+      edad<11 ~ "0 a 10 años",
+      edad>10&edad<21 ~ "11 a 20 años",
+      edad>20&edad<31 ~ "21 a 30 años",
+      edad>30&edad<41 ~ "31 a 40 años",
+      edad>40&edad<51 ~ "41 a 50 años",
+      edad>50&edad<61 ~ "51 a 60 años",
+      edad>60&edad<71 ~ "61 a 70 años",
+      edad>70&edad<81 ~ "71 a 80 años",
+      edad>80~ "80 años o más"
+    )
+  )%>%
+  count(
+    fecha_corte, ent, g_edad
+  ) %>% 
+  complete(fecha_corte, ent, g_edad) %>% 
+  replace(., is.na(.), 0) %>% 
+  group_by(
+    ent, g_edad
+  ) %>% 
+  mutate(
+    n_acumulada = cumsum(n)
+  ) %>% 
+  complete(fecha_corte, ent, g_edad) %>% 
+  replace(., is.na(.), 0) %>% 
+  ungroup() %>% select(-n) %>% 
+  pivot_wider(
+    names_from = g_edad,
+    values_from = n_acumulada
+  ) %>% 
+  left_join(
+    d %>% 
+  mutate(
+    sexo=ifelse(
+      str_detect(sexo,"F"), "Mujeres", "Hombres"
+    )
+  ) %>% 
+  count(
+    fecha_corte, ent, sexo
+  ) %>% 
+  complete(fecha_corte, ent, sexo) %>% 
+  replace(., is.na(.), 0) %>% 
+  group_by(
+    ent, sexo
+  ) %>% 
+  mutate(
+    n_acumulada = cumsum(n)
+  ) %>% 
+  complete(fecha_corte, ent, sexo) %>% 
+  replace(., is.na(.), 0) %>% 
+  ungroup() %>% select(-n) %>% 
+  pivot_wider(
+    names_from = sexo,
+    values_from = n_acumulada
+  )
+  )
+  ) %>% 
+  rename(
+    Fecha = fecha_corte,
+    Entidad = ent,
+    `Casos nuevos` = n,
+    Total = n_acumulada
+  ) %>% arrange(desc(Fecha))%>% 
+  mutate(Entidad = str_to_title(Entidad),
+         Fecha = as.Date.character(Fecha, format = c("%Y-%m-%d")))%>%
+  select(Fecha, Entidad, `Casos nuevos`, Total, Hombres, Mujeres, everything())
+  
+
+DT::datatable(d_ent%>%select(Fecha, Entidad, `Casos nuevos`, Total, Hombres, Mujeres), width = 400, class= "cell-border stripe", rownames = F, filter = "top",
+              extensions = "Buttons", options = list(dom="Bfrtip",
+                                                     buttons = c("copy", "excel")))
+```
+
+<br>
+
+# Tabla por edades
+***
+<br>
+```{r fig.width=6, fig.height=6, fig.align='center',results='asis',echo=FALSE,message=FALSE}
+DT::datatable(d_ent%>%select(Fecha, Entidad, `Casos nuevos`, Total, ends_with("años"), starts_with("80")), width = 400, class= "cell-border stripe", rownames = F, filter = "top",
+              extensions = "Buttons", options = list(dom="Bfrtip",
+                                                     buttons = c("copy", "excel")))
+```
+
+
+# <b>Mapa de Casos agregados por entidad en el tiempo</b>
+***
+
+<br>
+```{r echo=F, background="white", message = FALSE, warning = FALSE}
+# Leemos la base SHP de polígonos de México
+estados_mexico <- readOGR(dsn = "01_datos/México_Estados/",verbose = F)
+# Todavía estaba guardada como DF la CDMX
+levels(estados_mexico$ESTADO)[9] <- "Ciudad De México"
+levels(estados_mexico@data$ESTADO)[9] <- "Ciudad De México"
+
+# Hacemos 10 bins de las fechas hasta ahora.
+seq_dates <- seq.Date(from = min(as.Date(d$fecha_corte)), to = max(as.Date(d$fecha_corte)), by = "day")
+seq_dates <- enframe(seq_dates, value = "fecha_corte")
+seq_dates$bin <- ntile(seq_dates$fecha_corte, 10)
+seq_dates <- seq_dates%>%select(-name)
+
+# Tomamos la base de datos, Estructuramos los datos de estado y fecha,
+data_fecha <- d %>% 
+  mutate(
+    ent = tolower(ent),
+    ESTADO = stringi::stri_trans_totitle(ent),
+    ESTADO = ifelse(ESTADO == "Queretaro", "Querétaro", ESTADO),
+    ESTADO = as.factor(ESTADO),
+    fecha_corte= as.Date(fecha_corte)
+  )%>%
+  count(
+    fecha_corte, ESTADO
+  )%>% # agregamos estados faltantes (si es el caso)
+  right_join(estados_mexico@data)%>%
+  # Completamos fechas faltantes de estados que tuvieron casos después
+  complete(fecha_corte, ESTADO)%>%
+  ungroup()%>%
+  # Cambiamos los valores faltantes por 0
+  mutate(n = ifelse(is.na(n), 0, n))%>%
+  # agregamos los bins de fechas
+  left_join(seq_dates) %>%
+  drop_na(bin)%>%
+  # Agrupando por bin y por entidad encontramos los casos nuevos y el periodo de fechas de ese bin
+  group_by(ESTADO, bin, .drop = F)%>%
+  summarise(n = sum(n),
+            fechas = paste0 (min(fecha_corte)," a ",max(fecha_corte)),
+         fecha_corte = max(fecha_corte))%>%
+  group_by(
+    ESTADO
+  )%>%
+  # Agrupando por estado encontramos los casos acumulados
+  mutate(
+    n_acumulada = cumsum(n),
+    fecha_corte = as.Date(fecha_corte)
+  )
+
+# Creamos bins de casos acumulados para asignar valores de color
+mybins <- c(0,seq(1,max(data_fecha$n_acumulada, data_fecha$n)+5,10))
+my_colors <- brewer.pal(9, "Reds") 
+my_colors <- colorRampPalette(my_colors)(length(mybins))
+# Creamos una función que transforme número de casos a color
+mypalette <- colorBin(palette=my_colors, domain=data_fecha$n_acumulada, na.color="transparent", bins=mybins)
+
+# Transformamos los datos para unir con datos geográficos
+data_mapa <- data_fecha %>%
+  mutate(n = ifelse(is.na(n), 0, n),
+         n_acumulada = ifelse(is.na(n_acumulada), 0, n_acumulada),
+         color = mypalette(n_acumulada))%>%
+  # Cambiamos el nombre de cada variable a "Variable"_"Fecha"
+  pivot_wider(ESTADO, names_from = fecha_corte, values_from = c("fechas","n","n_acumulada" ,"color"))%>%
+  mutate_at(vars(starts_with("n")), ~ifelse(is.na(.), 0, .))%>%
+  mutate_at(vars(starts_with("color")), ~ifelse(is.na(.), "#FFF5F0", .))%>%
+  select(-ends_with("NA"))%>%
+  # Ordenamos según datos geográficos IMPORTANTE!!
+  right_join(estados_mexico@data)
+# transformamos la base de datos a matriz para fácil indexación
+data_mapa1 <- as.matrix.data.frame(data_mapa)
+
+write_excel_csv(data_mapa,'01_datos/Datos_entidad_Acumulados_para_Mapa.csv')
+```
+<br>
+```{r results='asis',echo=FALSE,message=FALSE}
+xfun::embed_file('01_datos/Datos_entidad_Acumulados_para_Mapa.csv', text = "Descargue los datos para la siguiente gráfica. AQUÍ")
+```
+<br>
+```{css, echo = FALSE}
+.leaflet-container {
+  cursor: pointer !important;
+}
+```
+```{r fig.width=9, fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Mapa de Casos Confirmados de Coronavirus en México"}
+
+# Creamos mapa
+mymap <- leaflet(options = leafletOptions(zoomControl = FALSE,
+                                          minZoom = 3, 
+                                          maxZoom = 7,
+                                          dragging = T)) %>% 
+  addProviderTiles("Esri.WorldGrayCanvas")  %>%
+  setView( lat=21, lng=-103 , zoom=5)%>%addControl(caption, position = "bottomleft")
+
+# Hacemos un loop sobre cada uno de los bins creados 
+for (date in (unique(data_fecha$fecha_corte))) {
+  # el nombre del layer por agregar es la fecha de corte
+  dateStr <- as.Date(date, origin = "1970-01-01")
+  # Info que sale al pasar el mouse, 
+  popup1 <- paste0("<span style='color:#7f0000'><strong>",data_mapa1[,paste0("fechas_",dateStr)],"</strong<></span>",
+                   "<br><span style='color: salmon;'><strong>Estado: </strong></span>", 
+                   data_mapa$ESTADO, 
+                   "<br><span style='color: salmon;'><strong>Casos Totales: </strong></span>", 
+                   data_mapa1[,paste0("n_acumulada_",dateStr)],
+                   "<br><span style='color: salmon;'><strong>Casos Nuevos: </strong></span>", 
+                   data_mapa1[,paste0("n_",dateStr)]
+  )
+  # Agregamos layer de polígonos usando el shpfile
+  mymap <- mymap %>% addPolygons(data = estados_mexico, 
+                                  fillColor = ~data_mapa1[,paste0("color_",dateStr)],
+                                  fillOpacity = 0.8,
+                                  color = "red",       
+                                  weight = 1.5,    
+                                  popup = popup1,
+                                 # Nombre del layer
+                                  group=dateStr)
+}
+# Todos los grupos creados
+baseDates <- as.Date(unique(data_fecha$fecha_corte))
+
+# Creamos un controlador de los layers
+mymap <- mymap %>% addLayersControl(
+  baseGroups = baseDates,
+  options = layersControlOptions(collapsed = FALSE)) %>% 
+  addLegend(position = 'topleft', # agregamos una seleccion de colores de los valores de Casos (10 valores) pero podemos escoger más
+            colors = mypalette(seq(1, max(data_fecha$n_acumulada, data_fecha$n),
+                                   max(data_fecha$n_acumulada, data_fecha$n)/10)), 
+            labels = c("1 Caso",rep("", 8),paste0(max(data_fecha$n_acumulada), " Casos")),
+            opacity = 0.7,    
+            title = "Casos Totales") %>%
+  # Botón de Estrella para centrar mapa
+  addEasyButton(easyButton(position = "bottomright",
+    icon = htmltools::span(class = "star", htmltools::HTML("&starf;")),
+    onClick = htmlwidgets::JS("function(btn, map){
+                    map.setView(new L.latLng(21, -103), 5);
+                    }")))
+
+htmlwidgets::saveWidget(mymap, selfcontained = F,file="Mapa_Casos.html")
+mymap
+
+```
+<br>
+[Link a este Mapa](https://lorenzoleon.github.io/covid19_mex_Reportes/Mapa_Casos.html)
+<br>
+La intensidad del color indica la magnitud de los casos totales georreferenciados por entidad.
+<br>
+
+# Cotización
+
+***
+<p>
+Favor de Contactar a [Diana Penagos](<mailto:dpenagos@parametria.com.mx?subject=Reporte Covid>) o directamente en [Parametría](http://www.parametria.com.mx/cotiza_parametria.php) para cotizar un `Seguimiento en Vivo` de algún tema de interés.
+<br>
+
+# Info
+***
+
+<br>
+Descargue el archivo RMarkdown para crear este reporte aquí
+[Rmarkdown](https://github.com/LorenzoLeon/covid19_mex_Reportes/REPORTE_COVID.Rmd)
+<br>
+También puedes descargar el tema de este Rmd [aquí](https://holtzy.github.io/Pimp-my-rmd/).
