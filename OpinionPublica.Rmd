@@ -897,7 +897,7 @@ Favor de Contactar a [Diana Penagos](<mailto:dpenagos@parametria.com.mx?subject=
 <br>
 ```
 ```{block eval=FALSE, include=params$view_pdf}
-Favor de Contactar a \href{mailto:dpenagos@parametria.com.mx?subject=ReporteCOVID?body=Favor de mandar información de cotización}{\textcolor{blue}{\underline{Diana Penagos}}} o directamente en [\textcolor{blue}{\underline{Parametría}}](http://www.parametria.com.mx/cotiza_parametria.php) para cotizar un Seguimiento en Vivo de algún tema de interés.
+Favor de Contactar a [\textcolor{blue}{\underline{Diana Penagos}}](mailto:dpenagos@parametria.com.mx?subject=ReporteCOVID?body=Favor de mandar información de cotización) o directamente en [\textcolor{blue}{\underline{Parametría}}](http://www.parametria.com.mx/cotiza_parametria.php) para cotizar un Seguimiento en Vivo de algún tema de interés.
 ```
 
 # Info
