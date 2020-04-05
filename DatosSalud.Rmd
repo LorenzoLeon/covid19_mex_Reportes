@@ -28,24 +28,19 @@ params:
 ---
 <center>
 <div class="pill-nav">
-<a class="active" href='https://lorenzoleon.github.io/covid19_mex_Reportes/'><b>Análisis Parametría</b></a>
+<a href='https://lorenzoleon.github.io/covid19_mex_Reportes/'><b>Análisis Parametría</b></a>
 <a href='https://lorenzoleon.github.io/covid19_mex_Reportes/RedesSociales.html'><b>Análisis Redes Sociales</b></a>
 <a href='https://lorenzoleon.github.io/covid19_mex_Reportes/OpinionPublica.html'><b>Análisis Opinión Pública</b></a>
-<a href='https://lorenzoleon.github.io/covid19_mex_Reportes/DatosSalud.html'><b>Reporte Secretaría de Salud</b></a>
+<a class="active" href='https://lorenzoleon.github.io/covid19_mex_Reportes/DatosSalud.html'><b>Reporte Secretaría de Salud</b></a>
 </div>
-</center>
-```{block eval=FALSE, include=params$view_html}
-<center>
+
 <br>
 Descargue el archivo RMarkdown para crear este reporte aquí
 [Rmarkdown](https://github.com/LorenzoLeon/covid19_mex_Reportes/AnalisisParametria.Rmd)
 </center>
 <br>
 ***
-```
-***
 
-# <b>Información Pública - Secretaría de Salud, Redes Sociales y Encuestas de Opinión</b>
 <br>
 Desde el inicio de la crisis mundial de salud debida al brote del virus COVID-19, el rápido crecimiento del contagio y la desinformación sobre la enfermedad han sido dos de los principales retos a combatir para los gobiernos de los países afectados. En México, la Secretaría de Salud Federal combate en dos frentes. Por un lado, garantizar la suficiencia de recursos e infraestructura médica necesaria para atender al público cuando se alcancen los puntos más críticos de contagio en el país. Y, por otro lado, a través de la Dirección General de Epidemiología, la Secretaría publica diariamente un informe técnico con los casos sospechosos y positivos al COVID-19 en todo el país. 
 <p>
