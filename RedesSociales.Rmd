@@ -31,10 +31,10 @@ params:
 ---
 <center>
 <div class="pill-nav">
-  <a href='https://lorenzoleon.github.io/covid19_mex_Reportes/'><b>Análisis Parametría<b></a>
-  <a class="active" href='https://lorenzoleon.github.io/covid19_mex_Reportes/RedesSociales.html'><b>Análisis Redes Sociales</b></a>
-  <a href='https://lorenzoleon.github.io/covid19_mex_Reportes/OpinionPublica.html'>Análisis Opinión Pública</a>
-  <a href='https://lorenzoleon.github.io/covid19_mex_Reportes/DatosSalud.html'>Reporte Secretaría de Salud</a>
+<a href='https://lorenzoleon.github.io/covid19_mex_Reportes/'><b>Análisis Parametría</b></a>
+<a class="active" href='https://lorenzoleon.github.io/covid19_mex_Reportes/RedesSociales.html'><b>Análisis Redes Sociales</b></a>
+<a href='https://lorenzoleon.github.io/covid19_mex_Reportes/OpinionPublica.html'><b>Análisis Opinión Pública</b></a>
+<a href='https://lorenzoleon.github.io/covid19_mex_Reportes/DatosSalud.html'><b>Reporte Secretaría de Salud</b></a>
 </div>
 </center>
 ```{block eval=FALSE, include=params$view_html}

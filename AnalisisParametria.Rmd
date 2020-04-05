@@ -31,10 +31,10 @@ params:
 ---
 <center>
 <div class="pill-nav">
-<a class="active" href='https://lorenzoleon.github.io/covid19_mex_Reportes/'><b>Análisis Parametría<b></a>
+<a class="active" href='https://lorenzoleon.github.io/covid19_mex_Reportes/'><b>Análisis Parametría</b></a>
 <a href='https://lorenzoleon.github.io/covid19_mex_Reportes/RedesSociales.html'><b>Análisis Redes Sociales</b></a>
-<a href='https://lorenzoleon.github.io/covid19_mex_Reportes/OpinionPublica.html'>Análisis Opinión Pública</a>
-<a href='https://lorenzoleon.github.io/covid19_mex_Reportes/DatosSalud.html'>Reporte Secretaría de Salud</a>
+<a href='https://lorenzoleon.github.io/covid19_mex_Reportes/OpinionPublica.html'><b>Análisis Opinión Pública</b></a>
+<a href='https://lorenzoleon.github.io/covid19_mex_Reportes/DatosSalud.html'><b>Reporte Secretaría de Salud</b></a>
 </div>
 </center>
 ```{block eval=FALSE, include=params$view_html}
@@ -158,10 +158,10 @@ if(params$view_html) {
                                       subtitulo,
                                       '</sup>'),
                         y = 1.1),
-           legend = list(orientation = 'v', x = 0, y = 0.9),
            hovermode = "x", 
            tickvalues ="", 
-           annotations = list(x = 1, y = 1, 
+           showlegend = F, 
+           annotations = list(x = 1, y = -0.1, 
                               text = caption, 
                               showarrow = F, 
                               xref='paper', 
@@ -222,9 +222,9 @@ if(params$view_html) {
                                       '</sup>'),
                         y = 1.1),
            hovermode = "x", 
-           legend = list(orientation = 'v', x = 0, y = 0.9),
+           showlegend = F,
            tickvalues ="", 
-           annotations = list(x = 1, y = 1, 
+           annotations = list(x = 1, y = -0.283, 
                               text = caption, 
                               showarrow = F, 
                               xref='paper', 
@@ -287,7 +287,7 @@ if(params$view_html) {
                         y = 1.1),
            hovermode = "x", 
            tickvalues ="", 
-           legend = list(orientation = 'v', x = 0, y = 0.9),
+           showlegend = F,
            annotations = list(x = 1, y = 1, 
                               text = caption, 
                               showarrow = F, 
@@ -356,7 +356,7 @@ if(params$view_html) {
                         y = 1.1),
            hovermode = "x", 
            tickvalues ="", 
-           legend = list(orientation = 'v', x = 0, y = 0.9),
+           showlegend = F,
            annotations = list(x = 1, y = 1, 
                               text = caption, 
                               showarrow = F, 
@@ -420,7 +420,7 @@ if(params$view_html) {
                         y = 1.1),
            hovermode = "x", 
            tickvalues ="", 
-           legend = list(orientation = 'v', x = 0, y = 0.9),
+           showlegend = F,
            annotations = list(x = 1, y = 1, 
                               text = caption, 
                               showarrow = F, 
@@ -484,7 +484,7 @@ if(params$view_html) {
                         y = 1.1),
            hovermode = "x", 
            tickvalues ="", 
-           legend = list(orientation = 'v', x = 0, y = 0.9),
+           showlegend = F,
            annotations = list(x = 1, y = 1, 
                               text = caption, 
                               showarrow = F, 
@@ -557,7 +557,7 @@ if(params$view_html) {
                         y = 1.1),
            hovermode = "x", 
            tickvalues ="", 
-           legend = list(orientation = 'v', x = 0, y = 0.9),
+           showlegend = F,
            annotations = list(x = 1, y = 1, 
                               text = caption, 
                               showarrow = F, 
@@ -631,7 +631,7 @@ if(params$view_html) {
                         y = 1.1),
            hovermode = "x", 
            tickvalues ="", 
-           legend = list(orientation = 'v', x = 0, y = 0.9),
+           showlegend = F,
            annotations = list(x = 1, y = 1, 
                               text = caption, 
                               showarrow = F, 
@@ -694,7 +694,7 @@ if(params$view_html) {
                         y = 1.1),
            hovermode = "x", 
            tickvalues ="", 
-           legend = list(orientation = 'v', x = 0, y = 0.9),
+           showlegend = F,
            annotations = list(x = 1, y = 1, 
                               text = caption, 
                               showarrow = F, 
@@ -763,7 +763,7 @@ if(params$view_html) {
                         y = 1.1),
            hovermode = "x", 
            tickvalues ="", 
-           legend = list(orientation = 'v', x = 0, y = 0.9),
+           showlegend = F,
            annotations = list(x = 1, y = 1, 
                               text = caption, 
                               showarrow = F, 
@@ -827,7 +827,7 @@ if(params$view_html) {
                         y = 1.1),
            hovermode = "x", 
            tickvalues ="", 
-           legend = list(orientation = 'v', x = 0, y = 0.9),
+           showlegend = F,
            annotations = list(x = 1, y = 1, 
                               text = caption, 
                               showarrow = F, 
@@ -891,7 +891,7 @@ if(params$view_html) {
                         y = 1.1),
            hovermode = "x", 
            tickvalues ="", 
-           legend = list(orientation = 'v', x = 0, y = 0.9),
+           showlegend = F,
            annotations = list(x = 1, y = 1, 
                               text = caption, 
                               showarrow = F, 
@@ -1034,15 +1034,9 @@ ggsave("03_graficas/presidente_covid_param.pdf", plot = ur+          geom_label(
 if(params$view_html) {
   plotly <- ggplotly(ur, dynamicTicks = TRUE, tooltip = c("text"))%>%
     layout(yaxis = list(tickformat = "%"),
-           title = list(text = paste0(stri_wrap(titulo, 50),
-                                      '<br>',
-                                      '<sup>',
-                                      subtitulo,
-                                      '</sup>'),
-                        y = 1.1),
            hovermode = "x", 
            tickvalues ="", 
-           legend = list(orientation = 'v', x = 0.8, y = 0.6),
+           showlegend = F,
            annotations = list(x = 1, y = 1, 
                               text = caption, 
                               showarrow = F, 
@@ -1098,15 +1092,9 @@ ggsave("03_graficas/presidente_covid_sufi_param.pdf", plot = ur+          geom_l
 if(params$view_html) {
   plotly <- ggplotly(ur, dynamicTicks = TRUE, tooltip = c("text"))%>%
     layout(yaxis = list(tickformat = "%"),
-           title = list(text = paste0(stri_wrap(titulo, 50),
-                                      '<br>',
-                                      '<sup>',
-                                      subtitulo,
-                                      '</sup>'),
-                        y = 1.1),
            hovermode = "x", 
            tickvalues ="", 
-           legend = list(orientation = 'v', x = .8, y = 0.6),
+           showlegend = F,
            annotations = list(x = 1, y = 1, 
                               text = caption, 
                               showarrow = F, 

@@ -7,6 +7,7 @@ body {
     line-height: 1.42857143;
     color: #555555;
     background-color: #ffffff;
+    font-weight: normal;
 }
 
 /* This change the style of the main container that wraps the whole R Markdown document. It allows the parallax image to be full width */
