@@ -6,6 +6,7 @@ twitter: "lolo7no"
 github: "LorenzoLeon/covid19_mex_Reportes"
 logo: "logo_gallery.png"
 mail: lorenzoln@parametria.com.mx
+lang: es
 output:
   html_document:
     collapsed: no
@@ -16,13 +17,17 @@ output:
       in_header: '04_resources/header.html'
     number_sections: no
     theme: lumen
-    toc: no
+    toc: yes
     toc_depth: 1
     toc_float: yes
   pdf_document:
     toc: no
     toc_depth: '1'
     keep_tex: false
+    extra_dependencies: ["xcolor"]
+params: 
+  view_pdf: !r knitr::is_latex_output()
+  view_html: !r knitr::is_html_output()
 ---
 <center>
 <div class="pill-nav">
@@ -32,12 +37,553 @@ output:
   <a href='https://lorenzoleon.github.io/covid19_mex_Reportes/DatosSalud.html'>Reporte Secretaría de Salud</a>
 </div>
 </center>
-
+```{block eval=FALSE, include=params$view_html}
 <center>
 <br>
-Descargue este reporte en formato estáfico PDF. [AQUÍ](https://github.com/LorenzoLeon/covid19_mex_Reportes/REPORTE_COVID.pdf)
+Descargue este reporte en formato estáfico PDF. [AQUÍ](https://github.com/LorenzoLeon/covid19_mex_Reportes/RedesSociales.pdf)
+<br>
+Descargue el archivo RMarkdown para crear este reporte aquí
+[Rmarkdown](https://github.com/LorenzoLeon/covid19_mex_Reportes/RedesSociales.Rmd)
+</center>
+<br>
+```
+
+***
+```{block eval=FALSE, include=params$view_pdf}
+<b>Análisis de Sentimiento y Temas</b>
+<br>
+Con base en una extracción completa de tweets donde se menciona a la figura o tema de importancia analizamos y creamos un diagnóstico de la opinión pública. Basado en un análisis ad hoc de disciplinas mixtas creamos un diccionario especializado para la figura o tema de interés. Este diccionario nos permite crear indicadores de sentimiento o relevancia, capaces de crear sistemas de redes 
+<br>
+<b>Etapas de Análisis</b>
+<br>
+Iniciando con una extracción directa de todos los tweets donde hay menciones o utilizan las palabras clave predeterminadas creamos un diagnóstico preliminar. Esta descarga se realiza con interfaces basadas en la API de Twitter, donde filtramos en tiempo real los tweets de interés para crear una base de datos propia analizable.
+A partir de este análisis identificamos los topics, hashtags y utilizadores más importantes para el seguimiento. Consideramos poco relevante los seguimientos a tiempo real, dado que es imposible ex ante conocer los futuros temas o tendencias coyunturales. 
+<br>
+Es importante hacer un seguimiento de redes Sociales para la comprensión del debate público, principalmente porque, al ser de acceso público, el debate es más cercano a la opinión pública del momento. Este análisis se basa en un scrapping personal de tweets en México que hacen mención de COVID-19. Si bien el sistema no es perfecto (con errores, omisiones e imperfecciones), sirve para tener una buena imagen del debate durante el tiempo.
+\newpage
+```
+<br>
+```{r echo=F, background="white", message = FALSE, warning = FALSE}
+require(rvest, quietly = T)
+## remotes::install_github("wilkelab/ggtext")
+require(ggtext, quietly = T)
+## devtools::install_github("hadley/emo")
+require(emo, quietly = T)
+require(hrbrthemes, quietly = T)
+require(tidytext, quietly = T)
+require(emojifont)
+require(ggrepel, quietly = T)
+require(stringi, quietly = T)
+require(ggthemes, quietly = T)
+require(lubridate, quietly = T)
+require(plotly, quietly = T)
+require(RColorBrewer, quietly = T)
+require(hrbthemes, quietly = T)
+require(tidyverse, quietly = T)
+require(htmlwidgets, quietly = T)
+require(knitr, quietly = T)
+
+load.emojifont("OpenSansEmoji.ttf")
+load.emojifont("EmojiOne.ttf")
+
+caption <- "Elaboración propia con datos de Twitter | <a href='https://twitter.com/Parametria'>@parametria</a> | <a href='https://twitter.com/lolo7no'>@lolo7no</a> | <a href='https://twitter.com/guzmart_'>@guzmart_</a>"
+caption1 <- "Elaboración propia con datos de Twitter | @parametria| @lolo7no | @guzmart_"
+
+saveWidgetFix <- function (widget,file,...) {
+  ## A wrapper to saveWidget which compensates for arguable BUG in
+  ## saveWidget which requires `file` to be in current working
+  ## directory.
+  wd<-getwd()
+  on.exit(setwd(wd))
+  outDir<-dirname(file)
+  file<-basename(file)
+  setwd(outDir);
+  saveWidget(widget,file=file,...)
+}
+
+rm_words <- 
+  function(string, words) {
+    stopifnot(is.character(string), is.character(words))
+    spltted <- strsplit(string, " ", fixed = TRUE) # fixed = TRUE for speedup
+    vapply(spltted, function(x) paste(x[!tolower(x) %in% words], collapse = " "), character(1))
+  }
+# Aplicar str_wrap a objetos dentro de otras funciones (como scale_x_discrete(labels=equis))
+strwrap_obj <- function(x) {
+  str_wrap(x, width = 10)
+}
+
+BigramTokenizer <-
+  function(x) {
+    unlist(lapply(ngrams(words(x), 2), paste, collapse = " "), use.names = FALSE)
+  }
+tweets <- readRDS("01_datos/covid_2.rds")
+tweets <- tweets %>% 
+  as_tibble() %>% 
+  distinct(id_str, .keep_all = T)%>%
+  mutate(
+    hashtags = stri_extract_all(text, regex = "#[[:alnum:]_]+"),
+    ats = stri_extract_all(text, regex = "@[[:alnum:]_]+"),
+    emojis = stri_extract_all_charclass(text, "\\p{EMOJI}"),
+    
+    texto = gsub(text, pattern = " ", replacement = "_"),
+    texto = gsub(texto, pattern = "[[:space:]]", replacement = ""),
+    texto = gsub(texto, pattern = "_", replacement = " "),
+    texto = gsub(texto, pattern = "ª", replacement = ""),
+    texto = gsub(texto, pattern = "[0-9]+|[[:punct:]]|\\(.*\\)", replacement = ""),
+    texto = gsub(texto, pattern = "https[^[:space:]]*", replacement = ""),
+    texto = gsub(texto, pattern = "[^[:alpha:][:space:]]*", replacement = ""),
+    texto = gsub(texto, pattern = "[[:punct:]]", replacement = ""),
+    texto = gsub(texto, pattern = "  ", replacement = " "),
+    texto = trimws(texto),
+    texto = str_replace_all(texto, pattern = "rt", 
+                            replacement = ""),
+    fecha = as.POSIXct(created, 
+                       format = "%Y-%m-%d %T") - hours(7),
+   RT = stri_detect(text, fixed = "RT"),
+   replied_TO = ifelse(RT, stri_extract_first(text, regex = "@[[:alnum:]_]+"), "")
+  ) %>% filter(fecha>as.POSIXct("2020-03-15", format = "%Y-%m-%d"),fecha<as.POSIXct("2020-03-20", format = "%Y-%m-%d") )
+
+saveRDS(tweets, "01_datos/tweets.rds")
+```
+Los datos sobre tweets hasta `r max(tweets$fecha)` tienen `r nrow(tweets)` tweets y `r ncol(tweets)` variables.
+
+# <b>Tiempo</b>
+***
+```{block eval=FALSE, include=params$view_pdf}
+Es importante remarcar los ciclos normales de creación de tweets. Estos son normales por las horas de descanso y la escalada esperada del fin de semana. En promedio cada día tuvo alrededor de mil tweets. Vale la pena destacar que entre las 18:00 hrs y las 19:00 hrs existen incrementos en la actividad del tema; esto coincide con la conferencia diaria que la Secretaría de Salud transmite en relación con la epidemia.
+```
+<br>
+```{r fig.width=9, out.width="80%", fig.height=7, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Línea de Tiempo de Tweets sobre COVID-19 en México - Twitter"}
+
+titulo <- "Frecuencia de tuits que mencionan al #COVID19mx"
+subtitulo <- paste0("Tuits agrupados por hora del 15 de marzo al ", as.Date(max(tweets$fecha)))
+
+ur <- ggplot(data = tweets %>%
+         group_by(month = month(fecha),day = day(fecha), hour = hour(fecha)) %>%
+         summarise(`Número de Tweets` = n(), 
+                   retweets = sum(as.numeric(retweet_count), na.rm = T ))%>%
+         mutate(Fecha= as.POSIXct(paste0(month," " ,day, " ", hour), format = "%m %d %H")), 
+       aes(size = `Número de Tweets`,
+           y = `Número de Tweets`,
+           color = `Número de Tweets`,
+           x = Fecha)) +
+  geom_smooth(method = "loess",
+              show.legend = F,
+              colour="black") +
+  geom_point() +
+  scale_color_continuous(NULL, NULL, NULL)+
+  scale_size(NULL, NULL, NULL)+
+  scale_x_datetime(date_breaks = "3 day", date_labels =  "%b/%d %I:00%p")+
+  theme_ipsum(grid="Y") +
+  labs(title=str_wrap(titulo, width = 80),
+       subtitle = str_wrap(subtitulo, width = 80),
+       y="Número de tweets",
+       x="",
+       caption=caption1)+
+   theme(plot.title = element_text(size = 35),
+        plot.subtitle = element_text(size = 25),
+        plot.caption = element_text(size = 20),
+        axis.title.x = element_text(size = 20),
+        axis.text.y = element_text(size = 20),
+        axis.text.x = element_text(angle = 45))
+
+ggsave("03_graficas/linea_tiempo_tweets.pdf", plot = ur, 
+       width = 15, height = 10, dpi = 100)
+
+ur <- ggplot(data = tweets %>%
+         group_by(month = month(fecha),day = day(fecha), hour = hour(fecha)) %>%
+         summarise(`Número de Tweets` = n(), 
+                   retweets = sum(as.numeric(retweet_count), na.rm = T ))%>%
+         mutate(Fecha= as.POSIXct(paste0(month," " ,day, " ", hour), format = "%m %d %H")), 
+       aes(size = `Número de Tweets`,
+           y = `Número de Tweets`,
+           color = `Número de Tweets`,
+           x = Fecha)) +
+  geom_point() +
+  scale_color_continuous(NULL, NULL, NULL)+
+  scale_size(NULL, NULL, NULL)+
+  scale_x_datetime(date_breaks = "1 day", date_labels =  "%b/%d %I:00%p")+
+  theme_ipsum(grid="Y") +
+  labs(title=str_wrap(titulo, width = 80),
+       subtitle = str_wrap(subtitulo, width = 80),
+       y="Número de tweets",
+       x="",
+       caption=caption1) +
+   theme(plot.title = element_text(size = 20),
+        plot.subtitle = element_text(size = 15),
+        plot.caption = element_text(size = 10),
+        axis.title.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10),
+        axis.text.x = element_text(angle = 45))
+
+plotly <- ggplotly(ur, 
+                           tooltip = c("x", "y"),
+                           dynamicTicks = TRUE
+                           )%>%
+  rangeslider() %>%
+  layout(title = list(text = paste0(titulo,
+                                    '<br>',
+                                    '<sup>',
+                                    subtitulo,
+                                    '</sup>'),
+                              y = 1.1),
+                 hovermode = "x", 
+                 tickvalues ="", 
+                 annotations = list(x = 1, y = 0, 
+                                    text = caption, 
+                                    showarrow = F, 
+                                    xref='paper', 
+                                    yref='paper', 
+                                    xanchor='right', 
+                                    yanchor='auto', 
+                                    xshift=0, 
+                                    yshift=0,
+                                    font=list(size=15, color="red")))
+
+saveWidgetFix(plotly,libdir = "graph_dependencies", selfcontained = F, file="03_graficas/linea_tiempo_tweets.html")
+
+if(params$view_html) {
+  plotly
+} else if(params$view_pdf ){
+  include_graphics(path ="03_graficas/linea_tiempo_tweets.png", auto_pdf = T)
+}
+```
+```{block eval=FALSE, include=params$view_html}
+[Link a esta gráfica](https://lorenzoleon.github.io/covid19_mex_Reportes/03_graficas/linea_tiempo_tweets.html)
+```
+```{block eval=FALSE, include=params$view_pdf}
+[\underline{Link a esta gráfica}](https://lorenzoleon.github.io/covid19_mex_Reportes/03_graficas/linea_tiempo_sentimiento_tweets.png)
+\newpage
+```
+
+# <b>Hashtags, Menciones y Temas</b> {.tabset .tabset-fade .tabset-pills}
+***
+
+## <b>Temas</b>
+***
+
+```{block eval=FALSE, include=params$view_pdf}
+Esta gráfica indica que la palabras relacionadas con las consecuencias del virus —tales como cuarentena, efecto y casos— son recurrentes en la discusión pública. También cabe destacar que “hoy” fue la palabra más mencionada —con un conteo total de 8,695—, lo anterior sugiere que las y los usuarios de Twitter están preocupados por el seguimiento diario de la evolución del tema.
+```
+
+```{r fig.width=9, out.width="80%",fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Menciones más comunes en Tweets sobre COVID-19 en México - Twitter"}
+include_graphics(path ="03_graficas/WC_topicos_twitter.png", auto_pdf = T)
+```
+```{block eval=FALSE, include=params$view_html}
+[Link a esta gráfica](https://lorenzoleon.github.io/covid19_mex_Reportes/03_graficas/WC_topicos_twitter.html)
+```
+```{block eval=FALSE, include=params$view_pdf}
+\newpage
+```
+
+## <b>Hashtags</b>
+***
+```{block eval=FALSE, include=params$view_pdf}
+Los hashtags que se relacionaron con mayor frecuencia a los tweets hacen referencia al #COVID19mx pueden dividirse en tres grandes conglomerados. Primero, aquellos relacionados con algunas entidades federativas que ya han implementado estrategias específicas. Segundo, los hashtags relacionados con las recomendaciones para contener el contagio del virus (CuarentenaNacional, QuedateEnCasa). Finalmente, términos comúnmente usados por agencias de noticias para promover su contenido.
+```
+
+```{r fig.width=9, out.width="80%",fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Menciones más comunes en Tweets sobre COVID-19 en México - Twitter"}
+include_graphics(path ="03_graficas/WC_hashtags_twitter.png", auto_pdf = T)
+```
+```{block eval=FALSE, include=params$view_html}
+[Link a esta gráfica](https://lorenzoleon.github.io/covid19_mex_Reportes/03_graficas/WC_hashtags_twitter.html)
+```
+```{block eval=FALSE, include=params$view_pdf}
+\newpage
+```
+
+## <b>Menciones</b>
+***
+```{block eval=FALSE, include=params$view_pdf}
+Resulta interesante observar que la discusión pública en redes se relaciona fuertemente con las autoridades correspondientes. En particular, llama la atención que la jefa de gobierno Claudia Sheinbaum (4,342) y el subsecretario Hugo López-Gatell (4,292) superen la frecuencia de menciones del presidente Lopez Obrador(3923). Lo anterior pudiera ser indicativo de una atribución de responsabilidad sofisticada por parte de las y los usuarios de Twitter: no se responsabiliza o asocia en su totalidad el manejo de la crisis al jefe del ejecutivo, sino que se relaciona el manejo de la crisis con autoridades locales y/o especializadas en salud. Adicionalmente, este comportamiento es congruente con la misma estrategia de comunicación que el gobierno ha implementado en este tema. Por otro lado, el comunicador Ciro Gómez-Leyva fue puntero en la frecuencia de menciones con un total de 5,631.
+```
+
+```{r fig.width=9, out.width="80%",fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Menciones más comunes en Tweets sobre COVID-19 en México - Twitter"}
+include_graphics(path ="03_graficas/WC_ats_twitter.png", auto_pdf = T)
+```
+```{block eval=FALSE, include=params$view_html}
+[Link a esta gráfica](https://lorenzoleon.github.io/covid19_mex_Reportes/03_graficas/WC_menciones_twitter.html)
+```
+```{block eval=FALSE, include=params$view_pdf}
+[\underline{Link a esta gráfica}](https://lorenzoleon.github.io/covid19_mex_Reportes/03_graficas/WC_menciones_twitter.pdf)
+\newpage
+```
+
+# <b>Emojis!</b>
+***
+
+```{r fig.width=9, out.width="80%",fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Emojis más comunes en Tweets sobre COVID-19 en México - Twitter"}
+`%notin%` <- Negate(`%in%`)
+
+  if(!file.exists("01_datos/emojis.rds")){
+    emojis <- tweets %>% select(id_str, emojis)%>%unnest(cols = emojis)%>%
+    drop_na() %>%group_by(emojis) %>% summarise(n = n()) %>% arrange(desc(n))%>%
+    filter(is.na(as.numeric(emojis)),!str_detect(emojis, "#"),emojis %notin% c("*","!!","‼"))
+  
+  emoji_to_link <- function(x) {
+    paste0("https://emojipedia.org/emoji/",x) %>%
+      read_html() %>%
+      html_nodes("tr td a") %>%
+      .[1] %>%
+      html_attr("href") %>%
+      paste0("https://emojipedia.org/", .) %>%
+      read_html() %>%
+      html_node('div[class="vendor-image"] img') %>%
+      html_attr("src")
+  }
+  link_to_img <- function(x, size = 25) {
+    paste0("<img src='", x, "' width='", size, "'/>")
+  }
+  thead_emojis <- head(emojis, 20)%>%
+    mutate(ems1 = stri_extract_all(emojis, regex = "\\p{Emoji_Presentation}"),
+           ems1 = map(ems1, unique), 
+           len = as.double(map(ems1, length)),
+           len = ifelse(is.na(ems1), NA_real_, len),
+           ems2 = stri_extract_all(emojis, regex = "\\p{Emoji_Modifier}"),
+           ems3 = stri_extract_all(emojis, regex = "\\p{Emoji_Modifier_Base}"),
+           ems4 = stri_extract_all(emojis, regex = "\\p{Emoji_Component}"),
+           ems4 = ifelse(is.na(ems1), emojis, NA_character_),
+           count= stri_count(emojis, regex = "\\p{Emoji}"),
+           count1=stri_count(emojis, regex = "\\p{Emoji_Presentation}"),
+           count2=stri_count(emojis, regex = "\\p{Emoji_Modifier}"),
+           count3=stri_count(emojis, regex = "\\p{Emoji_Modifier_Base}"),
+           count4=stri_count(emojis, regex = "\\p{Emoji_Component}"),
+           countif = case_when(
+             count==1 | len==1| count1 == 1| count2 == 1| count3 == 1| count4 == 1 ~ as.integer(1),
+             !is.na(ems4) ~ stri_count(emojis, regex="\\p{Emoji}"),
+             T ~ as.integer(count)
+           ),
+           finalems = ifelse(count==1, emojis, NA),
+           finalems = ifelse(ifelse(is.na(len), F, len == 1), ems1, finalems),
+           finalems = ifelse(countif>1, emojis, finalems),
+           finalems = ifelse(is.na(finalems), ifelse(countif==1, ems3, finalems), finalems),
+           )%>%
+    transmute(family = ifelse(is.na(ems4), "OpenSansEmoji" , "EmojiOne"),
+              emojis = finalems,
+              n = n)
+  
+  thead_emojis <- thead_emojis %>%
+    mutate(url = map_chr(emojis, slowly(~plyr::try_default(emoji_to_link(.x), NA, quiet = T), rate_delay(1))),
+           label = link_to_img(url))
+  
+  thead_emojis <- thead_emojis%>%
+    mutate(emojis = ifelse(is.na(url),stri_extract_all(emojis, regex = "\\p{Emoji_Presentation}"), emojis))%>%
+    unnest(emojis)%>%
+    mutate(url = ifelse(is.na(url),map_chr(emojis, slowly(~plyr::try_default(emoji_to_link(.x), NA), rate_delay(1))), url),
+           label = link_to_img(url),
+           `Número de Tweets`=n)
+  saveRDS(thead_emojis, "01_datos/emojis.rds")
+  } else {
+  thead_emojis <- readRDS("01_datos/emojis.rds")
+}
+
+titulo <- "Emojis más usados en menciones de COVID-19 en Twitter"
+ur1 <-  ggplot(thead_emojis%>%distinct(emojis, .keep_all = T), aes(x=reorder(emojis,desc(`Número de Tweets`) ), y=`Número de Tweets`, fill = emojis,  label = label, family = family)) + 
+  geom_bar(stat = "identity") +
+  geom_richtext(label.color = NA, label.padding = grid::unit(rep(0, 4), "pt"),  size = 5, vjust = 1) +
+  scale_fill_discrete(NULL, NULL, NULL)+
+  labs(title=str_wrap(titulo, width = 70),
+       y="Número de tweets",
+       x="",
+       caption=caption1) +
+  theme_minimal()+
+  #scale_x_discrete(labels = emojis) +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+ggsave(filename = "03_graficas/04_emojis_twitter.pdf",plot = ur1,
+       width = 15, height = 10, dpi = 100)
+
+subtitulo <- paste0("#COVID19mx Tuits del 15 de marzo al ", as.Date(max(tweets$fecha)))
+data_emojis <- thead_emojis%>%distinct(emojis, .keep_all = T)
+ur2 <- ggplot(data_emojis, 
+             aes(x=emojis,
+                 y=`Número de Tweets`, fill = emojis,  label = emojis, family = family)) + 
+  geom_bar(stat = "identity") +
+  geom_text(size = 5, vjust = 1) +
+  guides(fill = F)+
+  scale_fill_discrete(NULL, NULL, NULL)+
+  labs(title=str_wrap(titulo, width = 70),
+       y="Número de tweets",
+       x="") +
+  theme_minimal()+
+  #scale_x_discrete(labels = emojis) +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        legend.position = "none")
+
+plotly <- plotly::ggplotly(ur2, 
+                           tooltip = c("label", "y")
+                           )%>%
+  plotly::layout(title = list(text = paste0(titulo,
+                                    '<br>',
+                                    '<sup>',
+                                    subtitulo,
+                                    '</sup>'),
+                              y = 1.1),
+                 tickvalues ="", 
+                 annotations = list(x = 1, y = 0, 
+                                    text = caption, 
+                                    showarrow = F, 
+                                    xref='paper', 
+                                    yref='paper', 
+                                    xanchor='right', 
+                                    yanchor='auto', 
+                                    xshift=0, 
+                                    yshift=0,
+                                    font=list(size=15, color="red")))
+
+saveWidgetFix(plotly,libdir = "graph_dependencies", selfcontained = F, file="03_graficas/Emojis_twitter.html")
+
+if(is_html_output()) {
+  plotly
+} else if(is_latex_output()) {
+  include_graphics(path ="03_graficas/04_emojis_twitter.pdf")
+}
+```
+
+```{block eval=FALSE, include=params$view_html}
+[Link a esta gráfica](https://lorenzoleon.github.io/covid19_mex_Reportes/03_graficas/Emojis_twitter.html)
+```
+```{block eval=FALSE, include=params$view_pdf}
+[\underline{Link a esta gráfica}](https://lorenzoleon.github.io/covid19_mex_Reportes/03_graficas/Emojis_twitter.pdf)
+\newpage
+```
+
+# <b>Análisis de Sentimiento</b>
+***
+```{block eval=FALSE, include=params$view_pdf}
+Empezando con un diccionario de 50,000 palabras: donde hay algunas palabras (groserías, adjetivos fuertes) que asociamos con puntajes negativos; al mismo tiempo hay palabras positivas (cumplidos, buenos adjetivos) que nos permiten saber cuando, en un tweet alguien está hablando de manera negativa o positiva sobre un tema. Este sistema es automatizado y nos permite asignar un puntaje para cada palabra en los tweets de la base de datos, que nos permite saber el puntaje general por tweet. Con estos puntajes, sacamos un promedio de la puntuación de los tweets por hora, para así entender el sentimiento a lo largo del día. 
+<br>
+El sentimiento general relacionado con el virus COVID19 en México es negativo. Sin embargo, vale la pena destacar que —sobre todo el día 17 de marzo— durante las conferencias de prensa transmitidas por la Secretaría de Salud el sentimiento mejora ligeramente. Esto podría ser indicativo que el socializar información puntual relacionada con la evolución de la epidemia calma las preocupaciones de las personas.
+```
+<br>
+```{r fig.width=9,out.width="80%", fig.height=8, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Análisis de Sentimiento en Tweets sobre COVID-19 en México - Twitter"}
+
+afinn <- readRDS("01_datos/DiccionarioUNAfin.rds")%>%
+  filter(!is.na(mean)) %>% rename(Puntuacion = mean)
+desc <- afinn %>% distinct(root, .keep_all = T) %>% 
+  select(-Palabra)%>%arrange(desc(Puntuacion)) 
+asce <- afinn %>% distinct(root, .keep_all = T)%>% 
+  select(-Palabra)%>%arrange(Puntuacion)
+general_afinn <- tweets%>%select(id_str, texto, fecha)%>%
+  mutate(id = 1:length(texto),
+         id = formatC(id, width = 3, format="d", flag="0")) %>% 
+  unnest_tokens(input = "texto", output = "Palabra") %>%
+  inner_join(afinn,., by = "Palabra") %>%
+  #mutate(Tipo = ifelse(Puntuacion > 0, "Positiva", "Negativa"))  %>%
+  group_by(month = month(fecha), day = day(fecha), hour = hour(fecha), id) %>% 
+  summarise(puntuacion = sum(Puntuacion)) %>%
+  group_by(month, day, hour) %>% 
+  summarise(puntuacion = mean(puntuacion),
+            n = n()) %>%
+  mutate(puntuacion = ifelse(is.na(puntuacion), 0, puntuacion),
+         colour = ifelse(puntuacion>0,"positivo",
+                         ifelse(puntuacion<0,"negativo","neutral")),
+         alpha = abs(puntuacion))%>%
+  ungroup()%>%
+  mutate(Fecha = as.POSIXct(paste0(month, " " ,day, " ", hour), format = "%m %d %H"),
+         `Número de tweets` = n)
+
+
+titulo <- "Análisis de sentimiento en tweets de COVID19"
+subtitulo1 <- "Cada círculo representa un día; el tamaño del círculo indica la cantidad de tweets encontrados por día. Una puntuación mayor a cero representa un sentimiento promedio positivo; una menor, un negativo."
+subtitulo <- "Cada círculo representa un día; el tamaño del círculo indica la cantidad de tweets encontrados por día. <br>Una puntuación mayor a cero representa un sentimiento promedio positivo; una menor, un negativo."
+
+ur <- ggplot(general_afinn ,
+       aes(x = Fecha,
+           y = puntuacion,
+           col = colour,
+           size=`Número de tweets`)) +
+  geom_point()+
+  scale_x_datetime(date_breaks = "2 day", date_labels =  "%b/%d %I%p")+
+  scale_color_manual(values = c("#FC4E07", "grey",  "#00AFBB")) +
+  scale_size_continuous("Sentimiento",
+                        guide = guide_legend(override.aes = list(colour = "#E7B800"))) +
+  guides(color = F) +
+  xlab("") + ylab("Puntuación")  +
+  labs(title = str_wrap(titulo, width = 90),
+       subtitle= str_wrap(subtitulo1, width = 90),
+       caption=caption1,
+       x="Tiempo",
+       y="Sentimiento") +
+  theme_ipsum() +
+  scale_fill_distiller("",palette="Spectral") +
+  theme(plot.title = element_text(size = 30),
+        plot.subtitle = element_text(size = 20),
+        plot.caption = element_text(size = 15),
+        legend.key.size = unit(1, "cm"),
+        legend.title = element_text(size = 10),
+        legend.text = element_text(size = 10),
+        axis.title.x = element_text(size = 15),
+        axis.text.y = element_text(size = 15),
+        axis.text.x = element_text(angle = 35))
+ggsave(filename = "03_graficas/linea_tiempo_sentimiento_tweets.pdf",plot = ur + geom_smooth(method="loess", show.legend = F, colour="black") + geom_point(),
+       width = 15, height = 10, dpi = 100)
+
+plotly <- plotly::ggplotly(ur, 
+                           tooltip = c("x", "y", "size"),
+                           dynamicTicks = TRUE
+                           )%>%
+  plotly::rangeslider() %>%
+  plotly::layout(title = list(text = paste0(titulo,
+                                    '<br>',
+                                    '<sup><sup>',
+                                    subtitulo,
+                                    '</sup></sup>'),
+                              y = 1.3, size = 3),
+                 hovermode = "x", 
+                 tickvalues ="", 
+                 legend = list(orientation = 'v', x=1, y=.5),
+                 annotations = list(x = 1, y = 0, 
+                                    text = caption, 
+                                    showarrow = F, 
+                                    xref='paper', 
+                                    yref='paper', 
+                                    xanchor='right', 
+                                    yanchor='auto', 
+                                    xshift=0, 
+                                    yshift=0,
+                                    font=list(size=15, color="red")))
+saveWidgetFix(plotly,selfcontained = F, file="03_graficas/linea_tiempo_sentimiento_tweets.html")
+if(is_html_output()) {
+  plotly
+} else if(is_latex_output()) {
+  include_graphics(path ="03_graficas/linea_tiempo_sentimiento_tweets.pdf")
+}
+```
+
+```{block eval=FALSE, include=params$view_html}
+[Link a esta gráfica](https://lorenzoleon.github.io/covid19_mex_Reportes/03_graficas/linea_tiempo_sentimiento_tweets.html)
+```
+
+```{block eval=FALSE, include=params$view_pdf}
+[\underline{Link a esta gráfica}](https://lorenzoleon.github.io/covid19_mex_Reportes/03_graficas/linea_tiempo_sentimiento_tweets.png)
+```
+
+# Cotización
+***
+```{block eval=FALSE, include=params$view_html}
+<p>
+Favor de Contactar a [Diana Penagos](<mailto:dpenagos@parametria.com.mx?subject=Reporte Covid>) o directamente en [Parametría](http://www.parametria.com.mx/cotiza_parametria.php) para cotizar un `Seguimiento en Vivo` de algún tema de interés.
+<br>
+```
+```{block eval=FALSE, include=params$view_pdf}
+Favor de Contactar a \href{mailt:dpenagos@parametria.com.mx?subject=ReporteCOVID?body=Favor de mandar información de cotización}{{\textcolor{blue}{\underline{Diana Penagos}}}} o directamente en [\textcolor{blue}{\underline{Parametría}}](http://www.parametria.com.mx/cotiza_parametria.php) para cotizar un Seguimiento en Vivo de algún tema de interés.
+```
+
+# Info
+***
+```{block eval=FALSE, include=params$view_html}
 <br>
 Descargue el archivo RMarkdown para crear este reporte aquí
 [Rmarkdown](https://github.com/LorenzoLeon/covid19_mex_Reportes/REPORTE_COVID.Rmd)
-</center>
 <br>
+También puedes descargar el tema de este Rmd [aquí](https://holtzy.github.io/Pimp-my-rmd/).
+```
+```{block eval=FALSE, include=params$view_pdf}
+Descargue los archivo RMarkdown para crear este reporte aquí [\underline{Rmarkdown}](https://github.com/LorenzoLeon/covid19_mex_Reportes).
+\newline
+También puedes descargar el tema de este Rmd [\underline{aquí}](https://holtzy.github.io/Pimp-my-rmd/)
+```

@@ -65,21 +65,22 @@ a:hover {
 
 
 /* ---------- TOC ----------------- */
-#nav_logo {
-  width: 100%;
-  margin-top: 20px;
-}
+
 
 #TOC {
-  top: 30%;
+  top: 25%;
   position: fixed;
+  background-color: transparent;
   width: 210px;
 }
+
 .tocify {
   border: none;
+  background-color: transparent;
   color: grey;
   border-radius: 0px;
 }
+
 .list-group-item.active {
     color: #4F89C8;
     background-color: transparent;
@@ -92,6 +93,7 @@ a:hover {
     border-left: solid;
     border-color: #4F89C8;
 }
+
 .tocify-extend-page {
   display: none;
 }
@@ -102,7 +104,7 @@ a:hover {
 }
 
 /* ------ Don't display on small media */
-@media (max-width: 1300px) {
+@media (max-width: 1200px) {
   #TOC {
     width: auto;
     display: none;

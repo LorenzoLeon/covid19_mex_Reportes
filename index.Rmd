@@ -24,11 +24,6 @@ output:
     toc_depth: '1'
     keep_tex: false
 ---
-<script>
-  $(document).ready(function() {
-    $('#TOC').parent().prepend('<div id=\"nav_logo\"><img src=\"https://github.com/LorenzoLeon/covid19_mex_Reportes/blob/master/04_resources/logo.png?raw=true"></div>');
-  });
-</script>
 
 <center>
 <div class="pill-nav">
@@ -39,14 +34,17 @@ output:
 </div>
 </center>
 
-<center>
-<br>
-Descargue este reporte en formato estáfico PDF. [AQUÍ](https://github.com/LorenzoLeon/covid19_mex_Reportes/REPORTE_COVID.pdf)
-<br>
-Descargue el archivo RMarkdown para crear este reporte aquí
-[Rmarkdown](https://github.com/LorenzoLeon/covid19_mex_Reportes/REPORTE_COVID.Rmd)
-</center>
-<br>
+
+## <b>Nota metodológica:</b>
+
+| Aplicación de encuesta vía telefónica en CATI | modalidad HOME-CATI llamadas realizadas desde casa|
+|------:|:------:|
+| Representatividad | hogares del país con teléfono en su vivienda | 
+| Población objetivo | personas de 18 años en adelante residentes del país con teléfono en vivienda. Número de entrevistas: 420 encuestas | 
+| Fecha de levantamiento | 28 y 29 de marzo de 2020 |
+| Nivel de confianza estadística | 95%. Margen de error: (+/-) 4.8% |
+| Diseño, muestreo, aplicación de entrevistas y análisis |Parametría SA de CV |
+| Método de muestreo | aleatorio simple |
 
 # ueuuer
 

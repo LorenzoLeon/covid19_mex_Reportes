@@ -38,6 +38,6 @@ output:
 Descargue este reporte en formato estáfico PDF. [AQUÍ](https://github.com/LorenzoLeon/covid19_mex_Reportes/REPORTE_COVID.pdf)
 <br>
 Descargue el archivo RMarkdown para crear este reporte aquí
-[Rmarkdown](https://github.com/LorenzoLeon/covid19_mex_Reportes/REPORTE_COVID.Rmd)
+[Rmarkdown](https://github.com/LorenzoLeon/covid19_mex_Reportes/DatosSalud.Rmd)
 </center>
 <br>
