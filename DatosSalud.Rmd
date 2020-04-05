@@ -39,9 +39,8 @@ Descargue el archivo RMarkdown para crear este reporte aquí
 [Rmarkdown](https://github.com/LorenzoLeon/covid19_mex_Reportes/AnalisisParametria.Rmd)
 </center>
 <br>
-***
 
-<br>
+***
 Desde el inicio de la crisis mundial de salud debida al brote del virus COVID-19, el rápido crecimiento del contagio y la desinformación sobre la enfermedad han sido dos de los principales retos a combatir para los gobiernos de los países afectados. En México, la Secretaría de Salud Federal combate en dos frentes. Por un lado, garantizar la suficiencia de recursos e infraestructura médica necesaria para atender al público cuando se alcancen los puntos más críticos de contagio en el país. Y, por otro lado, a través de la Dirección General de Epidemiología, la Secretaría publica diariamente un informe técnico con los casos sospechosos y positivos al COVID-19 en todo el país. 
 <p>
 Si bien este esfuerzo gubernamental busca combatir la desinformación en el tema, los formatos de presentación de los datos no permiten un análisis sintético del fenómeno. En este marco nace la siguiente propuesta de Parametría. Con el fin de dar garantía al derecho humano de acceso a la información oportuna y completa, que resulta además en este caso de interés público, Parametría pone a disposición del público el siguiente reporte interactivo sobre la evolución del COVID-19 en México.
