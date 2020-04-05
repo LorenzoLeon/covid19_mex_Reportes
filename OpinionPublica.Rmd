@@ -278,23 +278,17 @@ manejo_media <- cuadros_OP %>%
 
 p <- 
   ggplot(manejo_media,
-       aes(x = str_wrap(id, 15), y = prop,
+       aes(x = str_wrap(id, 10), y = prop,
            fill = id, 
            color = Pregunta,
            label = Porcentaje)) +
   geom_col(width = 0.5) +
-  facet_wrap(País ~ Encuesta, nrow = 1) +
+  facet_wrap(País ~ Encuesta, nrow = 1, scales = "free_x") +
   theme_minimal() + 
   scale_color_manual("", 
                      values = c(rep("white", length(levels(as.factor(manejo_media$Pregunta)))))) +
   scale_fill_manual("",
-                    values = c(
-                      brewer.pal(n=9, "Blues")[2],
-                      brewer.pal(n=9, "Blues")[4],
-                      brewer.pal(n=9, "Blues")[6],
-                      brewer.pal(n=9, "Blues")[8],
-                      brewer.pal(n=9, "Blues")[9]
-                    )) +
+                    values = brewer.pal(n=length(unique(manejo_media$id)), "Blues")) +
   labs(x="",
        y="%") +
   theme(strip.text = element_text(size = 15),
