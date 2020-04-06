@@ -29,6 +29,7 @@ params:
   view_pdf: !r knitr::is_latex_output()
   view_html: !r knitr::is_html_output()
 ---
+```{block eval=FALSE, include=params$view_html}
 <center>
 <div class="pill-nav">
 <a class="active" href='https://lorenzoleon.github.io/covid19_mex_Reportes/'><b>Análisis Parametría</b></a>
@@ -37,10 +38,12 @@ params:
 <a href='https://lorenzoleon.github.io/covid19_mex_Reportes/DatosSalud.html'><b>Reporte Secretaría de Salud</b></a>
 </div>
 </center>
-```{block eval=FALSE, include=params$view_html}
 <center>
 <br>
-Descargue este reporte en formato estáfico PDF. [AQUÍ](https://lorenzoleon.github.io/covid19_mex_Reportes/AnalisisParametria.pdf)
+<b>
+Si quiere descargar el reporte completo en pdf haga click [AQUÍ](https://lorenzoleon.github.io/covid19_mex_Reportes/AnalisisParametria.pdf)
+</b>
+<br>
 <br>
 Descargue el archivo RMarkdown para crear este reporte aquí
 [Rmarkdown](https://github.com/LorenzoLeon/covid19_mex_Reportes/blob/master/AnalisisParametria.Rmd)
@@ -104,8 +107,8 @@ cuadros_OP <- cuadros_OP %>%
   )
 
 categorias <- unique(cuadros_OP$Categoría)
-caption <- "Elaboración con datos de <a href='https://twitter.com/Parametria'>@parametria</a> | <a href='https://twitter.com/lolo7no'>@lolo7no</a> | <a href='https://twitter.com/guzmart_'>@guzmart_</a>"
-caption1 <- "Elaboración propia con datos de @parametria | @lolo7no | @guzmart_"
+caption <- "Elaboración con datos de <a href='https://twitter.com/Parametria'>@Parametria</a>"
+caption1 <- "Elaboración propia con datos de Parametría"
 
 
 ```
@@ -1144,9 +1147,9 @@ Favor de Contactar a [Diana Penagos](<mailto:dpenagos@parametria.com.mx?subject=
 Favor de Contactar a \href{mailto:dpenagos@parametria.com.mx?subject=ReporteCOVID?body=Favor de mandar información de cotización}{\textcolor{blue}{\underline{Diana Penagos}}} o directamente en [\textcolor{blue}{\underline{Parametría}}](http://www.parametria.com.mx/cotiza_parametria.php) para cotizar un Seguimiento en Vivo de algún tema de interés.
 ```
 
+```{block eval=FALSE, include=params$view_html}
 # Info
 ***
-```{block eval=FALSE, include=params$view_html}
 <br>
 Descargue el archivo RMarkdown para crear este reporte aquí
 [Rmarkdown](https://github.com/LorenzoLeon/covid19_mex_Reportes/REPORTE_COVID.Rmd)

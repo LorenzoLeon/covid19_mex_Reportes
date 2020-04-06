@@ -29,6 +29,7 @@ params:
   view_pdf: !r knitr::is_latex_output()
   view_html: !r knitr::is_html_output()
 ---
+```{block eval=FALSE, include=params$view_html}
 <center>
 <div class="pill-nav">
 <a href='https://lorenzoleon.github.io/covid19_mex_Reportes/'><b>Análisis Parametría</b></a>
@@ -36,11 +37,11 @@ params:
 <a class="active" href='https://lorenzoleon.github.io/covid19_mex_Reportes/OpinionPublica.html'><b>Análisis Opinión Pública</b></a>
 <a href='https://lorenzoleon.github.io/covid19_mex_Reportes/DatosSalud.html'><b>Reporte Secretaría de Salud</b></a>
 </div>
-</center>
-```{block eval=FALSE, include=params$view_html}
-<center>
 <br>
-Descargue este reporte en formato estáfico PDF. [AQUÍ](https://lorenzoleon.github.io/covid19_mex_Reportes/OpinionPublica.pdf)
+<b>
+Si quiere descargar el reporte completo en pdf haga click [AQUÍ](https://lorenzoleon.github.io/covid19_mex_Reportes/OpinionPublica.pdf)
+</b>
+<br>
 <br>
 Descargue el archivo RMarkdown para crear este reporte aquí
 [Rmarkdown](https://github.com/LorenzoLeon/covid19_mex_Reportes/blob/master/OpinionPublica.Rmd)
@@ -155,7 +156,7 @@ categorias <- unique(cuadros_OP$Categoría)
 
 Resultados de distintas encuestadoras a nivel mundial
 ```{r fig.width=9,  out.width="80%",fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Información sobre COVID-19"}
-caption <- "Elaboración propia con datos de <a href='https://wapor.org/'>WAPOR</a> | <a href='https://twitter.com/Parametria'>@parametria</a> | <a href='https://twitter.com/lolo7no'>@lolo7no</a> | <a href='https://twitter.com/guzmart_'>@guzmart_</a>"
+caption <- "Elaboración propia con datos de <a href='https://wapor.org/'>WAPOR</a> | <a href='https://twitter.com/Parametria'>@parametria</a>"
 
 niv_con <- cuadros_OP %>% 
   filter(Categoría=="Noticias") %>% 
@@ -900,9 +901,9 @@ Favor de Contactar a [Diana Penagos](<mailto:dpenagos@parametria.com.mx?subject=
 Favor de Contactar a [\textcolor{blue}{\underline{Diana Penagos}}](mailto:dpenagos@parametria.com.mx?subject=ReporteCOVID?body=Favor de mandar información de cotización) o directamente en [\textcolor{blue}{\underline{Parametría}}](http://www.parametria.com.mx/cotiza_parametria.php) para cotizar un Seguimiento en Vivo de algún tema de interés.
 ```
 
+```{block eval=FALSE, include=params$view_html}
 # Info
 ***
-```{block eval=FALSE, include=params$view_html}
 <br>
 Descargue el archivo RMarkdown para crear este reporte aquí
 [Rmarkdown](https://github.com/LorenzoLeon/covid19_mex_Reportes/REPORTE_COVID.Rmd)
