@@ -518,7 +518,7 @@ Asimismo, una de las principales evidencias que emergen de esta crisis, especial
 ```
 ```{block eval=FALSE, include=params$view_html}
 
-# Proporción de hogares en México que podrían o no ir a trabajar y continuar recibiendo su salario o ingreso
+## Proporción de hogares en México que podrían o no ir a trabajar y continuar recibiendo su salario o ingreso
 ```
 ```{r fig.width=9, out.width="70%", fig.height=7, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Hogares que continuarán recibiendo ingresos - Parametría"}
 pregunta <- "Proporción de hogares en México que podrían o no ir a trabajar y continuar recibiendo su salario o ingreso"
@@ -589,7 +589,7 @@ De la encuesta telefónica de marzo, el 96% de los hogares en México tiene al m
 ```
 ```{block eval=FALSE, include=params$view_html}
 
-# Proporción de hogares en México que tiene al menos un miembro que trabaja y Proporción de hogares en México en los que ya ninguno de sus miembros está trabajando
+## Proporción de hogares en México que tiene al menos un miembro que trabaja y Proporción de hogares en México en los que ya ninguno de sus miembros está trabajando
 ```
 ```{r fig.width=9, out.width="70%", fig.height=7, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Hogares trabajadores - Parametría"}
 pregunta <- c("Proporción de hogares en México que tiene al menos un miembro que trabaja", "Proporción de hogares en México en los que ya ninguno de sus miembros está trabajando")
@@ -955,7 +955,7 @@ ur <-   ggplot(data_cono,
   geom_point(aes(shape = encuesta)) +
   theme_minimal() +
   ylim(0, 1.05) +
-  #scale_x_datetime(date_breaks = "3 month", date_labels = "%m/%y")+
+  ##scale_x_datetime(date_breaks = "3 month", date_labels = "%m/%y")+
   scale_color_manual("", values = c("red", "green"))+
   labs(title = str_wrap(titulo, 50),
        subtitle = str_wrap(subtitulo, 50),
@@ -1009,7 +1009,7 @@ if(params$view_html) {
 Respecto a las acciones del Presidente frente a la pandemia del COVID-19, los mexicanos aún respaldan su trabajo. El 57% de los entrevistados califica muy bien o bien la forma en que el gobierno de AMLO ha manejado esta crisis de salud. Sin embargo, hasta el 52% de quienes participaron en la encuesta considera que las acciones gubernamentales aún son insuficientes para prevenir la propagación del virus en el país. Estos datos de opinión son los mismos para la evaluación de los gobernadores, lo cual deriva en un nuevo fenómeno. (Figura 14 y 15) 
 ```{block eval=FALSE, include=params$view_html}
 
-# ¿Cómo cree que ha manejado el gobierno del Presidente Andrés Manuel López Obrador la epidemia del Coronavirus: muy bien, bien, mal o muy mal?
+## ¿Cómo cree que ha manejado el gobierno del Presidente Andrés Manuel López Obrador la epidemia del Coronavirus: muy bien, bien, mal o muy mal?
 ```
 ```{r fig.width=9, out.width="70%", fig.height=7, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Opinión de presidente: trabajo - Parametría"}
 pregunta <- "¿Cómo cree que ha manejado el gobierno del Presidente Andrés Manuel López Obrador la epidemia del Coronavirus: muy bien, bien, mal o muy mal?"
@@ -1070,7 +1070,7 @@ if(params$view_html) {
 ```
 ```{block eval=FALSE, include=params$view_html}
 
-# ¿Usted considera que el gobierno del Presidente Andrés Manuel López Obrador está haciendo o no lo suficiente para prevenir la propagación del Coronavirus en el país?
+## ¿Usted considera que el gobierno del Presidente Andrés Manuel López Obrador está haciendo o no lo suficiente para prevenir la propagación del Coronavirus en el país?
 ```
 ```{r fig.width=9, out.width="70%", fig.height=7, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Opinión de presidente: suficiencia - Parametría"}
 pregunta <- "¿Usted considera que el gobierno del Presidente Andrés Manuel López Obrador está haciendo o no lo suficiente para prevenir la propagación del Coronavirus en el país?"
