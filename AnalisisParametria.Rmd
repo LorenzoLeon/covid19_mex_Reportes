@@ -101,7 +101,7 @@ cuadros_OP <- cuadros_OP %>%
     ),
     value = value/100,
     id = ifelse(id=="Nivel", País, id), 
-    text = paste0(stri_replace_first(id, regex = "[:digit:]+. ", replacement = ""), "\n", "Porcentaje: " ,round(value*100, 0), "%" , "\n", str_wrap(Pregunta, 20), "\nEncuestadora: ", Encuesta ),
+    text = paste0(stri_replace_first(id, regex = "[:digit:]+. ", replacement = ""), "\n", "Porcentaje: " ,round(value*100, 0), "%" , "\nEncuestadora: ", Encuesta ),
     prop = round(value*100),
     Porcentaje = paste0(round(value*100), "%")
   )
@@ -1147,17 +1147,6 @@ Sin duda el camino que aún queda por combatir ante esta pandemia es largo, empe
 | Diseño, muestreo, aplicación de entrevistas y análisis | Parametría SA de CV |
 | Método de muestreo | Aleatorio simple |
 
-# Cotización
-***
-```{block eval=FALSE, include=params$view_html}
-<p>
-Favor de Contactar a [Diana Penagos](<mailto:dpenagos@parametria.com.mx?subject=Reporte Covid>) o directamente en [Parametría](http://www.parametria.com.mx/cotiza_parametria.php) para cotizar un `Seguimiento en Vivo` de algún tema de interés.
-<br>
-```
-```{block eval=FALSE, include=params$view_pdf}
-Favor de Contactar a [\textcolor{blue}{\underline{Diana Penagos}}](mailto:dpenagos@parametria.com.mx?subject=ReporteCOVID?body=Favor de mandar información de cotización) o directamente en [\textcolor{blue}{\underline{Parametría}}](http://www.parametria.com.mx/cotiza_parametria.php) para cotizar un Seguimiento en Vivo de algún tema de interés.
-```
-
 ```{block eval=FALSE, include=params$view_html}
 # Info
 ***
@@ -1169,6 +1158,7 @@ También puedes descargar el tema de este Rmd [aquí](https://holtzy.github.io/P
 ```
 ```{block eval=FALSE, include=params$view_pdf}
 Descargue los archivo RMarkdown para crear este reporte aquí [\underline{Rmarkdown}](https://github.com/LorenzoLeon/covid19_mex_Reportes).
-\newline
+```
+```{block eval=FALSE, include=params$view_html}
 También puedes descargar el tema de este Rmd [\underline{aquí}](https://holtzy.github.io/Pimp-my-rmd/)
 ```

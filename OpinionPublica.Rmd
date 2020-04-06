@@ -49,7 +49,10 @@ Descargue el archivo RMarkdown para crear este reporte aquí
 <br>
 ```
 
+# El Covid ante la Opinión Pública Internacional {.tabset .tabset-fade .tabset-pills}
+
 ***
+
 Aunque son diversos los aprendizajes que se pueden obtener de la crisis derivada por la pandemia del COVID-19, queremos destacar dos principalmente. Primero, rescatar que el personal médico, los cuerpos de seguridad y protección civil, así como los campesinos y comerciantes de productos básicos son grupos de primaria atención ya que de su trabajo depende el buen funcionamiento de la estructura social. Segundo, la importancia de la empatía como motor de la respuesta más efectiva ante una catástrofe: la acción colectiva. Los ciudadanos de la aldea global juegan hoy un papel crucial ante esta pandemia, en esta medida, el seguimiento a sus opiniones y comportamientos son esenciales tanto para alterar el curso de la crisis como para entender su desarrollo. 
 <br>
 Con el fin de concentrar y uniformar la información sobre la opinión pública respecto a la pandemia del COVID-19 en el mundo, Parametría presenta este ejercicio acumulativo de mediciones nacionales e internacionales en el tema. La diversidad de información presentada en este tipo de trackings de opinión pública permite no solo conocer los esfuerzos del gremio por obtener datos en otros países, sino además facilita la comparabilidad de resultados. En general, los datos evidencian no solo el alto nivel de conocimiento de la sociedad respecto al tema, sino también su gran preocupación frente al virus como una amenaza latente tanto para la salud personal como para la economía familiar. De hecho, las diversas mediciones coinciden en la percepción pesimista de los entrevistados respecto al futuro desarrollo de la pandemia. Asimismo, la información revela posiciones contrastantes en la evaluación del trabajo de los gobiernos ante la crisis, así como respecto a las acciones gubernamentales a nivel local. 
@@ -89,14 +92,14 @@ saveWidgetFix <- function (widget,file,...) {
 }
 
 rm_accent <- function(str,pattern="all") {
-   if(!is.character(str))
+  if(!is.character(str))
     str <- as.character(str)
-
+  
   pattern <- unique(pattern)
-
+  
   if(any(pattern=="Ç"))
     pattern[pattern=="Ç"] <- "ç"
-
+  
   symbols <- c(
     acute = "áéíóúÁÉÍÓÚýÝ",
     grave = "àèìòùÀÈÌÒÙ",
@@ -105,7 +108,7 @@ rm_accent <- function(str,pattern="all") {
     umlaut = "äëïöüÄËÏÖÜÿ",
     cedil = "çÇ"
   )
-
+  
   nudeSymbols <- c(
     acute = "aeiouAEIOUyY",
     grave = "aeiouAEIOU",
@@ -114,15 +117,15 @@ rm_accent <- function(str,pattern="all") {
     umlaut = "aeiouAEIOUy",
     cedil = "cC"
   )
-
+  
   accentTypes <- c("´","`","^","~","¨","ç")
-
+  
   if(any(c("all","al","a","todos","t","to","tod","todo")%in%pattern)) # opcao retirar todos
     return(chartr(paste(symbols, collapse=""), paste(nudeSymbols, collapse=""), str))
-
+  
   for(i in which(accentTypes%in%pattern))
     str <- chartr(symbols[i],nudeSymbols[i], str) 
-
+  
   return(str)
 }
 
@@ -151,11 +154,11 @@ categorias <- unique(cuadros_OP$Categoría)
 ```
 \newpage
 
-# <b>Nivel de información respecto al COVID-19</b>
+## <b>Nivel de información</b>
 ***
 
-Resultados de distintas encuestadoras a nivel mundial
-```{r fig.width=9,  out.width="80%",fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Información sobre COVID-19"}
+Resultados de distintas encuestadoras a nivel mundial respecto al COVID-19
+```{r fig.width=7,  out.width="70%",fig.height=7, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Información sobre COVID-19"}
 caption <- "Elaboración propia con datos de <a href='https://wapor.org/'>WAPOR</a> | <a href='https://twitter.com/Parametria'>@parametria</a>"
 
 niv_con <- cuadros_OP %>% 
@@ -169,10 +172,10 @@ niv_con <- cuadros_OP %>%
   ) %>% 
   bind_rows(
     cuadros_OP %>% 
-  filter(Categoría=="Noticias") %>% 
-  filter(str_detect(id,"1")) %>% 
-  filter(str_detect(País,"xico")) %>%
-  filter(!tipo_encuesta=="En línea")
+      filter(Categoría=="Noticias") %>% 
+      filter(str_detect(id,"1")) %>% 
+      filter(str_detect(País,"xico")) %>%
+      filter(!tipo_encuesta=="En línea")
   ) %>% 
   mutate(
     order = case_when(
@@ -190,11 +193,11 @@ niv_con <- cuadros_OP %>%
 
 p <- 
   ggplot(niv_con,
-       aes(x = reorder(paste0(str_wrap(Encuesta, 20), "\n",País), order), 
-           y = value,
-           color = Pregunta,
-           fill = País, label = Porcentaje,
-           text = text)) +
+         aes(x = reorder(paste0(str_wrap(Encuesta, 20), "\n",País), order), 
+             y = value,
+             color = Pregunta,
+             fill = País, label = Porcentaje,
+             text = text)) +
   geom_col(width = 0.5) + 
   theme_minimal() + 
   scale_fill_manual("",
@@ -207,9 +210,9 @@ p <-
                       brewer.pal(n=9, "Blues")[5]
                     )) +
   scale_color_manual("",
-                    values = c(
-                      rep("white", length(levels(as.factor(niv_con$Pregunta))))
-                    )) +
+                     values = c(
+                       rep("white", length(levels(as.factor(niv_con$Pregunta))))
+                     )) +
   ylim(0, 1.05) +
   labs(x="",
        y="") +
@@ -225,36 +228,47 @@ ggsave("03_graficas/informacion_op.pdf", plot = p,
        width = 15, height = 10, dpi = 100)
 
 if(params$view_html) {
-  DT::datatable(
+  dats <- 
     cuadros_OP %>% 
-  filter(Categoría=="Noticias") %>% 
-  filter(!str_detect(País,"xico")) %>% 
-  filter(!str_detect(id,"99")) %>% 
-  arrange(País) %>% 
-  mutate(
-    fecha = as.Date(fecha),
-    prop = round(value*100),
-    Porcentaje = paste0(round(value*100), "%")
-  ) %>% 
-  select(País, Encuesta, fecha, tipo_encuesta, Pregunta, id, Porcentaje, Nota = nota) %>% 
-  rename(
-    Fecha = fecha, 
-    `Tipo encuesta` = tipo_encuesta,
-    Respuesta = id
-  ), class= "cell-border stripe", rownames = F, filter = "top",
-              extensions = "Buttons", options = list(dom="Bfrtip",
-                                                     buttons = c("copy", "excel"))) 
+    filter(Categoría=="Noticias") %>% 
+    filter(!str_detect(País,"xico")) %>% 
+    filter(!str_detect(id,"99")) %>% 
+    arrange(País) %>% 
+    mutate(
+      fecha = as.Date(fecha),
+      prop = round(value*100),
+      Porcentaje = paste0(round(value*100), "%")
+    ) %>% 
+    select(País, Encuesta, fecha, tipo_encuesta, Pregunta, id, Porcentaje, Nota = nota) %>% 
+    rename(
+      Fecha = fecha, 
+      `Tipo encuesta` = tipo_encuesta,
+      Respuesta = id
+    )
+  DT::datatable(dats, 
+                class= "cell-border stripe", 
+                rownames = F,
+                filter = "top",
+                extensions = "Buttons", 
+                width = "100%",
+                options = list(dom="Bfrtip", 
+                               pageLength = 10,scrollX = T,
+                               buttons = c("copy", "excel"), 
+                                autowidth = T, columnDefs = list(list(width = '20%', targets = 7)))
+  )%>%
+  DT::formatStyle(columns = c(1:8), fontSize = '8pt')%>%DT::formatStyle(columns = 8, fontSize = '4pt')
 } else if(params$view_pdf ){
   include_graphics(path ="03_graficas/informacion_op.png", auto_pdf = T)
 }
 ```
 \newpage
 
-# <b>Evaluación del tratamiento mediático de la información sobre el COVID-19</b>
+## <b>Evaluación de medios</b>
 ***
 
+### Evaluación del tratamiento mediático de la información sobre el COVID-19
 Resultados de distintas encuestadoras a nivel mundial
-```{r fig.width=9,  out.width="80%",fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Tratamiento mediático sobre COVID-19"}
+```{r fig.width=7,  out.width="70%",fig.height=7, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Tratamiento mediático sobre COVID-19"}
 
 manejo_media <- cuadros_OP %>% 
   filter(Categoría=="Manejo Medios") %>% 
@@ -281,10 +295,10 @@ manejo_media <- cuadros_OP %>%
 
 p <- 
   ggplot(manejo_media,
-       aes(x = str_wrap(id, 10), y = prop,
-           fill = id, 
-           color = Pregunta,
-           label = Porcentaje)) +
+         aes(x = str_wrap(id, 10), y = prop,
+             fill = id, 
+             color = Pregunta,
+             label = Porcentaje)) +
   geom_col(width = 0.5) +
   facet_wrap(País ~ Encuesta, nrow = 1, scales = "free_x") +
   theme_minimal() + 
@@ -303,37 +317,49 @@ ggsave("03_graficas/evaluacion_medios_op.pdf", plot = p,
        width = 15, height = 10, dpi = 100)
 
 if(params$view_html) {
- DT::datatable(
+  dats <- 
     cuadros_OP %>% 
-  filter(Categoría=="Manejo Medios") %>% 
-  filter(!str_detect(País,"xico")) %>% 
-  filter(!str_detect(id,"99")) %>% 
-  arrange(País) %>% 
-  mutate(
-    fecha = as.Date(fecha),
-    prop = round(value*100),
-    Porcentaje = paste0(round(value*100), "%")
-  ) %>% 
-  select(País, Encuesta, fecha, tipo_encuesta, Pregunta, id, Porcentaje, Nota = nota) %>% 
-  rename(
-    Fecha = fecha, 
-    `Tipo encuesta` = tipo_encuesta,
-    Respuesta = id
-  ), class= "cell-border stripe", rownames = F, filter = "top",
-              extensions = "Buttons", options = list(dom="Bfrtip",
-                                                     buttons = c("copy", "excel"))) 
+    filter(Categoría=="Manejo Medios") %>% 
+    filter(!str_detect(País,"xico")) %>% 
+    filter(!str_detect(id,"99")) %>% 
+    arrange(País) %>% 
+    mutate(
+      fecha = as.Date(fecha),
+      prop = round(value*100),
+      Porcentaje = paste0(round(value*100), "%")
+    ) %>% 
+    select(País, Encuesta, fecha, tipo_encuesta, Pregunta, id, Porcentaje, Nota = nota) %>% 
+    rename(
+      Fecha = fecha, 
+      `Tipo encuesta` = tipo_encuesta,
+      Respuesta = id
+    )
+  DT::datatable(dats, 
+                class= "cell-border stripe", 
+                rownames = F, 
+                filter = "top",
+                extensions = "Buttons", 
+                width = "100%",
+                options = list(dom="Bfrtip", pageLength = 10,scrollX = T,
+                               buttons = c("copy", "excel"), 
+                                autowidth = T, columnDefs = list(list(width = '20%', targets = 7)))
+  ) %>%
+  DT::formatStyle(columns = c(1:8), fontSize = '8pt')%>%DT::formatStyle(columns = 8, fontSize = '4pt')
 } else if(params$view_pdf ){
   include_graphics(path ="03_graficas/evaluacion_medios_op.png", auto_pdf = T)
 }
 ```
 \newpage
 
-# <b>Aprobación del trabajo del Presidente en el manejo de la crisis derivada de la pandemia del COVID-19 (México)</b>
+## <b>Aprobación y Desempeño</b> {.tabset}
+
+### <b>AMLO frente a la Pandemia</b>
 ***
 
+#### Aprobación del trabajo del Presidente en el manejo de la crisis derivada de la pandemia del COVID-19 (México)
 Resultados de distintas encuestadoras en México
 
-```{r fig.width=9,  out.width="80%",fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Aprobación Presidente durante crisis de COVID-19"}
+```{r fig.width=7,  out.width="70%",fig.height=7, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Aprobación Presidente durante crisis de COVID-19"}
 titulo <- "Aprobación del trabajo del Presidente en el manejo de la crisis derivada de la pandemia del COVID-19 (México)"
 
 apr_pres <- cuadros_OP %>% 
@@ -349,9 +375,9 @@ apr_pres <- cuadros_OP %>%
 
 p <- 
   ggplot(apr_pres,
-       aes(x = str_wrap(id, 15), y = prop,
-           color = Pregunta,
-           fill = id, label = Porcentaje)) +
+         aes(x = str_wrap(id, 15), y = prop,
+             color = Pregunta,
+             fill = id, label = Porcentaje)) +
   geom_col(width = 0.5) +
   facet_wrap(~ Encuesta, nrow = 1) +
   theme_minimal() + 
@@ -374,23 +400,23 @@ ggsave("03_graficas/aprobacion_pres_op.pdf", plot = p,
        width = 15, height = 10, dpi = 100)
 
 if(params$view_html) {
- plotly <- ggplotly(p, tooltip = c("label", "colour")) %>%
-  plotly::layout(yaxis = list(ticksuffix = "%"),
-                 hovermode = "x", 
-                 tickvalues ="", 
-                 annotations = list(x = 1, y = 1, 
-                                    text = caption, 
-                                    showarrow = F, 
-                                    xref='paper', 
-                                    yref='paper', 
-                                    xanchor='right', 
-                                    yanchor='auto', 
-                                    xshift=0, 
-                                    yshift=0,
-                                    font=list(size=10, color="red")))
-saveWidgetFix(plotly, libdir = "graph_dependencies", selfcontained = F,
-              file="03_graficas/aprobacion_pres_op.html")
-plotly
+  plotly <- ggplotly(p, tooltip = c("label", "colour")) %>%
+    plotly::layout(yaxis = list(ticksuffix = "%"),
+                   hovermode = "x", 
+                   tickvalues ="", 
+                   annotations = list(x = 1, y = 1, 
+                                      text = caption, 
+                                      showarrow = F, 
+                                      xref='paper', 
+                                      yref='paper', 
+                                      xanchor='right', 
+                                      yanchor='auto', 
+                                      xshift=0, 
+                                      yshift=0,
+                                      font=list(size=10, color="red")))
+  saveWidgetFix(plotly, libdir = "graph_dependencies", selfcontained = F,
+                file="03_graficas/aprobacion_pres_op.html")
+  plotly
 } else if(params$view_pdf ){
   include_graphics(path ="03_graficas/aprobacion_pres_op.png", auto_pdf = T)
 }
@@ -398,11 +424,13 @@ plotly
 ```
 \newpage
 
-# <b>Aprobación del trabajo del Presidente en el manejo de la crisis derivada de la pandemia del COVID-19 (Internacional)</b>
+### <b>Presidentes frente a la Pandemia</b>
 ***
+
+#### Aprobación del trabajo del Presidente en el manejo de la crisis derivada de la pandemia del COVID-19 (Internacional)
 Resultados de distintas encuestadoras a nivel mundial.
 Sólo se muestran las proporciones de evaluaciones positivas.
-```{r fig.width=9,  out.width="80%",fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Aprobación Presidentes Internacional durante crisis de COVID-19"}
+```{r fig.width=7,  out.width="70%",fig.height=7, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Aprobación Presidentes Internacional durante crisis de COVID-19"}
 
 apr_pres_int <- cuadros_OP %>% 
   filter(Categoría=="Aprobar") %>% 
@@ -420,17 +448,17 @@ apr_pres_int <- cuadros_OP %>%
 
 p <- 
   ggplot(apr_pres_int,
-       aes(x = reorder(paste0(str_wrap(Encuesta, 20), "\n",País), -prop), 
-           y = prop,
-           color = Pregunta,
-           fill = País, label = Porcentaje)) +
+         aes(x = reorder(paste0(str_wrap(Encuesta, 20), "\n",País), -prop), 
+             y = prop,
+             color = Pregunta,
+             fill = País, label = Porcentaje)) +
   geom_col(width = 0.5) +
   theme_minimal() + 
   scale_color_manual("", 
                      values= c(
                        rep("white", length(levels(as.factor(apr_pres_int$Pregunta))))
                      )
-                     ) +
+  ) +
   scale_fill_manual("",
                     values = c(
                       brewer.pal(n=9, "Blues")[2],
@@ -448,42 +476,53 @@ p <-
         axis.text.y = element_text(size = 15),
         legend.position = "none")
 
-  
+
 ggsave("03_graficas/aprobacion_pres_int_op.pdf", plot = p, 
        width = 15, height = 10, dpi = 100)
 
 if(params$view_html) {
-DT::datatable(
+  dats <- 
     cuadros_OP %>% 
-  filter(Categoría=="Aprobar") %>% 
-  filter(!str_detect(Pregunta, "obierno del estado")) %>% 
-  filter(!str_detect(País,"xico")) %>% 
-  filter(!str_detect(id,"99")) %>% 
-  arrange(País) %>% 
-  mutate(
-    fecha = as.Date(fecha),
-    prop = round(value*100),
-    Porcentaje = paste0(round(value*100), "%")
-  ) %>% 
-  select(País, Encuesta, fecha, tipo_encuesta, Pregunta, id, Porcentaje, Nota = nota) %>% 
-  rename(
-    Fecha = fecha, 
-    `Tipo encuesta` = tipo_encuesta,
-    Respuesta = id
-  ), class= "cell-border stripe", rownames = F, filter = "top",
-              extensions = "Buttons", options = list(dom="Bfrtip",
-                                                     buttons = c("copy", "excel"))) 
+    filter(Categoría=="Aprobar") %>% 
+    filter(!str_detect(Pregunta, "obierno del estado")) %>% 
+    filter(!str_detect(País,"xico")) %>% 
+    filter(!str_detect(id,"99")) %>% 
+    arrange(País) %>% 
+    mutate(
+      fecha = as.Date(fecha),
+      prop = round(value*100),
+      Porcentaje = paste0(round(value*100), "%")
+    ) %>% 
+    select(País, Encuesta, fecha, tipo_encuesta, Pregunta, id, Porcentaje, Nota = nota) %>% 
+    rename(
+      Fecha = fecha, 
+      `Tipo encuesta` = tipo_encuesta,
+      Respuesta = id
+    )
+  DT::datatable(dats, 
+                class= "cell-border stripe", 
+                rownames = F, 
+                filter = "top",
+                extensions = "Buttons", 
+                width = "100%",
+                options = list(dom="Bfrtip", pageLength = 10,scrollX = T,
+                               buttons = c("copy", "excel"), 
+                                autowidth = T, columnDefs = list(list(width = '20%', targets = 7)))
+  )%>%
+  DT::formatStyle(columns = c(1:8), fontSize = '8pt')%>%DT::formatStyle(columns = 8, fontSize = '4pt')
 } else if(params$view_pdf ){
   include_graphics(path ="03_graficas/aprobacion_pres_int_op.png", auto_pdf = T)
 }
 ```
 \newpage
 
-# <b>Aprobación del trabajo gubernamental local en el manejo de la crisis derivada de la pandemia del COVID-19</b>
+### <b>Gobiernos frente a la Pandemia</b>
 ***
+
+#### Aprobación del trabajo gubernamental local en el manejo de la crisis derivada de la pandemia del COVID-19
 Resultados de distintas encuestadoras a nivel mundial.
 Sólo se muestran las proporciones de evaluaciones positivas.
-```{r fig.width=9,  out.width="80%",fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Aprobación Gobierno durante crisis de COVID-19"}
+```{r fig.width=7,  out.width="70%",fig.height=7, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Aprobación Gobierno durante crisis de COVID-19"}
 
 apr_gob_loc <- cuadros_OP %>% 
   filter(Categoría=="Aprobar") %>% 
@@ -496,9 +535,9 @@ apr_gob_loc <- cuadros_OP %>%
   ) %>% 
   bind_rows(
     cuadros_OP %>% 
-  filter(Categoría=="Aprobar") %>% 
-  filter(str_detect(id,"1")) %>% filter(str_detect(Pregunta, "estado")) %>% 
-  filter(str_detect(País,"xico"))%>% filter(!tipo_encuesta=="En línea")
+      filter(Categoría=="Aprobar") %>% 
+      filter(str_detect(id,"1")) %>% filter(str_detect(Pregunta, "estado")) %>% 
+      filter(str_detect(País,"xico"))%>% filter(!tipo_encuesta=="En línea")
   ) %>% 
   mutate(
     prop = round(value*100),
@@ -507,17 +546,17 @@ apr_gob_loc <- cuadros_OP %>%
 
 p <- 
   ggplot(apr_gob_loc,
-       aes(x = reorder(paste0(str_wrap(Encuesta, 20), "\n",País), -prop), 
-           color = Pregunta,
-           y = prop,
-           fill = País, label = Porcentaje)) +
+         aes(x = reorder(paste0(str_wrap(Encuesta, 20), "\n",País), -prop), 
+             color = Pregunta,
+             y = prop,
+             fill = País, label = Porcentaje)) +
   geom_col(width = 0.5) +
   theme_minimal() + 
   scale_color_manual("", 
                      values= c(
                        rep("white", length(levels(as.factor(apr_gob_loc$Pregunta))))
                      )
-                     ) +
+  ) +
   scale_fill_manual("",
                     values = c(
                       brewer.pal(n=9, "Blues")[2],
@@ -536,26 +575,34 @@ ggsave("03_graficas/aprobacion_gob_int_op.pdf", plot = p,
        width = 15, height = 10, dpi = 100)
 
 if(params$view_html) {
- DT::datatable(
-    cuadros_OP %>% 
-  filter(Categoría=="Aprobar") %>% 
-  filter(str_detect(Pregunta, "obierno del estado")) %>% 
-  filter(!str_detect(País,"xico")) %>% 
-  filter(!str_detect(id,"99")) %>% 
-  arrange(País) %>% 
-  mutate(
-    fecha = as.Date(fecha),
-    prop = round(value*100),
-    Porcentaje = paste0(round(value*100), "%")
-  ) %>% 
-  select(País, Encuesta, fecha, tipo_encuesta, Pregunta, id, Porcentaje, Nota = nota) %>% 
-  rename(
-    Fecha = fecha, 
-    `Tipo encuesta` = tipo_encuesta,
-    Respuesta = id
-  ), class= "cell-border stripe", rownames = F, filter = "top",
-              extensions = "Buttons", options = list(dom="Bfrtip",
-                                                     buttons = c("copy", "excel"))) 
+  dats <- cuadros_OP %>% 
+    filter(Categoría=="Aprobar") %>% 
+    filter(str_detect(Pregunta, "obierno del estado")) %>% 
+    filter(!str_detect(País,"xico")) %>% 
+    filter(!str_detect(id,"99")) %>% 
+    arrange(País) %>% 
+    mutate(
+      fecha = as.Date(fecha),
+      prop = round(value*100),
+      Porcentaje = paste0(round(value*100), "%")
+    ) %>% 
+    select(País, Encuesta, fecha, tipo_encuesta, Pregunta, id, Porcentaje, Nota = nota) %>% 
+    rename(
+      Fecha = fecha, 
+      `Tipo encuesta` = tipo_encuesta,
+      Respuesta = id
+    )
+  DT::datatable(dats, 
+                class= "cell-border stripe", 
+                rownames = F, 
+                filter = "top",
+                extensions = "Buttons", 
+                width = "100%",
+                options = list(dom="Bfrtip", pageLength = 10,scrollX = T,
+                               buttons = c("copy", "excel"), 
+                                autowidth = T, columnDefs = list(list(width = '20%', targets = 7)))
+  )%>%
+  DT::formatStyle(columns = c(1:8), fontSize = '8pt')%>%DT::formatStyle(columns = 8, fontSize = '4pt')
 } else if(params$view_pdf ){
   include_graphics(path ="03_graficas/aprobacion_gob_int_op.png", auto_pdf = T)
 }
@@ -563,11 +610,13 @@ if(params$view_html) {
 <br>
 \newpage
 
-# <b>Percepción de suficiencia en el manejo de la crisis derivada de la pandemia del COVID-19 Gobiernos nacionales o federales</b>
+### <b>Suficiente de Gobiernos Federales</b>
 ***
+
+#### Percepción de suficiencia en el manejo de la crisis derivada de la pandemia del COVID-19 Gobiernos nacionales o federales
 Resultados de distintas encuestadoras a nivel mundial.
 Sólo se muestran las proporciones de evaluaciones positivas.
-```{r fig.width=9,  out.width="80%",fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Percepción de suficiencia durante crisis de COVID-19"}
+```{r fig.width=7,  out.width="70%",fig.height=7, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Percepción de suficiencia durante crisis de COVID-19"}
 
 suficiente_fed <- cuadros_OP %>% 
   filter(Categoría=="Suficiente") %>% 
@@ -580,9 +629,9 @@ suficiente_fed <- cuadros_OP %>%
   ) %>% 
   bind_rows(
     cuadros_OP %>% 
-  filter(Categoría=="Suficiente") %>% 
-  filter(str_detect(id,"1")) %>% filter(!str_detect(Pregunta, "estado")) %>% 
-  filter(str_detect(País,"xico"))%>% filter(!tipo_encuesta=="En línea")
+      filter(Categoría=="Suficiente") %>% 
+      filter(str_detect(id,"1")) %>% filter(!str_detect(Pregunta, "estado")) %>% 
+      filter(str_detect(País,"xico"))%>% filter(!tipo_encuesta=="En línea")
   ) %>% 
   mutate(
     order = case_when(
@@ -598,17 +647,17 @@ suficiente_fed <- cuadros_OP %>%
 
 p <- 
   ggplot(suficiente_fed,
-       aes(x = reorder(reorder(paste0(str_wrap(Encuesta, 20), "\n",País), order), -prop), 
-           y = prop,
-           color = Pregunta,
-           fill = País, label = Porcentaje)) +
+         aes(x = reorder(reorder(paste0(str_wrap(Encuesta, 20), "\n",País), order), -prop), 
+             y = prop,
+             color = Pregunta,
+             fill = País, label = Porcentaje)) +
   geom_col(width = 0.5) +
   theme_minimal() + 
   scale_color_manual("", 
                      values= c(
                        rep("white", length(levels(as.factor(suficiente_fed$Pregunta))))
                      )
-                     ) +
+  ) +
   scale_fill_manual("",
                     values = c(
                       brewer.pal(n=9, "Blues")[2],
@@ -627,39 +676,50 @@ ggsave("03_graficas/suf_gob_op.pdf", plot = p,
        width = 15, height = 10, dpi = 100)
 
 if(params$view_html) {
-DT::datatable(
+  dats <- 
     cuadros_OP %>% 
-  filter(Categoría=="Suficiente") %>% 
-  filter(!str_detect(Pregunta, "estado")) %>% 
-  filter(!str_detect(País,"xico")) %>% 
-  filter(!str_detect(id,"99")) %>% 
-  arrange(País) %>% 
-  mutate(
-    fecha = as.Date(fecha),
-    prop = round(value*100),
-    Porcentaje = paste0(round(value*100), "%")
-  ) %>% 
-  select(País, Encuesta, fecha, tipo_encuesta, Pregunta, id, Porcentaje, Nota = nota) %>% 
-  rename(
-    Fecha = fecha, 
-    `Tipo encuesta` = tipo_encuesta,
-    Respuesta = id
-  ), class= "cell-border stripe", rownames = F, filter = "top",
-              extensions = "Buttons", options = list(dom="Bfrtip",
-                                                     buttons = c("copy", "excel"))) 
+    filter(Categoría=="Suficiente") %>% 
+    filter(!str_detect(Pregunta, "estado")) %>% 
+    filter(!str_detect(País,"xico")) %>% 
+    filter(!str_detect(id,"99")) %>% 
+    arrange(País) %>% 
+    mutate(
+      fecha = as.Date(fecha),
+      prop = round(value*100),
+      Porcentaje = paste0(round(value*100), "%")
+    ) %>% 
+    select(País, Encuesta, fecha, tipo_encuesta, Pregunta, id, Porcentaje, Nota = nota) %>% 
+    rename(
+      Fecha = fecha, 
+      `Tipo encuesta` = tipo_encuesta,
+      Respuesta = id
+    )
+  DT::datatable(dats, 
+                class= "cell-border stripe", 
+                rownames = F, 
+                filter = "top",
+                extensions = "Buttons", 
+                width = "100%",
+                options = list(dom="Bfrtip", pageLength = 10,scrollX = T,
+                               buttons = c("copy", "excel"), 
+                                autowidth = T, columnDefs = list(list(width = '20%', targets = 7)))
+  )%>%
+  DT::formatStyle(columns = c(1:8), fontSize = '8pt')%>%DT::formatStyle(columns = 8, fontSize = '4pt')
 } else if(params$view_pdf ){
   include_graphics(path ="03_graficas/suf_gob_op.png", auto_pdf = T)
 }
 ```
 \newpage
 
-# <b>Percepción de suficiencia en el manejo de la crisis derivada de la pandemia del COVID-19 Gobiernos locales</b>
+### <b>Suficiente de Gobiernos Locales</b>
+
+#### Percepción de suficiencia en el manejo de la crisis derivada de la pandemia del COVID-19 Gobiernos locales
 ***
 <br>
 Resultados de distintas encuestadoras a nivel mundial.
 Sólo se muestran las proporciones de evaluaciones positivas.
 <br>
-```{r fig.width=9,  out.width="80%",fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Percepción suficiencia (Local) durante crisis de  COVID-19"}
+```{r fig.width=7,  out.width="70%",fig.height=7, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Percepción suficiencia (Local) durante crisis de  COVID-19"}
 
 suficiente_loc <- cuadros_OP %>% 
   filter(Categoría=="Suficiente") %>% 
@@ -672,9 +732,9 @@ suficiente_loc <- cuadros_OP %>%
   ) %>% 
   bind_rows(
     cuadros_OP %>% 
-  filter(Categoría=="Suficiente") %>% 
-  filter(str_detect(id,"1")) %>% filter(str_detect(Pregunta, "estado")) %>% 
-  filter(str_detect(País,"xico")) %>% filter(!tipo_encuesta=="En línea")
+      filter(Categoría=="Suficiente") %>% 
+      filter(str_detect(id,"1")) %>% filter(str_detect(Pregunta, "estado")) %>% 
+      filter(str_detect(País,"xico")) %>% filter(!tipo_encuesta=="En línea")
   ) %>% 
   mutate(
     prop = round(value*100),
@@ -683,17 +743,17 @@ suficiente_loc <- cuadros_OP %>%
 
 p <- 
   ggplot(suficiente_loc,
-       aes(x = reorder(paste0(str_wrap(Encuesta, 20), "\n",País), -prop), 
-           y = prop,
-           color = Pregunta,
-           fill = País, label = Porcentaje)) +
+         aes(x = reorder(paste0(str_wrap(Encuesta, 20), "\n",País), -prop), 
+             y = prop,
+             color = Pregunta,
+             fill = País, label = Porcentaje)) +
   geom_col(width = 0.5) +
   theme_minimal() + 
   scale_color_manual("", 
                      values= c(
                        rep("white", length(levels(as.factor(suficiente_loc$Pregunta))))
                      )
-                     ) +
+  ) +
   scale_fill_manual("",
                     values = c(
                       brewer.pal(n=9, "Blues")[4],
@@ -712,36 +772,46 @@ ggsave("03_graficas/suf_gob_loc_op.pdf", plot = p,
        width = 15, height = 10, dpi = 100)
 
 if(params$view_html) {
- DT::datatable(
-    cuadros_OP %>% 
-  filter(Categoría=="Suficiente") %>% 
-  filter(str_detect(Pregunta, "estado")) %>% 
-  filter(!str_detect(País,"xico")) %>% 
-  filter(!str_detect(id,"99")) %>% 
-  arrange(País) %>% 
-  mutate(
-    fecha = as.Date(fecha),
-    prop = round(value*100),
-    Porcentaje = paste0(round(value*100), "%")
-  ) %>% 
-  select(País, Encuesta, fecha, tipo_encuesta, Pregunta, id, Porcentaje, Nota = nota) %>% 
-  rename(
-    Fecha = fecha, 
-    `Tipo encuesta` = tipo_encuesta,
-    Respuesta = id
-  ), class= "cell-border stripe", rownames = F, filter = "top",
-              extensions = "Buttons", options = list(dom="Bfrtip",
-                                                     buttons = c("copy", "excel"))) 
+  dats <- cuadros_OP %>% 
+      filter(Categoría=="Suficiente") %>% 
+      filter(str_detect(Pregunta, "estado")) %>% 
+      filter(!str_detect(País,"xico")) %>% 
+      filter(!str_detect(id,"99")) %>% 
+      arrange(País) %>% 
+      mutate(
+        fecha = as.Date(fecha),
+        prop = round(value*100),
+        Porcentaje = paste0(round(value*100), "%")
+      ) %>% 
+      select(País, Encuesta, fecha, tipo_encuesta, Pregunta, id, Porcentaje, Nota = nota) %>% 
+      rename(
+        Fecha = fecha, 
+        `Tipo encuesta` = tipo_encuesta,
+        Respuesta = id
+      )
+  DT::datatable(dats, 
+                class= "cell-border stripe", 
+                rownames = F, 
+                filter = "top",
+                extensions = "Buttons", 
+                width = "100%",
+                options = list(dom="Bfrtip", pageLength = 10,scrollX = T,
+                               buttons = c("copy", "excel"), 
+                                autowidth = T, columnDefs = list(list(width = '20%', targets = 7)))
+  )%>%
+  DT::formatStyle(columns = c(1:8), fontSize = '8pt')%>%DT::formatStyle(columns = 8, fontSize = '4pt')
 } else if(params$view_pdf ){
   include_graphics(path ="03_graficas/suf_gob_loc_op.png", auto_pdf = T)
 }
 ```
 \newpage
 
-# <b>Percepción respecto al impacto del COVID-19 en la vida personal y familiar</b>
+## <b>Impacto en la vida</b>
 ***
+
+### Percepción respecto al impacto del COVID-19 en la vida personal y familiar
 Resultados de distintas encuestadoras a nivel mundial
-```{r fig.width=9,  out.width="80%",fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Percepción de impacto en vida personal y familiar durante crisis de COVID-19"}
+```{r fig.width=7,  out.width="70%",fig.height=7, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Percepción de impacto en vida personal y familiar durante crisis de COVID-19"}
 
 impacto <- cuadros_OP %>% 
   filter(Categoría=="Cambios" | Categoría == "Impacto") %>% 
@@ -754,10 +824,10 @@ impacto <- cuadros_OP %>%
   ) %>% 
   bind_rows(
     cuadros_OP %>% 
-  filter(Categoría=="Cambios" | Categoría == "Impacto") %>% 
-  filter(!str_detect(id,"9"))  %>% 
-  filter(str_detect(País,"xico")) %>%
-  filter(!tipo_encuesta=="En línea")
+      filter(Categoría=="Cambios" | Categoría == "Impacto") %>% 
+      filter(!str_detect(id,"9"))  %>% 
+      filter(str_detect(País,"xico")) %>%
+      filter(!tipo_encuesta=="En línea")
   ) %>% 
   mutate(
     prop = round(value*100),
@@ -766,9 +836,9 @@ impacto <- cuadros_OP %>%
 
 p <- 
   ggplot(impacto,
-       aes(x = id, y = prop,
-           color = Pregunta, 
-           fill = País, label = Porcentaje)) +
+         aes(x = id, y = prop,
+             color = Pregunta, 
+             fill = País, label = Porcentaje)) +
   geom_col(width = 0.5) +
   facet_wrap(Encuesta ~ País, nrow = 2) +
   theme_minimal() + 
@@ -776,7 +846,7 @@ p <-
                      values= c(
                        rep("white", length(levels(as.factor(impacto$Pregunta))))
                      )
-                     ) +
+  ) +
   scale_fill_manual("",
                     values = c(
                       brewer.pal(n=9, "Blues")[4],
@@ -789,30 +859,39 @@ p <-
         axis.text.x = element_text(size = 10),
         axis.text.y = element_text(size = 15),
         legend.position='none')
-  
+
 ggsave("03_graficas/percepcion_fam_pers_op.pdf", plot = p, 
        width = 15, height = 10, dpi = 100)
 
 if(params$view_html) {
-DT::datatable(
-    cuadros_OP %>% 
-  filter(Categoría=="Cambios" | Categoría == "Impacto") %>% 
-  filter(!str_detect(País,"xico")) %>% 
-  filter(!str_detect(id,"99")) %>% 
-  arrange(País) %>% 
-  mutate(
-    fecha = as.Date(fecha),
-    prop = round(value*100),
-    Porcentaje = paste0(round(value*100), "%")
-  ) %>% 
-  select(País, Encuesta, fecha, tipo_encuesta, Pregunta, id, Porcentaje, Nota = nota) %>% 
-  rename(
-    Fecha = fecha, 
-    `Tipo encuesta` = tipo_encuesta,
-    Respuesta = id
-  ), class= "cell-border stripe", rownames = F, filter = "top",
-              extensions = "Buttons", options = list(dom="Bfrtip",
-                                                     buttons = c("copy", "excel"))) 
+  dats <- cuadros_OP %>% 
+      filter(Categoría=="Cambios" | Categoría == "Impacto") %>% 
+      filter(!str_detect(País,"xico")) %>% 
+      filter(!str_detect(id,"99")) %>% 
+      arrange(País) %>% 
+      mutate(
+        fecha = as.Date(fecha),
+        prop = round(value*100),
+        Porcentaje = paste0(round(value*100), "%")
+      ) %>% 
+      select(País, Encuesta, fecha, tipo_encuesta, Pregunta, id, Porcentaje, Nota = nota) %>% 
+      rename(
+        Fecha = fecha, 
+        `Tipo encuesta` = tipo_encuesta,
+        Respuesta = id
+      )
+  DT::datatable(dats, 
+                class= "cell-border stripe", 
+                rownames = F, 
+                filter = "top",
+                extensions = "Buttons", 
+                width = "100%",
+                options = list(dom="Bfrtip", pageLength = 10,scrollX = T,
+                               buttons = c("copy", "excel"), 
+                                autowidth = T, columnDefs = list(list(width = '20%', targets = 7)))
+  )%>%
+  DT::formatStyle(columns = c(1:8), fontSize = '8pt')%>%DT::formatStyle(columns = 8, fontSize = '4pt')
+
 } else if(params$view_pdf ){
   include_graphics(path ="03_graficas/percepcion_fam_pers_op.png", auto_pdf = T)
 }
@@ -820,11 +899,13 @@ DT::datatable(
 ```
 \newpage
 
-# <b>Percepción respecto al desarrollo de la pandemia del COVID-19</b>
+## <b>Desarrollo de la Pandemia</b>
 ***
+
+### Percepción respecto al desarrollo de la pandemia del COVID-19
 Resultados de distintas encuestadoras a nivel mundial
 
-```{r fig.width=9,  out.width="80%",fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Percepción respecto al desarrollo de la pandemia de COVID-19"}
+```{r fig.width=7,  out.width="70%", fig.height=7, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Percepción respecto al desarrollo de la pandemia de COVID-19"}
 
 empeorar <- cuadros_OP %>% 
   filter(Categoría=="Empeorar") %>% 
@@ -837,22 +918,22 @@ empeorar <- cuadros_OP %>%
   ) %>% 
   bind_rows(
     cuadros_OP %>% 
-  filter(Categoría=="Empeorar") %>% 
-  filter(!str_detect(id,"9"))  %>% 
-  filter(str_detect(País,"xico")) %>%
-  filter(!tipo_encuesta=="En línea")
+      filter(Categoría=="Empeorar") %>% 
+      filter(!str_detect(id,"9"))  %>% 
+      filter(str_detect(País,"xico")) %>%
+      filter(!tipo_encuesta=="En línea")
   ) %>% 
   mutate(
     prop = round(value*100),
     Porcentaje = paste0(round(value*100), "%")
   )
-    
+
 
 p <- 
   ggplot(empeorar,
-       aes(x = str_wrap(id, 15), y = prop,
-           color = Pregunta, 
-           fill = id, label = Porcentaje)) +
+         aes(x = str_wrap(id, 15), y = prop,
+             color = Pregunta, 
+             fill = id, label = Porcentaje)) +
   geom_col(width = 0.5) +
   facet_wrap(País ~ Encuesta, nrow = 2) +
   theme_minimal() + 
@@ -860,7 +941,7 @@ p <-
                      values= c(
                        rep("white", length(levels(as.factor(empeorar$Pregunta))))
                      )
-                     ) +
+  ) +
   scale_fill_manual("",
                     values = c(
                       brewer.pal(n=9, "Blues")[4],
@@ -874,30 +955,39 @@ p <-
         axis.text.x = element_text(size = 10),
         axis.text.y = element_text(size = 10), 
         legend.position='none')
-  
+
 ggsave("03_graficas/percepcion_epi_op.pdf", plot = p, 
        width = 15, height = 10, dpi = 100)
 
 if(params$view_html) {
-DT::datatable(
-    cuadros_OP %>% 
-  filter(Categoría=="Empeorar") %>% 
-  filter(!str_detect(País,"xico")) %>% 
-  filter(!str_detect(id,"99")) %>% 
-  arrange(País) %>% 
-  mutate(
-    fecha = as.Date(fecha),
-    prop = round(value*100),
-    Porcentaje = paste0(round(value*100), "%")
-  ) %>% 
-  select(País, Encuesta, fecha, tipo_encuesta, Pregunta, id, Porcentaje, Nota = nota) %>% 
-  rename(
-    Fecha = fecha, 
-    `Tipo encuesta` = tipo_encuesta,
-    Respuesta = id
-  ), class= "cell-border stripe", rownames = F, filter = "top",
-              extensions = "Buttons", options = list(dom="Bfrtip",
-                                                     buttons = c("copy", "excel"))) 
+  dats <-  cuadros_OP %>% 
+      filter(Categoría=="Empeorar") %>% 
+      filter(!str_detect(País,"xico")) %>% 
+      filter(!str_detect(id,"99")) %>% 
+      arrange(País) %>% 
+      mutate(
+        fecha = as.Date(fecha),
+        prop = round(value*100),
+        Porcentaje = paste0(round(value*100), "%")
+      ) %>% 
+      select(País, Encuesta, fecha, tipo_encuesta, Pregunta, id, Porcentaje, Nota = nota) %>% 
+      rename(
+        Fecha = fecha, 
+        `Tipo encuesta` = tipo_encuesta,
+        Respuesta = id
+      )
+  DT::datatable(dats, 
+                class= "cell-border stripe", 
+                rownames = F, 
+                filter = "top",
+                extensions = "Buttons", 
+                width = "100%",
+                options = list(dom="Bfrtip", pageLength = 10,scrollX = T,
+                               buttons = c("copy", "excel"), 
+                                autowidth = T, columnDefs = list(list(width = '20%', targets = 7)))
+  )%>%
+  DT::formatStyle(columns = c(1:8), fontSize = '8pt')%>%DT::formatStyle(columns = 8, fontSize = '4pt')
+  
 } else if(params$view_pdf ){
   include_graphics(path ="03_graficas/percepcion_epi_op.png", auto_pdf = T)
 }
@@ -910,16 +1000,6 @@ La pandemia del COVID 19 ya se perfila como la protagonista principal de la últ
 <p>Por un lado, los débiles sistemas de salud hacen imposible atender efectivamente a todos los potenciales enfermos de la pandemia. Y, por otro lado, y especialmente en los países en desarrollo, la estructura económica construida hace insostenible una ausencia prolongada de la población económicamente activa. 
 <p>En el tema, y desde abril del 2015, el científico informático Bill Gates ya advertía que “si algo ha de matar a más de 10 millones de personas en las próximas décadas, probablemente será un virus muy infeccioso más que una guerra”. Sin duda el camino que aún queda por combatir ante esta pandemia es largo, empero, la sociedad civil- hoy más que nunca- es el principal protagonista para dar fin a los efectos de esta crisis.
 
-# Cotización
-***
-```{block eval=FALSE, include=params$view_html}
-<p>
-Favor de Contactar a [Diana Penagos](<mailto:dpenagos@parametria.com.mx?subject=Reporte Covid>) o directamente en [Parametría](http://www.parametria.com.mx/cotiza_parametria.php) para cotizar un `Seguimiento en Vivo` de algún tema de interés.
-<br>
-```
-```{block eval=FALSE, include=params$view_pdf}
-Favor de Contactar a [\textcolor{blue}{\underline{Diana Penagos}}](mailto:dpenagos@parametria.com.mx?subject=ReporteCOVID?body=Favor de mandar información de cotización) o directamente en [\textcolor{blue}{\underline{Parametría}}](http://www.parametria.com.mx/cotiza_parametria.php) para cotizar un Seguimiento en Vivo de algún tema de interés.
-```
 
 ```{block eval=FALSE, include=params$view_html}
 # Info
@@ -932,6 +1012,7 @@ También puedes descargar el tema de este Rmd [aquí](https://holtzy.github.io/P
 ```
 ```{block eval=FALSE, include=params$view_pdf}
 Descargue los archivo RMarkdown para crear este reporte aquí [\underline{Rmarkdown}](https://github.com/LorenzoLeon/covid19_mex_Reportes).
-\newline
+```
+```{block eval=FALSE, include=params$view_html}
 También puedes descargar el tema de este Rmd [\underline{aquí}](https://holtzy.github.io/Pimp-my-rmd/)
 ```

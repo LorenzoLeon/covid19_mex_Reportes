@@ -179,7 +179,8 @@ xfun::embed_file('01_datos/Data_fecha_acumulada.csv', text = "Descargue los dato
 ```
 
 ***
-<br><br>
+
+## Número de casos confirmados de COVID-19 en México a la fecha de corte `r format(max(data_fecha$fecha_corte), format = "%d/%m/%Y")`
 ```{r fig.width=9, fig.height=6, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Casos Confirmados Acumulados por día"}
 ur <- ggplot(fig, 
          aes(x = Fecha,
@@ -216,11 +217,7 @@ unt$value <-  as.numeric(as.Date(unt$label))
 plotly <- plotly::ggplotly(ur, 
                            tooltip = c("x", "y", "color")
                            )%>%
-  plotly::layout(title = list(text = paste0(titulo,
-                                    '<br>',
-                                    '<sup>',
-                                    subtitulo,
-                                    '</sup>')),
+  plotly::layout(title = list(text = ""),
                  hovermode = "x", 
                  tickvalues ="", 
                  annotations = list(x = 1, y = 0, 
@@ -355,11 +352,7 @@ ur <- ggplot(b,
         legend.position = "bottom") +
   coord_flip() 
 plotly <-  plotly::ggplotly(ur, tooltip = c("text"))%>%
-  plotly::layout(title = list(text = paste0(titulo,
-                                    '<br>',
-                                    '<sup>',
-                                    subtitulo,
-                                    '</sup>')),
+  plotly::layout(title = list(text = ""),
                  hovermode = "y", 
                  bargap = 0.1, 
                  barmode = 'overlay', 
@@ -639,13 +632,6 @@ mymap
 ```
 <br>
 [Link a este Mapa](https://lorenzoleon.github.io/covid19_mex_Reportes/Mapa_Casos.html)
-
-# Cotización
-
-***
-<p>
-Favor de Contactar a [Diana Penagos](<mailto:dpenagos@parametria.com.mx?subject=Reporte Covid>) o directamente en [Parametría](http://www.parametria.com.mx/cotiza_parametria.php) para cotizar un `Seguimiento en Vivo` de algún tema de interés.
-<br>
 
 # Info
 ***
