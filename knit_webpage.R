@@ -18,5 +18,5 @@ rmarkdown::render(input = "OpinionPublica.Rmd",
                   output_format = "html_document", output_file = "OpinionPublica")
 rmarkdown::render(input = "DatosSalud.Rmd", 
                   output_format = "html_document",
-                  output_file = "DatosSalud", params = "ask")
+                  output_file = "DatosSalud")#, params = "ask")
 
