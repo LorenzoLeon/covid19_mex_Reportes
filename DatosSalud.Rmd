@@ -236,7 +236,7 @@ plotly <- plotly::ggplotly(ur,
                                                font = list(color="red")))
 
 saveWidgetFix(plotly, libdir = "graph_dependencies", selfcontained = F,
-              file="linea_tiempo.html")
+              file="03_graficas/linea_tiempo.html")
 plotly
 
 ```
@@ -364,7 +364,7 @@ plotly <-  plotly::ggplotly(ur, tooltip = c("text"))%>%
  
  ggsave("03_graficas/Prop_sexo_edad.png", plot = ur + geom_label(na.rm = T, size = 5, aes(label = ifelse(abs(prop)<1,NA_character_,paste0(abs(round(prop,1)), "%")))), width = 15, height = 10, dpi = 100)
 saveWidgetFix(plotly,libdir = "graph_dependencies", selfcontained = F,
-              file="Prop_sexo_edad.html")
+              file="03_graficas/Prop_sexo_edad.html")
 plotly
 ```
 <br>
@@ -467,10 +467,18 @@ d_ent <- d %>%
          Fecha = as.Date.character(Fecha, format = c("%Y-%m-%d")))%>%
   select(Fecha, Entidad, `Casos nuevos`, Total, Hombres, Mujeres, everything())
   
-
-DT::datatable(d_ent%>%select(Fecha, Entidad, `Casos nuevos`, Total, Hombres, Mujeres), width = 400, class= "cell-border stripe", rownames = F, filter = "top",
-              extensions = "Buttons", options = list(dom="Bfrtip",
-                                                     buttons = c("copy", "excel")))
+dats <- d_ent%>%select(Fecha, Entidad, `Casos nuevos`, Total, Hombres, Mujeres)
+DT::datatable(dats, 
+                class= "cell-border stripe", 
+                rownames = F,
+                filter = "top",
+                extensions = "Buttons", 
+                width = "100%",
+                options = list(dom="Bfrtip", 
+                               pageLength = 10,scrollX = T,
+                               buttons = c("copy", "excel"), 
+                               autowidth = T)
+  )
 ```
 
 <br>
@@ -479,9 +487,18 @@ DT::datatable(d_ent%>%select(Fecha, Entidad, `Casos nuevos`, Total, Hombres, Muj
 ***
 <br>
 ```{r fig.width=6, fig.height=6, fig.align='center',results='asis',echo=FALSE,message=FALSE}
-DT::datatable(d_ent%>%select(Fecha, Entidad, `Casos nuevos`, Total, ends_with("años"), starts_with("80")), width = 400, class= "cell-border stripe", rownames = F, filter = "top",
-              extensions = "Buttons", options = list(dom="Bfrtip",
-                                                     buttons = c("copy", "excel")))
+dats <- d_ent%>%select(Fecha, Entidad, `Casos nuevos`, Total, ends_with("años"), starts_with("80"))
+DT::datatable(dats, 
+                class= "cell-border stripe", 
+                rownames = F,
+                filter = "top",
+                extensions = "Buttons", 
+                width = "100%",
+                options = list(dom="Bfrtip", 
+                               pageLength = 10,scrollX = T,
+                               buttons = c("copy", "excel"), 
+                               autowidth = T)
+  )
 ```
 
 
@@ -626,7 +643,7 @@ mymap <- mymap %>% addLayersControl(
                     }")))
 
 saveWidgetFix(mymap, libdir = "graph_dependencies", selfcontained = F,
-              file="Mapa_Casos.html")
+              file="03_graficas/Mapa_Casos.html")
 mymap
 
 ```

@@ -53,8 +53,9 @@ Descargue el archivo RMarkdown para crear este reporte aquí
 
 ***
 
-Aunque son diversos los aprendizajes que se pueden obtener de la crisis derivada por la pandemia del COVID-19, queremos destacar dos principalmente. Primero, rescatar que el personal médico, los cuerpos de seguridad y protección civil, así como los campesinos y comerciantes de productos básicos son grupos de primaria atención ya que de su trabajo depende el buen funcionamiento de la estructura social. Segundo, la importancia de la empatía como motor de la respuesta más efectiva ante una catástrofe: la acción colectiva. Los ciudadanos de la aldea global juegan hoy un papel crucial ante esta pandemia, en esta medida, el seguimiento a sus opiniones y comportamientos son esenciales tanto para alterar el curso de la crisis como para entender su desarrollo. 
+Aunque son diversos los aprendizajes que se pueden obtener de la crisis derivada por la pandemia del COVID-19, queremos destacar dos principalmente. Primero, rescatar que el personal médico, los cuerpos de seguridad y protección civil, así como los campesinos y comerciantes de productos básicos son grupos de primaria atención ya que de su trabajo depende el buen funcionamiento de la estructura social. Segundo, la importancia de la empatía como motor de la respuesta más efectiva ante una catástrofe: la acción colectiva. Los ciudadanos de la aldea global juegan hoy un papel crucial ante esta pandemia, en esta medida, el seguimiento a sus opiniones y comportamientos es esencial tanto para alterar el curso de la crisis como para entender su desarrollo. 
 <br>
+\newline
 Con el fin de concentrar y uniformar la información sobre la opinión pública respecto a la pandemia del COVID-19 en el mundo, Parametría presenta este ejercicio acumulativo de mediciones nacionales e internacionales en el tema. La diversidad de información presentada en este tipo de trackings de opinión pública permite no solo conocer los esfuerzos del gremio por obtener datos en otros países, sino además facilita la comparabilidad de resultados. En general, los datos evidencian no solo el alto nivel de conocimiento de la sociedad respecto al tema, sino también su gran preocupación frente al virus como una amenaza latente tanto para la salud personal como para la economía familiar. De hecho, las diversas mediciones coinciden en la percepción pesimista de los entrevistados respecto al futuro desarrollo de la pandemia. Asimismo, la información revela posiciones contrastantes en la evaluación del trabajo de los gobiernos ante la crisis, así como respecto a las acciones gubernamentales a nivel local. 
 ```{r echo=F, background="white", message = FALSE, warning = FALSE}
 require(foreign, quietly = T)
@@ -610,7 +611,7 @@ if(params$view_html) {
 <br>
 \newpage
 
-### <b>Suficiente de Gobiernos Federales</b>
+### <b>Suficiencia de Gobiernos Federales</b>
 ***
 
 #### Percepción de suficiencia en el manejo de la crisis derivada de la pandemia del COVID-19 Gobiernos nacionales o federales
@@ -711,7 +712,7 @@ if(params$view_html) {
 ```
 \newpage
 
-### <b>Suficiente de Gobiernos Locales</b>
+### <b>Suficiencia de Gobiernos Locales</b>
 
 #### Percepción de suficiencia en el manejo de la crisis derivada de la pandemia del COVID-19 Gobiernos locales
 ***
@@ -996,8 +997,11 @@ if(params$view_html) {
 
 ***
 \newpage
-La pandemia del COVID 19 ya se perfila como la protagonista principal de la última década. Si bien han surgido nuevas enfermedades en los últimos años, los efectos específicos de este virus han puesto en evidencia la vulnerabilidad de los países frente a este tipo de fenómeno. 
-<p>Por un lado, los débiles sistemas de salud hacen imposible atender efectivamente a todos los potenciales enfermos de la pandemia. Y, por otro lado, y especialmente en los países en desarrollo, la estructura económica construida hace insostenible una ausencia prolongada de la población económicamente activa. 
+Si bien han surgido nuevas enfermedades en los últimos años, los efectos específicos de este virus han puesto en evidencia la vulnerabilidad de los países frente a este tipo de fenómeno. 
+<p>
+
+Por un lado, los débiles sistemas de salud hacen imposible atender efectivamente a todos los potenciales enfermos de la pandemia. Y, por otro lado, y especialmente en los países en desarrollo, la estructura económica construida hace insostenible una ausencia prolongada de la población económicamente activa. 
+
 <p>En el tema, y desde abril del 2015, el científico informático Bill Gates ya advertía que “si algo ha de matar a más de 10 millones de personas en las próximas décadas, probablemente será un virus muy infeccioso más que una guerra”. Sin duda el camino que aún queda por combatir ante esta pandemia es largo, empero, la sociedad civil- hoy más que nunca- es el principal protagonista para dar fin a los efectos de esta crisis.
 
 
