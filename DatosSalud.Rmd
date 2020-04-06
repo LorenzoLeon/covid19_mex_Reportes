@@ -99,7 +99,7 @@ d <- read_excel(paste0("01_datos/",filetoread),
                                         "date", "date", "text", "text", "text", "text" ))%>%
   filter(fecha_corte > params$`Fecha Mínima`)
 ```
-Los datos de `r format(as.Date(max(d$fecha_corte)),"%d-%B" )` tienen `r nrow(d%>%filter(!(inconsistencia_omision == 1)))` casos registrados con y `r ncol(d)` variables.
+Los datos de `r format(as.Date(max(d$fecha_corte)),"%d-%m" )` tienen `r nrow(d%>%filter(!(inconsistencia_omision == 1)))` casos registrados con y `r ncol(d)` variables.
 
 # <b>Número de casos positivos</b>
 ***

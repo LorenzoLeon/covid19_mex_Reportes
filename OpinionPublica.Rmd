@@ -887,21 +887,21 @@ plotly
 ***
 \newpage
 La pandemia del COVID 19 ya se perfila como la protagonista principal de la última década. Si bien han surgido nuevas enfermedades en los últimos años, los efectos específicos de este virus han puesto en evidencia la vulnerabilidad de los países frente a este tipo de fenómeno. 
+\newline
 <p>Por un lado, los débiles sistemas de salud hacen imposible atender efectivamente a todos los potenciales enfermos de la pandemia. Y, por otro lado, y especialmente en los países en desarrollo, la estructura económica construida hace insostenible una ausencia prolongada de la población económicamente activa. 
+\newline
 <p>En el tema, y desde abril del 2015, el científico informático Bill Gates ya advertía que “si algo ha de matar a más de 10 millones de personas en las próximas décadas, probablemente será un virus muy infeccioso más que una guerra”. Sin duda el camino que aún queda por combatir ante esta pandemia es largo, empero, la sociedad civil- hoy más que nunca- es el principal protagonista para dar fin a los efectos de esta crisis.
+```{block eval=FALSE, include=params$view_html}
 
 # Cotización
 ***
-```{block eval=FALSE, include=params$view_html}
 <p>
 Favor de Contactar a [Diana Penagos](<mailto:dpenagos@parametria.com.mx?subject=Reporte Covid>) o directamente en [Parametría](http://www.parametria.com.mx/cotiza_parametria.php) para cotizar un `Seguimiento en Vivo` de algún tema de interés.
 <br>
 ```
 ```{block eval=FALSE, include=params$view_pdf}
 Favor de Contactar a [\textcolor{blue}{\underline{Diana Penagos}}](mailto:dpenagos@parametria.com.mx?subject=ReporteCOVID?body=Favor de mandar información de cotización) o directamente en [\textcolor{blue}{\underline{Parametría}}](http://www.parametria.com.mx/cotiza_parametria.php) para cotizar un Seguimiento en Vivo de algún tema de interés.
-```
 
-```{block eval=FALSE, include=params$view_html}
 # Info
 ***
 <br>

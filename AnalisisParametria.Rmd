@@ -515,7 +515,10 @@ Los mexicanos entrevistados ya perciben los efectos de la pandemia sobre su vida
 \newpage
 Asimismo, una de las principales evidencias que emergen de esta crisis, especialmente en los países en desarrollo, es la débil estructura económica que no está preparada para una ausencia prolongada de la población económicamente activa (PEA). En México, acorde con cifras oficiales del INEGI ^[INEGI (2019). “Actualización de la medición de la economía informal, 2003-2018. Año base 2013”. Comunicado de prensa No. 693/19, diciembre. [\textcolor{blue}{\underline{INEGI Boletines}}](https://www.inegi.org.mx/contenidos/saladeprensa/boletines/2019/StmaCntaNal/MEI2018.pdf)], el 56% de la PEA se emplea en puestos de trabajo informales sin contrato, prestaciones laborales o jornadas de empleo adecuadas. Acorde con lo anterior, hasta el 46% de los mexicanos entrevistados señala que depende de salir a trabajar para obtener un ingreso diario. Este porcentaje extrapolado al total de la población mexicana (en una encuesta cara a cara) probablemente superaría el 50%. (Figura 7)
 ```
+```{block eval=FALSE, include=params$view_html}
 
+# Proporción de hogares en México que podrían o no ir a trabajar y continuar recibiendo su salario o ingreso
+```
 ```{r fig.width=9, out.width="70%", fig.height=7, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Hogares que continuarán recibiendo ingresos - Parametría"}
 pregunta <- "Proporción de hogares en México que podrían o no ir a trabajar y continuar recibiendo su salario o ingreso"
 
@@ -583,7 +586,10 @@ if(params$view_html) {
 \newpage
 De la encuesta telefónica de marzo, el 96% de los hogares en México tiene al menos una persona que trabaja. De este grupo, hasta el 29% de los entrevistados afirmó que todos los miembros de su hogar están cumpliendo la cuarentena en casa. Es decir, además de su probable dependencia económica a un empleo precario, es factible que el volumen de entradas económicas de los hogares se vea afectado por la ausencia laboral de sus miembros. En este tema, el 86% de los entrevistados afirmó que el ingreso familiar se reduciría significativamente en caso que el periodo de cuarentena durará un mes más. (Figura 8 y 9)
 ```
+```{block eval=FALSE, include=params$view_html}
 
+# Proporción de hogares en México que tiene al menos un miembro que trabaja y Proporción de hogares en México en los que ya ninguno de sus miembros está trabajando
+```
 ```{r fig.width=9, out.width="70%", fig.height=7, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Hogares trabajadores - Parametría"}
 pregunta <- c("Proporción de hogares en México que tiene al menos un miembro que trabaja", "Proporción de hogares en México en los que ya ninguno de sus miembros está trabajando")
 
@@ -1000,7 +1006,10 @@ if(params$view_html) {
 
 \newpage
 Respecto a las acciones del Presidente frente a la pandemia del COVID-19, los mexicanos aún respaldan su trabajo. El 57% de los entrevistados califica muy bien o bien la forma en que el gobierno de AMLO ha manejado esta crisis de salud. Sin embargo, hasta el 52% de quienes participaron en la encuesta considera que las acciones gubernamentales aún son insuficientes para prevenir la propagación del virus en el país. Estos datos de opinión son los mismos para la evaluación de los gobernadores, lo cual deriva en un nuevo fenómeno. (Figura 14 y 15) 
+```{block eval=FALSE, include=params$view_html}
 
+# ¿Cómo cree que ha manejado el gobierno del Presidente Andrés Manuel López Obrador la epidemia del Coronavirus: muy bien, bien, mal o muy mal?
+```
 ```{r fig.width=9, out.width="70%", fig.height=7, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Opinión de presidente: trabajo - Parametría"}
 pregunta <- "¿Cómo cree que ha manejado el gobierno del Presidente Andrés Manuel López Obrador la epidemia del Coronavirus: muy bien, bien, mal o muy mal?"
 
@@ -1058,7 +1067,10 @@ if(params$view_html) {
 }
 
 ```
+```{block eval=FALSE, include=params$view_html}
 
+# ¿Usted considera que el gobierno del Presidente Andrés Manuel López Obrador está haciendo o no lo suficiente para prevenir la propagación del Coronavirus en el país?
+```
 ```{r fig.width=9, out.width="70%", fig.height=7, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Opinión de presidente: suficiencia - Parametría"}
 pregunta <- "¿Usted considera que el gobierno del Presidente Andrés Manuel López Obrador está haciendo o no lo suficiente para prevenir la propagación del Coronavirus en el país?"
 
@@ -1135,19 +1147,18 @@ Sin duda el camino que aún queda por combatir ante esta pandemia es largo, empe
 | Diseño, muestreo, aplicación de entrevistas y análisis | Parametría SA de CV |
 | Método de muestreo | Aleatorio simple |
 
+```{block eval=FALSE, include=params$view_html}
+
 # Cotización
 
 ***
-```{block eval=FALSE, include=params$view_html}
 <p>
 Favor de Contactar a [Diana Penagos](<mailto:dpenagos@parametria.com.mx?subject=Reporte Covid>) o directamente en [Parametría](http://www.parametria.com.mx/cotiza_parametria.php) para cotizar un `Seguimiento en Vivo` de algún tema de interés.
 <br>
 ```
 ```{block eval=FALSE, include=params$view_pdf}
 Favor de Contactar a \href{mailto:dpenagos@parametria.com.mx?subject=ReporteCOVID?body=Favor de mandar información de cotización}{\textcolor{blue}{\underline{Diana Penagos}}} o directamente en [\textcolor{blue}{\underline{Parametría}}](http://www.parametria.com.mx/cotiza_parametria.php) para cotizar un Seguimiento en Vivo de algún tema de interés.
-```
 
-```{block eval=FALSE, include=params$view_html}
 # Info
 ***
 <br>
