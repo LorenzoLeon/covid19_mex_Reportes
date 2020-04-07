@@ -130,9 +130,36 @@ rm_accent <- function(str,pattern="all") {
   return(str)
 }
 
+color.palette <- function(steps, n.steps.between=NULL, ...){
+  
+  if(is.null(n.steps.between)) n.steps.between <- rep(0, (length(steps)-1))
+  if(length(n.steps.between) != length(steps)-1) stop("Must have one less n.steps.between value than steps")
+  
+  fill.steps <- cumsum(rep(1, length(steps))+c(0,n.steps.between))
+  RGB <- matrix(NA, nrow=3, ncol=fill.steps[length(fill.steps)])
+  RGB[,fill.steps] <- col2rgb(steps)
+  
+  for(i in which(n.steps.between>0)){
+    col.start=RGB[,fill.steps[i]]
+    col.end=RGB[,fill.steps[i+1]]
+    for(j in seq(3)){
+      vals <- seq(col.start[j], col.end[j], length.out=n.steps.between[i]+2)[2:(2+n.steps.between[i]-1)]  
+      RGB[j,(fill.steps[i]+1):(fill.steps[i+1]-1)] <- vals
+    }
+  }
+  
+  new.steps <- rgb(RGB[1,], RGB[2,], RGB[3,], maxColorValue = 255)
+  pal <- colorRampPalette(new.steps, ...)
+  return(pal)
+}
+
+colfunc <- color.palette(c(brewer.pal(n = 11, "RdBu")[10],
+                           brewer.pal(n = 11, "RdBu")[7],
+                           brewer.pal(n = 11, "RdBu")[2]))
+
+
 cuadros_OP <- read_excel(paste0("01_datos/", "Cuadros_HTML2.xlsx"))
 #cuadros_OP <- read_excel("~/synology_shared/Parametría/COVID_SEGUIMIENTO_MX/01_datos/Cuadros_HTML2.xlsx")
-
 # Transformaciones ----
 names(cuadros_OP)[10:47] <- paste0("r_", names(cuadros_OP)[10:47])
 cuadros_OP <- cuadros_OP %>% 
@@ -146,9 +173,18 @@ cuadros_OP <- cuadros_OP %>%
       País=="USA", "EEUU", País
     ),
     value = value/100,
-    id = ifelse(id=="Nivel", País, id), 
-    text = paste0(stri_replace_first(id, regex = "[:digit:]+. ", replacement = ""), "\n", "Porcentaje: " ,round(value*100, 0), "%" , "\n", str_wrap(Pregunta, 25), "\nEncuestadora: ", Encuesta ),
-  ) %>% 
+    id_clean = stri_replace_first(id, regex = "[:digit:]+. ", replacement = ""),
+    id_num = stri_extract_first(id, regex = "[:digit:]+"),
+    id_num = ifelse(stri_detect(id, fixed = "Nivel", case_insensitive = T), 1, id_num),
+    id = ifelse(stri_detect(id, fixed = "Nivel", case_insensitive = T), País, id), 
+    text = paste0(id_clean, "\n", "Porcentaje: " ,round(value*100, 0), "%" , "\nEncuestadora: ", Encuesta ),
+    prop = round(value*100),
+    Porcentaje = paste0(round(value*100), "%")
+  )%>%
+  group_by(Pregunta)%>%
+  mutate(max = max(ifelse(as.numeric(id_num)==99, NA_integer_,as.numeric(id_num) ), na.rm = T),
+         color = colfunc(max)[as.numeric(id_num)],
+         color = ifelse(is.na(color), "grey", color)) %>% 
   drop_na(tipo_encuesta) # QUITAR UNA VEZ QUE SE ACTUALICEN TODAS LAS FECHAS Y NOTAS METODOLÓGICAS
 categorias <- unique(cuadros_OP$Categoría)
 
@@ -214,7 +250,7 @@ p <-
                      values = c(
                        rep("white", length(levels(as.factor(niv_con$Pregunta))))
                      )) +
-  ylim(0, 1.05) +
+  scale_y_percent(limits = c(0,(max(niv_con$value)+.1)))+
   labs(x="",
        y="") +
   theme(plot.title = element_text(size = 20, face = "bold"),
@@ -225,7 +261,8 @@ p <-
         axis.text.y = element_text(size = 15),
         legend.position = "none")
 
-ggsave("03_graficas/informacion_op.pdf", plot = p, 
+ggsave("03_graficas/informacion_op.pdf", plot = p+ 
+         geom_label(size = 8), 
        width = 15, height = 10, dpi = 100)
 
 if(params$view_html) {
@@ -291,30 +328,29 @@ manejo_media <- cuadros_OP %>%
   mutate(
     prop = round(value*100),
     Porcentaje = paste0(round(value*100), "%")
-  )
+  )%>%
+  arrange(id)
 
 
 p <- 
   ggplot(manejo_media,
-         aes(x = str_wrap(id, 10), y = prop,
+         aes(x = str_wrap(id, 10), y = value,
              fill = id, 
-             color = Pregunta,
              label = Porcentaje)) +
   geom_col(width = 0.5) +
+  scale_y_percent(limits = c(0,(max(manejo_media$value)+.1)))+
+  scale_fill_manual(values = manejo_media$color)+
   facet_wrap(País ~ Encuesta, nrow = 1, scales = "free_x") +
-  theme_minimal() + 
-  scale_color_manual("", 
-                     values = c(rep("white", length(levels(as.factor(manejo_media$Pregunta)))))) +
-  scale_fill_manual("",
-                    values = brewer.pal(n=length(unique(manejo_media$id)), "Blues")) +
+  theme_minimal() +
+  
   labs(x="",
-       y="%") +
+       y="") +
   theme(strip.text = element_text(size = 15),
-        axis.text.x = element_text(size = 8),
+        axis.text.x = element_text(size = 12),
         axis.text.y = element_text(size = 12),
         legend.position = "none")
 
-ggsave("03_graficas/evaluacion_medios_op.pdf", plot = p, 
+ggsave("03_graficas/evaluacion_medios_op.pdf", plot = p+geom_label(size = 8), 
        width = 15, height = 10, dpi = 100)
 
 if(params$view_html) {
@@ -376,20 +412,16 @@ apr_pres <- cuadros_OP %>%
 
 p <- 
   ggplot(apr_pres,
-         aes(x = str_wrap(id, 15), y = prop,
-             color = Pregunta,
-             fill = id, label = Porcentaje)) +
+         aes(x = str_wrap(id, 15), y = value,
+             fill = id, 
+             label = Porcentaje)) +
   geom_col(width = 0.5) +
   facet_wrap(~ Encuesta, nrow = 1) +
   theme_minimal() + 
-  scale_color_manual("", values=c(rep("white", length(levels(as.factor(apr_pres$Pregunta)))))) +
-  scale_fill_manual("",
-                    values = c(
-                      brewer.pal(n=9, "Blues")[4],
-                      brewer.pal(n=9, "Blues")[8]
-                    )) +
+  scale_y_percent(limits = c(0,(max(apr_pres$value)+.1)))+
+  scale_fill_manual(values = apr_pres$color)+
   labs(x="",
-       y="%") +
+       y="") +
   theme(strip.text = element_text(size = 15),
         panel.spacing.x = unit(3, "lines"),
         
@@ -397,7 +429,7 @@ p <-
         axis.text.y = element_text(size = 12),
         legend.position = "none")
 
-ggsave("03_graficas/aprobacion_pres_op.pdf", plot = p, 
+ggsave("03_graficas/aprobacion_pres_op.pdf", plot = p+geom_label(size = 8), 
        width = 15, height = 10, dpi = 100)
 
 if(params$view_html) {
@@ -450,11 +482,12 @@ apr_pres_int <- cuadros_OP %>%
 p <- 
   ggplot(apr_pres_int,
          aes(x = reorder(paste0(str_wrap(Encuesta, 20), "\n",País), -prop), 
-             y = prop,
+             y = value,
              color = Pregunta,
              fill = País, label = Porcentaje)) +
   geom_col(width = 0.5) +
   theme_minimal() + 
+  scale_y_percent(limits = c(0,(max(apr_pres_int$value)+.1)))+
   scale_color_manual("", 
                      values= c(
                        rep("white", length(levels(as.factor(apr_pres_int$Pregunta))))
@@ -469,7 +502,7 @@ p <-
                       brewer.pal(n=9, "Blues")[9]
                     )) +
   labs(x="",
-       y="%") +
+       y="") +
   theme(strip.text = element_text(size = 15),
         panel.spacing.x = unit(3, "lines"),
         
@@ -478,7 +511,7 @@ p <-
         legend.position = "none")
 
 
-ggsave("03_graficas/aprobacion_pres_int_op.pdf", plot = p, 
+ggsave("03_graficas/aprobacion_pres_int_op.pdf", plot = p+geom_label(size = 8), 
        width = 15, height = 10, dpi = 100)
 
 if(params$view_html) {
@@ -549,10 +582,11 @@ p <-
   ggplot(apr_gob_loc,
          aes(x = reorder(paste0(str_wrap(Encuesta, 20), "\n",País), -prop), 
              color = Pregunta,
-             y = prop,
+             y = value,
              fill = País, label = Porcentaje)) +
   geom_col(width = 0.5) +
   theme_minimal() + 
+  scale_y_percent(limits = c(0,(max(apr_gob_loc$value)+.1)))+
   scale_color_manual("", 
                      values= c(
                        rep("white", length(levels(as.factor(apr_gob_loc$Pregunta))))
@@ -565,14 +599,14 @@ p <-
                       brewer.pal(n=9, "Blues")[9]
                     )) +
   labs(x="",
-       y="%") +
+       y="") +
   theme(strip.text = element_text(size = 15),
         panel.spacing.x = unit(3, "lines"),
         
         axis.text.x = element_text(size = 15),
         axis.text.y = element_text(size = 15),
         legend.position = "none")
-ggsave("03_graficas/aprobacion_gob_int_op.pdf", plot = p, 
+ggsave("03_graficas/aprobacion_gob_int_op.pdf", plot = p+geom_label(size = 8), 
        width = 15, height = 10, dpi = 100)
 
 if(params$view_html) {
@@ -649,11 +683,12 @@ suficiente_fed <- cuadros_OP %>%
 p <- 
   ggplot(suficiente_fed,
          aes(x = reorder(reorder(paste0(str_wrap(Encuesta, 20), "\n",País), order), -prop), 
-             y = prop,
+             y = value,
              color = Pregunta,
              fill = País, label = Porcentaje)) +
   geom_col(width = 0.5) +
   theme_minimal() + 
+  scale_y_percent(limits = c(0,(max(suficiente_fed$value)+.1)))+
   scale_color_manual("", 
                      values= c(
                        rep("white", length(levels(as.factor(suficiente_fed$Pregunta))))
@@ -667,13 +702,13 @@ p <-
                       brewer.pal(n=9, "Blues")[9]
                     )) +
   labs(x="",
-       y="%") +
+       y="") +
   theme(strip.text = element_text(size = 15),
         panel.spacing.x = unit(3, "lines"),
         axis.text.x = element_text(size = 15),
         axis.text.y = element_text(size = 15),
         legend.position = "none")
-ggsave("03_graficas/suf_gob_op.pdf", plot = p, 
+ggsave("03_graficas/suf_gob_op.pdf", plot = p+geom_label(size = 8), 
        width = 15, height = 10, dpi = 100)
 
 if(params$view_html) {
@@ -745,11 +780,12 @@ suficiente_loc <- cuadros_OP %>%
 p <- 
   ggplot(suficiente_loc,
          aes(x = reorder(paste0(str_wrap(Encuesta, 20), "\n",País), -prop), 
-             y = prop,
+             y = value,
              color = Pregunta,
              fill = País, label = Porcentaje)) +
   geom_col(width = 0.5) +
   theme_minimal() + 
+  scale_y_percent(limits = c(0,(max(suficiente_loc$value)+.1)))+
   scale_color_manual("", 
                      values= c(
                        rep("white", length(levels(as.factor(suficiente_loc$Pregunta))))
@@ -761,7 +797,7 @@ p <-
                       brewer.pal(n=9, "Blues")[9]
                     )) +
   labs(x="",
-       y="%") +
+       y="") +
   theme(strip.text = element_text(size = 15),
         panel.spacing.x = unit(3, "lines"),
         
@@ -769,7 +805,7 @@ p <-
         axis.text.y = element_text(size = 15),
         legend.position = "none")
 
-ggsave("03_graficas/suf_gob_loc_op.pdf", plot = p, 
+ggsave("03_graficas/suf_gob_loc_op.pdf", plot = p+geom_label(size = 8), 
        width = 15, height = 10, dpi = 100)
 
 if(params$view_html) {
@@ -833,35 +869,26 @@ impacto <- cuadros_OP %>%
   mutate(
     prop = round(value*100),
     Porcentaje = paste0(round(value*100), "%")
-  )
-
+  )%>%
+  arrange(País, Encuesta, id)
 p <- 
   ggplot(impacto,
-         aes(x = id, y = prop,
-             color = Pregunta, 
-             fill = País, label = Porcentaje)) +
+         aes(x = id, y = value,
+             fill = id, label = Porcentaje)) +
   geom_col(width = 0.5) +
-  facet_wrap(Encuesta ~ País, nrow = 2) +
+  facet_wrap(str_wrap(Encuesta,15) ~ País, nrow = 2) +
   theme_minimal() + 
-  scale_color_manual("", 
-                     values= c(
-                       rep("white", length(levels(as.factor(impacto$Pregunta))))
-                     )
-  ) +
-  scale_fill_manual("",
-                    values = c(
-                      brewer.pal(n=9, "Blues")[4],
-                      brewer.pal(n=9, "Blues")[9]
-                    )) +
+  scale_y_percent(limits = c(0,(max(impacto$value)+.1)))+
+  scale_fill_manual(values = impacto$color)+
   labs(x="",
-       y="%") +
+       y="") +
   theme(strip.text = element_text(size = 15),
         
         axis.text.x = element_text(size = 10),
         axis.text.y = element_text(size = 15),
         legend.position='none')
 
-ggsave("03_graficas/percepcion_fam_pers_op.pdf", plot = p, 
+ggsave("03_graficas/percepcion_fam_pers_op.pdf", plot = p+geom_label(size = 8), 
        width = 15, height = 10, dpi = 100)
 
 if(params$view_html) {
@@ -927,37 +954,30 @@ empeorar <- cuadros_OP %>%
   mutate(
     prop = round(value*100),
     Porcentaje = paste0(round(value*100), "%")
-  )
+  )%>%
+  arrange(desc(Encuesta), País, id)
 
 
 p <- 
   ggplot(empeorar,
-         aes(x = str_wrap(id, 15), y = prop,
-             color = Pregunta, 
-             fill = id, label = Porcentaje)) +
+         aes(x = str_wrap(id, 15), 
+             y = value,
+             fill = id, 
+             label = Porcentaje)) +
   geom_col(width = 0.5) +
   facet_wrap(País ~ Encuesta, nrow = 2) +
   theme_minimal() + 
-  scale_color_manual("", 
-                     values= c(
-                       rep("white", length(levels(as.factor(empeorar$Pregunta))))
-                     )
-  ) +
-  scale_fill_manual("",
-                    values = c(
-                      brewer.pal(n=9, "Blues")[4],
-                      brewer.pal(n=9, "Blues")[7],
-                      brewer.pal(n=9, "Blues")[9]
-                    )) +
+  scale_y_percent(limits = c(0,(max(empeorar$value)+.1)))+
+  scale_fill_manual(values = empeorar$color)+
   labs(x="",
-       y="%") +
+       y="") +
   theme(strip.text = element_text(size = 15),
         
         axis.text.x = element_text(size = 10),
         axis.text.y = element_text(size = 10), 
         legend.position='none')
 
-ggsave("03_graficas/percepcion_epi_op.pdf", plot = p, 
+ggsave("03_graficas/percepcion_epi_op.pdf", plot = p+geom_label(size = 8), 
        width = 15, height = 10, dpi = 100)
 
 if(params$view_html) {
@@ -1016,7 +1036,4 @@ También puedes descargar el tema de este Rmd [aquí](https://holtzy.github.io/P
 ```
 ```{block eval=FALSE, include=params$view_pdf}
 Descargue los archivo RMarkdown para crear este reporte aquí [\underline{Rmarkdown}](https://github.com/LorenzoLeon/covid19_mex_Reportes).
-```
-```{block eval=FALSE, include=params$view_html}
-También puedes descargar el tema de este Rmd [\underline{aquí}](https://holtzy.github.io/Pimp-my-rmd/)
 ```

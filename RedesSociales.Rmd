@@ -48,6 +48,7 @@ Descargue el archivo RMarkdown para crear este reporte aquí
 </center>
 <br>
 ```
+
 ***
 ```{block eval=FALSE, include=params$view_html}
 El análisis de redes sociales es una buena herramienta para conocer y entender la opinión pública usuaria de redes sociales. Cabe señalar que, dado el contexto socioeconómico en nuestro país y la brecha tecnológica característica de los países en desarrollo, este grupo recoge características específicas que merece un tratamiento diferenciado de los trabajos demoscópicos realizados en vivienda o por teléfono. 
@@ -153,11 +154,38 @@ Los datos sobre tweets hasta `r max(tweets$fecha)` tienen `r nrow(tweets)` tweet
 
 # <b>Tiempo</b>
 ***
-```{block eval=FALSE, include=params$view_html}
-El gráfico de Tiempo presenta el número de tweets que mencionan el #COVID19MX. Estos tweets se muestran según la hora de su publicación desde el 15 al 20 de marzo de 2020. La imagen inferior que acompaña el gráfico permite elegir la temporalidad específica de su interés.
+```{r echo=F, message=F, warning=F}
+minday <- format(min(tweets$fecha), "%d")
+minmonth <- format(min(tweets$fecha), "%m")
+maxday <- format(max(tweets$fecha), "%d")
+maxmonth <- format(max(tweets$fecha), "%m")
+months <- list(
+  "01"="enero",
+  "02"="febrero",
+  "03"="marzo",
+  "04"="abril",
+  "05"="mayo",
+  "06"="junio",
+  "07"="julio",
+  "08"="agosto",
+  "09"="septiembre",
+  "10"="octubre",
+  "11"="noviembre",
+  "12"="diciembre"
+)
+if(maxmonth == minmonth){
+  fectoprint <- paste(minday, "al", maxday,"de", months[minmonth])
+} else {
+  fectoprint <-   paste(minday,"de",months[minmonth] ,"al", maxday,"de", months[maxmonth])
+}
+
 ```
+
+
+El gráfico de Tiempo presenta el número de tweets que mencionan el #COVID19MX. Estos tweets se muestran según la hora de su publicación desde el `r fectoprint` de `r format(min(tweets$fecha),"%Y")`. La imagen inferior que acompaña el gráfico permite elegir la temporalidad específica de su interés. 
 ```{block eval=FALSE, include=params$view_pdf}
-El gráfico de Tiempo presenta el número de tweets que mencionan el #COVID19MX. Estos tweets se muestran según la hora de su publicación desde el 15 al 20 de marzo de 2020. La imagen inferior que acompaña el gráfico permite elegir la temporalidad específica de su interés. Es importante remarcar que los tweets tienen ciclos normales de creación determinado por las horas de descanso, así como la escalada esperada en los fines de semana. Este ejercicio permite evaluar la relevancia de un tema particular para la opinión pública usuaria de redes sociales y, subsecuentemente, entender su relación con eventos observados en un periodo de tiempo.
+\newline
+Es importante remarcar que los tweets tienen ciclos normales de creación determinado por las horas de descanso, así como la escalada esperada en los fines de semana. Este ejercicio permite evaluar la relevancia de un tema particular para la opinión pública usuaria de redes sociales y, subsecuentemente, entender su relación con eventos observados en un periodo de tiempo.
 ```
 <br>
 ```{r fig.width=9, out.width="80%", fig.height=7, fig.align='center', echo=F, background="white", message = FALSE, warning = FALSE, fig.cap="Línea de Tiempo de Tweets sobre COVID-19 en México - Twitter"}
@@ -608,7 +636,4 @@ También puedes descargar el tema de este Rmd [aquí](https://holtzy.github.io/P
 ```
 ```{block eval=FALSE, include=params$view_pdf}
 Descargue los archivo RMarkdown para crear este reporte aquí [\underline{Rmarkdown}](https://github.com/LorenzoLeon/covid19_mex_Reportes).
-```
-```{block eval=FALSE, include=params$view_html}
-También puedes descargar el tema de este Rmd [\underline{aquí}](https://holtzy.github.io/Pimp-my-rmd/)
 ```

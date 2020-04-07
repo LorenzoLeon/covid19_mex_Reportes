@@ -87,9 +87,35 @@ saveWidgetFix <- function (widget,file,...) {
 }
 
 cuadros_OP <- read_excel("01_datos/parametría_Datos.xlsx")
-
 # Transformaciones ----
 names(cuadros_OP)[6:40] <- paste0("r_", names(cuadros_OP)[6:40])
+color.palette <- function(steps, n.steps.between=NULL, ...){
+  
+  if(is.null(n.steps.between)) n.steps.between <- rep(0, (length(steps)-1))
+  if(length(n.steps.between) != length(steps)-1) stop("Must have one less n.steps.between value than steps")
+  
+  fill.steps <- cumsum(rep(1, length(steps))+c(0,n.steps.between))
+  RGB <- matrix(NA, nrow=3, ncol=fill.steps[length(fill.steps)])
+  RGB[,fill.steps] <- col2rgb(steps)
+  
+  for(i in which(n.steps.between>0)){
+    col.start=RGB[,fill.steps[i]]
+    col.end=RGB[,fill.steps[i+1]]
+    for(j in seq(3)){
+      vals <- seq(col.start[j], col.end[j], length.out=n.steps.between[i]+2)[2:(2+n.steps.between[i]-1)]  
+      RGB[j,(fill.steps[i]+1):(fill.steps[i+1]-1)] <- vals
+    }
+  }
+  
+  new.steps <- rgb(RGB[1,], RGB[2,], RGB[3,], maxColorValue = 255)
+  pal <- colorRampPalette(new.steps, ...)
+  return(pal)
+}
+
+colfunc <- color.palette(c(brewer.pal(n = 11, "RdBu")[10],
+                           brewer.pal(n = 11, "RdBu")[7],
+                           brewer.pal(n = 11, "RdBu")[2]))
+
 cuadros_OP <- cuadros_OP %>% 
   pivot_longer(cols = starts_with("r_"), 
                names_prefix = "r_",
@@ -102,16 +128,22 @@ cuadros_OP <- cuadros_OP %>%
     ),
     value = value/100,
     id = ifelse(id=="Nivel", País, id), 
-    text = paste0(stri_replace_first(id, regex = "[:digit:]+. ", replacement = ""), "\n", "Porcentaje: " ,round(value*100, 0), "%" , "\nEncuestadora: ", Encuesta ),
+    id_clean = stri_replace_first(id, regex = "[:digit:]+. ", replacement = ""),
+    id_num = stri_extract_first(id, regex = "[:digit:]+"),
+    text = paste0(id_clean, "\n", "Porcentaje: " ,round(value*100, 0), "%" , "\nEncuestadora: ", Encuesta ),
     prop = round(value*100),
     Porcentaje = paste0(round(value*100), "%")
-  )
+  )%>%
+  group_by(Pregunta)%>%
+  mutate(max = max(ifelse(as.numeric(id_num)==99, NA_integer_,as.numeric(id_num) ), na.rm = T),
+         color = colfunc(max)[as.numeric(id_num)],
+         color = ifelse(is.na(color), "grey", color))
 
 categorias <- unique(cuadros_OP$Categoría)
 caption <- "Elaboración con datos de <a href='https://twitter.com/Parametria'>@Parametria</a>"
 caption1 <- "Elaboración propia con datos de Parametría"
 
-
+#colorRamp(c(brewer.pal(n = 11, "RdBu")[1], brewer.pal(n = 11, "RdBu")[11]))
 ```
 
 ```{block eval=FALSE, include=params$view_pdf}
@@ -125,15 +157,15 @@ titulo <- "Conocimiento de Coronavirus en México - Parametría"
 subtitulo <- pregunta1
 
 data_cono <- cuadros_OP%>%
-  filter(Pregunta == pregunta1) %>%
-  mutate(Respuesta = (reorder(id, desc(id))))
+  filter(Pregunta == pregunta1) 
 
 ur <-   ggplot(data_cono,
                aes(x = str_wrap(id, 10), y = value,
-                   fill =Respuesta , 
+                   fill = id, 
                    label = Porcentaje,
                    text = text)) +
   geom_col(width = 0.5) + 
+  scale_fill_manual(values = data_cono$color)+
   theme_minimal() +
   labs(title = str_wrap(titulo, 50),
        subtitle = str_wrap(subtitulo, 50),
@@ -190,15 +222,15 @@ titulo <- "Opinión de Pandemia de Coronavirus en México - Parametría"
 subtitulo <- pregunta
 
 data_cono <- cuadros_OP%>%
-  filter(Pregunta == pregunta) %>%
-  mutate(Respuesta = (reorder(id, desc(id))))
+  filter(Pregunta == pregunta)
 
 ur <-   ggplot(data_cono,
                aes(x = str_wrap(id, 10), y = value,
-                   fill =Respuesta , 
+                   fill =id, 
                    label = Porcentaje,
                    text = text)) +
   geom_col(width = 0.5) + 
+  scale_fill_manual(values = data_cono$color)+
   theme_minimal() +
   ylim(0, 1.05) +
   labs(title = str_wrap(titulo, 50),
@@ -254,22 +286,25 @@ titulo <- "Opinión sobre Medios abordando el tema de Coronavirus - Parametría"
 subtitulo <- pregunta
 
 data_cono <- cuadros_OP%>%
-  filter(Pregunta == pregunta) %>%
-  mutate(Respuesta = (reorder(id, desc(id))))
+  filter(Pregunta == pregunta) %>% 
+  arrange(id)#%>%
+  #mutate(Respuesta = (reorder(id, desc(id))))
 
 ur <-   ggplot(data_cono,
                aes(x = str_wrap(id, 10), y = value,
-                   fill =Respuesta , 
+                   fill =id, 
                    label = Porcentaje,
                    text = text)) +
   geom_col(width = 0.5) + 
+  scale_fill_manual(values = data_cono$color)+
   theme_minimal() +
   ylim(0, 1.05) +
   labs(title = str_wrap(titulo, 50),
        subtitle = str_wrap(subtitulo, 50),
        x="",
        y="") 
-ggsave("03_graficas/medios_op_param.pdf", plot = ur+          geom_label(size = 8)+
+ggsave("03_graficas/medios_op_param.pdf", plot = ur+  
+         geom_label(size = 8)+
          scale_y_percent(limits = c(0,(max(data_cono$value)+.1)))+
          theme(plot.title = element_text(size = 35, face = "bold"),
                plot.subtitle = element_text(size = 25),
@@ -323,15 +358,15 @@ titulo <- "Impacto de COVID-19 en vida diaria de personas - Parametría"
 subtitulo <- pregunta
 
 data_cono <- cuadros_OP%>%
-  filter(Pregunta == pregunta) %>%
-  mutate(Respuesta = (reorder(id, desc(id))))
+  filter(Pregunta == pregunta) %>% arrange(id)
 
 ur <-   ggplot(data_cono,
                aes(x = str_wrap(id, 10), y = value,
-                   fill =Respuesta , 
+                   fill =id , 
                    label = Porcentaje,
                    text = text)) +
   geom_col(width = 0.5) + 
+  scale_fill_manual(values = data_cono$color)+
   theme_minimal() +
   ylim(0, 1.05) +
   labs(title = str_wrap(titulo, 50),
@@ -387,15 +422,15 @@ titulo <- "Hogares en México con al menos un miembro con enfermedades preexiste
 subtitulo <- pregunta
 
 data_cono <- cuadros_OP%>%
-  filter(Pregunta == pregunta) %>%
-  mutate(Respuesta = (reorder(id, desc(id))))
+  filter(Pregunta == pregunta) %>% arrange(id)
 
 ur <-   ggplot(data_cono,
                aes(x = str_wrap(id, 10), y = value,
-                   fill =Respuesta , 
+                   fill =id , 
                    label = Porcentaje,
                    text = text)) +
   geom_col(width = 0.5) + 
+  scale_fill_manual(values = data_cono$color)+
   theme_minimal() +
   ylim(0, 1.05) +
   labs(title = str_wrap(titulo, 50),
@@ -451,15 +486,15 @@ titulo <- "Miedo al contagio de COVID-19 en México - Parametría"
 subtitulo <- pregunta
 
 data_cono <- cuadros_OP%>%
-  filter(Pregunta == pregunta) %>%
-  mutate(Respuesta = (reorder(id, desc(id))))
+  filter(Pregunta == pregunta) %>% arrange(id)
 
 ur <-   ggplot(data_cono,
                aes(x = str_wrap(id, 10), y = value,
-                   fill =Respuesta , 
+                   fill =id , 
                    label = Porcentaje,
                    text = text)) +
   geom_col(width = 0.5) + 
+  scale_fill_manual(values = data_cono$color)+
   theme_minimal() +
   ylim(0, 1.05) +
   labs(title = str_wrap(titulo, 50),
@@ -527,15 +562,15 @@ titulo <- pregunta
 subtitulo <- ""
 
 data_cono <- cuadros_OP%>%
-  filter(Pregunta == pregunta) %>%
-  mutate(Respuesta = (reorder(id, desc(id))))
+  filter(Pregunta == pregunta) %>% arrange(id)
 
 ur <-   ggplot(data_cono,
                aes(x = str_wrap(id, 10), y = value,
-                   fill =Respuesta , 
+                   fill =id , 
                    label = Porcentaje,
                    text = text)) +
   geom_col(width = 0.5) + 
+  scale_fill_manual(values = data_cono$color)+
   theme_minimal() +
   ylim(0, 1.05) +
   labs(title = str_wrap(titulo, 50),
@@ -599,7 +634,7 @@ subtitulo <- ""
 
 data_cono <- cuadros_OP%>%
   filter(Pregunta %in% pregunta, str_detect(id, "1.")) %>%
-  mutate(Respuesta = (reorder(id, desc(id))),
+  mutate(#Respuesta = (reorder(id, desc(id))),
          fill = str_wrap(str_replace(Pregunta, 
                                      "Proporción de hogares en México", 
                                      "% de hogares"),10)
@@ -612,6 +647,7 @@ ur <-   ggplot(data_cono,
                    label = Porcentaje,
                    text = text)) +
   geom_col(width = 0.5, position = "stack") + 
+  scale_fill_manual(values = c(brewer.pal(n = 11, "RdBu")[7],brewer.pal(n = 11, "RdBu")[11]))+
   theme_minimal() +
   ylim(0, 1.05) +
   labs(title = str_wrap(titulo, 50),
@@ -667,15 +703,15 @@ titulo <- "Efectos de la Cuarentena en los ingresos mexicanos - Parametría"
 subtitulo <- "Si no fuera posible salir a la calle para evitar los contagios por el Coronavirus durante un mes, ¿el ingreso familiar aumentaría, permanecería igual o disminuiría?"
 
 data_cono <- cuadros_OP%>%
-  filter(stri_detect(Pregunta, regex = pregunta)) %>%
-  mutate(Respuesta = (reorder(id, desc(id))))
+  filter(stri_detect(Pregunta, regex = pregunta)) 
 
 ur <-   ggplot(data_cono,
                aes(x = str_wrap(id, 10), y = value,
-                   fill =Respuesta , 
+                   fill =id , 
                    label = Porcentaje,
                    text = text)) +
   geom_col(width = 0.5) + 
+  scale_fill_manual(values = data_cono$color)+
   theme_minimal() +
   ylim(0, 1.05) +
   labs(title = str_wrap(titulo, 50),
@@ -736,15 +772,15 @@ titulo <- "Opinión y expectativas sobre cuarentena - Parametría"
 subtitulo <- pregunta
 
 data_cono <- cuadros_OP%>%
-  filter(Pregunta == pregunta) %>%
-  mutate(Respuesta = (reorder(id, desc(id))))
+  filter(Pregunta == pregunta) %>% arrange(id)
 
 ur <-   ggplot(data_cono,
                aes(x = str_wrap(id, 10), y = value,
-                   fill =Respuesta , 
+                   fill =id , 
                    label = Porcentaje,
                    text = text)) +
   geom_col(width = 0.5) + 
+  scale_fill_manual(values = data_cono$color)+
   theme_minimal() +
   ylim(0, 1.05) +
   labs(title = str_wrap(titulo, 50),
@@ -800,15 +836,15 @@ titulo <- "Sentimientos sobre Coronavirus - Parametría"
 subtitulo <- pregunta
 
 data_cono <- cuadros_OP%>%
-  filter(Pregunta == pregunta) %>%
-  mutate(Respuesta = (reorder(id, desc(id))))
+  filter(Pregunta == pregunta) %>% arrange(id)
 
 ur <-   ggplot(data_cono,
                aes(x = str_wrap(id, 10), y = value,
-                   fill =Respuesta , 
+                   fill =id, 
                    label = Porcentaje,
                    text = text)) +
   geom_col(width = 0.5) + 
+  scale_fill_manual(values = data_cono$color)+
   theme_minimal() +
   ylim(0, 1.05) +
   labs(title = str_wrap(titulo, 50),
@@ -864,15 +900,15 @@ titulo <- pregunta
 subtitulo <- ""
 
 data_cono <- cuadros_OP%>%
-  filter(Pregunta == pregunta) %>%
-  mutate(Respuesta = (reorder(id, desc(id))))
+  filter(Pregunta == pregunta) %>% arrange(id)
 
 ur <-   ggplot(data_cono,
                aes(x = str_wrap(id, 10), y = value,
-                   fill =Respuesta , 
+                   fill =id , 
                    label = Porcentaje,
                    text = text)) +
   geom_col(width = 0.5) + 
+  scale_fill_manual(values = data_cono$color)+
   theme_minimal() +
   ylim(0, 1.05) +
   labs(title = str_wrap(titulo, 50),
@@ -932,8 +968,9 @@ titulo <- "Aprobación presidencial - Andrés Manuel López Obrador"
 subtitulo <- ""
 
 data_cono <- cuadros_OP%>%
-  filter(Pregunta == pregunta) %>%
-  mutate(Respuesta = (reorder(id, desc(id))),
+  filter(Pregunta == pregunta) %>% 
+  arrange(id)%>%
+  mutate(#Respuesta = (reorder(id, desc(id))),
          encuesta = stri_extract_first(Encuesta, regex = "[[:alpha:] ]+_"),
          encuesta = stri_replace_all(encuesta, fixed = "_", ""),
          encuesta = ifelse(is.na(encuesta), "Parametría", encuesta),
@@ -946,8 +983,8 @@ data_cono <- cuadros_OP%>%
 ur <-   ggplot(data_cono,
                aes(x = reorder(Encuesta, fecha),
                    y = value,
-                   color = Respuesta,
-                   group = Respuesta,
+                   color = id,
+                   group = id,
                    label = Porcentaje,
                    text = text)) +
   geom_line() +
@@ -956,7 +993,7 @@ ur <-   ggplot(data_cono,
   theme_minimal() +
   ylim(0, 1.05) +
   ##scale_x_datetime(date_breaks = "3 month", date_labels = "%m/%y")+
-  scale_color_manual("", values = c("red", "green"))+
+  scale_color_manual("", values = c(brewer.pal(n = 11, "RdBu")[10],brewer.pal(n = 11, "RdBu")[2]))+
   labs(title = str_wrap(titulo, 50),
        subtitle = str_wrap(subtitulo, 50),
        x="",
@@ -1018,15 +1055,15 @@ titulo <- "El presidente frente al COVID-19 - Parametría"
 subtitulo <- pregunta
 
 data_cono <- cuadros_OP%>%
-  filter(Pregunta == pregunta) %>%
-  mutate(Respuesta = (reorder(id, desc(id))))
+  filter(Pregunta == pregunta) %>% arrange(id)
 
 ur <-   ggplot(data_cono,
                aes(x = str_wrap(id, 10), y = value,
-                   fill =Respuesta , 
+                   fill =id , 
                    label = Porcentaje,
                    text = text)) +
   geom_col(width = 0.5) + 
+  scale_fill_manual(values = data_cono$color)+
   theme_minimal() +
   ylim(0, 1.05) +
   labs(title = str_wrap(titulo, 50),
@@ -1079,15 +1116,15 @@ titulo <- "El presidente frente al COVID-19 - Parametría"
 subtitulo <- pregunta
 
 data_cono <- cuadros_OP%>%
-  filter(Pregunta == pregunta) %>%
-  mutate(Respuesta = (reorder(id, desc(id))))
+  filter(Pregunta == pregunta) %>% arrange(id)
 
 ur <-   ggplot(data_cono,
                aes(x = str_wrap(id, 10), y = value,
-                   fill =Respuesta , 
+                   fill =id , 
                    label = Porcentaje,
                    text = text)) +
   geom_col(width = 0.5) + 
+  scale_fill_manual(values = data_cono$color)+
   theme_minimal() +
   ylim(0, 1.05) +
   labs(title = str_wrap(titulo, 50),
@@ -1159,7 +1196,4 @@ También puedes descargar el tema de este Rmd [aquí](https://holtzy.github.io/P
 ```
 ```{block eval=FALSE, include=params$view_pdf}
 Descargue los archivo RMarkdown para crear este reporte aquí [\underline{Rmarkdown}](https://github.com/LorenzoLeon/covid19_mex_Reportes).
-```
-```{block eval=FALSE, include=params$view_html}
-También puedes descargar el tema de este Rmd [\underline{aquí}](https://holtzy.github.io/Pimp-my-rmd/)
 ```
