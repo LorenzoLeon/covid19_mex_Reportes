@@ -3,3 +3,6 @@ DiccionarioUNAfin.rds
 *.xlsx
 .Rproj.user
 01_datos/Guzmart_datos_covid.xlsx
+01_datos/covid_02ABR20.rds
+01_datos/tweets.rds
+01_datos/tweets.rds

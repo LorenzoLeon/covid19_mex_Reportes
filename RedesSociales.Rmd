@@ -12,7 +12,7 @@ output:
     css: '04_resources/style.css'
     df_print: paged
     include:
-      #after_body: '04_resources/footer.html'
+      after_body: '04_resources/footer.html'
       in_header: '04_resources/header.html'
     number_sections: no
     theme: lumen
@@ -32,7 +32,7 @@ params:
 <center>
 <div class="pill-nav">
 <a class="active" href='https://LorenzoLeon.github.io/covid19_mex_Reportes/'><b>Redes Sociales</b></a>
-<a href='https://LorenzoLeon.github.io/covid19_mex_Reportes/OpinionPublica.html'><b>Opinión Pública Internacional</b></a>
+<a href='https://lorenzoleon.github.io/covid19_mex_Reportes/DatosSalud.html'><b>Reporte Secretaría de Salud</b></a>
 </div>
 <br>
 <b>

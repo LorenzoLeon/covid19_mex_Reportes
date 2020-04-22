@@ -1,5 +1,6 @@
 setwd("Desktop/extra/COVID-19-Opinion/")
 tweets <- readRDS(file = "01_datos/tweets.rds")
+require(wordcloud2)
 
 custom_stop_words <- enframe(tm::stopwords("es")) %>% 
   bind_rows(enframe(c( "t", "rt"))) %>% 
